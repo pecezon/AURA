@@ -8,12 +8,19 @@ const router = Router();
 router.post("/complete-profile", requireAuth, async (req, res) => {
   const { firstName, lastName, birthDate, employeeId, area } = req.body;
 
+  const parsedBirthDate = new Date(birthDate);
+  if (!birthDate || isNaN(parsedBirthDate.getTime())) {
+    return res
+      .status(400)
+      .json({ message: "Invalid birthDate. Please provide a valid date." });
+  }
+
   const updated = await prisma.profile.update({
     where: { id: req.user.id },
     data: {
       firstName,
       lastName,
-      birthDate: new Date(birthDate),
+      birthDate: parsedBirthDate,
       employeeId,
       area,
       isProfileComplete: true,
