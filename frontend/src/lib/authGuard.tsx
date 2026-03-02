@@ -9,11 +9,14 @@ export async function getUserState() {
 
   const token = data.session.access_token;
 
-  const res = await fetch("http://localhost:4000/api/profile/dashboard-data", {
-    headers: {
-      Authorization: `Bearer ${token}`,
+  const res = await fetch(
+    `${import.meta.env.VITE_AURA_BACKEND_URL}/api/profile/dashboard-data`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     },
-  });
+  );
 
   if (res.status === 401) {
     return { isAuthenticated: false };
