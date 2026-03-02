@@ -29,8 +29,17 @@ export async function getUserState() {
     };
   }
 
-  return {
-    isAuthenticated: true,
-    isProfileComplete: true,
-  };
+  let body: any = null;
+  try {
+    body = await res.json();
+  } catch {
+    // If we cannot parse the body, fall through to treating this as unauthenticated.
+  }
+  if (body && body.needsCompletion === true) {
+    return {
+      isAuthenticated: true,
+      isProfileComplete: false,
+    };
+  }
+  return { isAuthenticated: false };
 }
