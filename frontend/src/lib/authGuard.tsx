@@ -23,23 +23,25 @@ export async function getUserState() {
   }
 
   if (res.status === 403) {
+    const body = await res.json();
+
+    if (body?.needsCompletion) {
+      return {
+        isAuthenticated: true,
+        isProfileComplete: false,
+      };
+    }
+
+    // 403 raro (no debería pasar)
+    return { isAuthenticated: false };
+  }
+
+  if (res.ok) {
     return {
       isAuthenticated: true,
-      isProfileComplete: false,
+      isProfileComplete: true,
     };
   }
 
-  let body: any = null;
-  try {
-    body = await res.json();
-  } catch {
-    // If we cannot parse the body, fall through to treating this as unauthenticated.
-  }
-  if (body && body.needsCompletion === true) {
-    return {
-      isAuthenticated: true,
-      isProfileComplete: false,
-    };
-  }
   return { isAuthenticated: false };
 }

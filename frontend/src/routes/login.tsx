@@ -1,14 +1,11 @@
 import { supabase } from "../lib/supabase";
 
 export default function Login() {
-  const frontendUrl =
-    import.meta.env.VITE_AURA_FRONTEND_URL || window.location.origin;
-
   const loginWithGoogle = async () => {
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${frontendUrl}/dashboard`,
+        redirectTo: `${import.meta.env.VITE_AURA_FRONTEND_URL}/dashboard`,
       },
     });
   };
