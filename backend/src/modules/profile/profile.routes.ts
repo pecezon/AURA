@@ -1,7 +1,6 @@
 import { Router } from "express";
-import { requireAuth } from "../../middleware/auth.middleware";
+import { requireAuth, requireCompleteProfile } from "../../middleware/auth.middleware";
 import { prisma } from "../../config/prisma";
-import { requireCompleteProfile } from "../../middleware/auth.middleware";
 
 const router = Router();
 
