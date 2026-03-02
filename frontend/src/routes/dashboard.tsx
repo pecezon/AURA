@@ -1,7 +1,13 @@
+import { useEffect } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { api } from "../lib/api";
+import LogoutButton from "../components/logout-button";
+
 export default function Dashboard() {
   return (
-    <div className="flex h-screen items-center justify-center">
-      <h1 className="text-4xl font-bold">Dashboard Page</h1>
+    <div>
+      Bienvenido al Dashboard
+      <LogoutButton />
     </div>
   );
 }
