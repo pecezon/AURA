@@ -5,14 +5,192 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
+  output = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
+// ================= ENUMS =================
+
+enum Role {
+  EMPLOYEE
+  ADMIN
+  OWNER
+}
+
+enum ContentType {
+  READING
+  VIDEO
+  IMAGE
+}
+
+enum EnrollmentStatus {
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+}
+
+// ================= PROFILE =================
+
 model Profile {
-  id          String   @id @db.Uuid
+  id                String   @id @default(uuid()) @db.Uuid
+  email             String?
+  firstName         String?
+  lastName          String?
+  birthDate         DateTime?
+  employeeId        String?
+  area              String?
+  role              Role     @default(EMPLOYEE)
+  isProfileComplete Boolean  @default(false)
+  createdAt         DateTime @default(now())
+
+  enrollments        CourseEnrollment[]
+  quizAttempts       QuizAttempt[]
+  simulationAttempts SimulationAttempt[]
+}
+
+// ================= COURSE =================
+
+model Course {
+  id          String   @id @default(uuid()) @db.Uuid
+  title       String
+  description String?
+  imageUrl    String?
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  modules     Module[]
+  enrollments CourseEnrollment[]
+}
+
+// ================= MODULE =================
+
+model Module {
+  id        String   @id @default(uuid()) @db.Uuid
+  title     String
+  order     Int
+  courseId  String   @db.Uuid
+  createdAt DateTime @default(now())
+
+  course     Course         @relation(fields: [courseId], references: [id])
+  contents   ModuleContent[]
+  quizzes    Quiz[]
+  simulation Simulation?
+}
+
+// ================= MODULE CONTENT =================
+
+model ModuleContent {
+  id       String   @id @default(uuid()) @db.Uuid
+  moduleId String   @db.Uuid
+  type     ContentType
+  title    String?
+  content  String?  @db.Text
+  url      String?
+  order    Int
+
+  module   Module   @relation(fields: [moduleId], references: [id])
+}
+
+// ================= SIMULATION =================
+
+model Simulation {
+  id           String   @id @default(uuid()) @db.Uuid
+  moduleId     String   @unique @db.Uuid
+  title        String
+  content      String   @db.Text
+  passingScore Int
+
+  module   Module              @relation(fields: [moduleId], references: [id])
+  attempts SimulationAttempt[]
+}
+
+model SimulationAttempt {
+  id           String   @id @default(uuid()) @db.Uuid
+  simulationId String   @db.Uuid
+  profileId    String   @db.Uuid
+  score        Float
+  passed       Boolean
+  createdAt    DateTime @default(now())
+
+  simulation Simulation @relation(fields: [simulationId], references: [id])
+  profile    Profile    @relation(fields: [profileId], references: [id])
+}
+
+// ================= QUIZ =================
+
+model Quiz {
+  id              String   @id @default(uuid()) @db.Uuid
+  moduleId        String   @db.Uuid
+  title           String
+  isGeneratedByAI Boolean  @default(true)
+
+  module    Module        @relation(fields: [moduleId], references: [id])
+  questions Question[]
+  attempts  QuizAttempt[]
+}
+
+model Question {
+  id      String   @id @default(uuid()) @db.Uuid
+  quizId  String   @db.Uuid
+  text    String   @db.Text
+
+  quiz      Quiz       @relation(fields: [quizId], references: [id])
+  reactives Reactive[]
+  answers   Answer[]
+}
+
+model Reactive {
+  id         String   @id @default(uuid()) @db.Uuid
+  questionId String   @db.Uuid
+  text       String
+  isCorrect  Boolean  @default(false)
+
+  question Question @relation(fields: [questionId], references: [id])
+  answers  Answer[]
+}
+
+// ================= QUIZ ATTEMPT =================
+
+model QuizAttempt {
+  id        String   @id @default(uuid()) @db.Uuid
+  quizId    String   @db.Uuid
+  profileId String   @db.Uuid
+  score     Float
+  passed    Boolean
+  createdAt DateTime @default(now())
+
+  quiz     Quiz     @relation(fields: [quizId], references: [id])
+  profile  Profile  @relation(fields: [profileId], references: [id])
+  answers  Answer[]
+}
+
+model Answer {
+  id         String   @id @default(uuid()) @db.Uuid
+  attemptId  String   @db.Uuid
+  questionId String   @db.Uuid
+  reactiveId String   @db.Uuid
+
+  attempt  QuizAttempt @relation(fields: [attemptId], references: [id])
+  question Question    @relation(fields: [questionId], references: [id])
+  reactive Reactive    @relation(fields: [reactiveId], references: [id])
+}
+
+// ================= COURSE ENROLLMENT =================
+
+model CourseEnrollment {
+  profileId   String   @db.Uuid
+  courseId    String   @db.Uuid
+  status      EnrollmentStatus @default(ASSIGNED)
+  progress    Float            @default(0)
+  completedAt DateTime?
+
+  profile Profile @relation(fields: [profileId], references: [id])
+  course  Course  @relation(fields: [courseId], references: [id])
+
+  @@id([profileId, courseId])
 }
