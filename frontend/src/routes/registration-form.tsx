@@ -22,9 +22,13 @@ export default function RegistrationForm() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    await api.post("api/profile/complete-profile", form);
-
-    navigate({ to: "/dashboard" });
+    try {
+      await api.post("api/profile/complete-profile", form);
+      navigate({ to: "/dashboard" });
+    } catch (error) {
+      console.error("Failed to complete profile:", error);
+      alert("No se pudo completar el registro. Por favor, inténtalo de nuevo.");
+    }
   };
 
   return (
