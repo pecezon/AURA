@@ -1,11 +1,7 @@
-import { Request, Response, NextFunction } from "express";
+import { ensureProfile } from "../services/profile.service";
 import { supabase } from "../config/supabase";
 
-export async function requireAuth(
-  req: Request & { user?: any },
-  res: Response,
-  next: NextFunction,
-) {
+export async function requireAuth(req: any, res: any, next: any) {
   const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) return res.status(401).json({ message: "Unauthorized" });
@@ -15,6 +11,17 @@ export async function requireAuth(
   if (error || !data.user)
     return res.status(403).json({ message: "Invalid token" });
 
+  const profile = await ensureProfile(data.user);
+
   req.user = data.user;
+  req.profile = profile;
+
+  next();
+}
+
+export function requireCompleteProfile(req: any, res: any, next: any) {
+  if (!req.profile.isProfileComplete) {
+    return res.status(403).json({ needsCompletion: true });
+  }
   next();
 }
