@@ -9,8 +9,11 @@ export async function getUserState() {
 
   const token = data.session.access_token;
 
+  const baseUrl =
+    import.meta.env.VITE_AURA_BACKEND_URL ?? "http://localhost:8000";
+
   const res = await fetch(
-    `${import.meta.env.VITE_AURA_BACKEND_URL}/api/profile/dashboard-data`,
+    `${baseUrl}/api/profile/dashboard-data`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
