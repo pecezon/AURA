@@ -23,7 +23,7 @@ export default function RegistrationForm() {
     e.preventDefault();
 
     try {
-      await api.post("api/profile/complete-profile", form);
+      await api.post("/api/profile/complete-profile", form);
       navigate({ to: "/dashboard" });
     } catch (error) {
       console.error("Failed to complete profile:", error);
