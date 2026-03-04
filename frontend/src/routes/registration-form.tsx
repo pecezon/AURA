@@ -1,4 +1,4 @@
-import { use, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { api } from "../lib/api";
 import LogoutButton from "../components/logout-button";
@@ -38,8 +38,12 @@ export default function RegistrationForm() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-
-    await completeProfileMutation.mutateAsync();
+    try {
+      await completeProfileMutation.mutateAsync();
+    } catch (error) {
+      console.error("Failed to complete profile:", error);
+      alert("No se pudo completar el registro. Por favor, inténtalo de nuevo.");
+    }
   };
 
   return (
