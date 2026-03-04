@@ -2,8 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { api } from "../lib/api";
 import LogoutButton from "../components/logout-button";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function RegistrationForm() {
+  // Query Client
+  const queryClient = useQueryClient();
+
   const navigate = useNavigate();
 
   // Form Handling
@@ -19,12 +23,23 @@ export default function RegistrationForm() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // Mutation to complete profile
+  const completeProfileMutation = useMutation({
+    mutationFn: () => api.post("/api/profile/complete-profile", form),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      navigate({ to: "/dashboard" });
+    },
+    onError: (error) => {
+      console.error("Failed to complete profile:", error);
+      alert("No se pudo completar el registro. Por favor, inténtalo de nuevo.");
+    },
+  });
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-
     try {
-      await api.post("/api/profile/complete-profile", form);
-      navigate({ to: "/dashboard" });
+      await completeProfileMutation.mutateAsync();
     } catch (error) {
       console.error("Failed to complete profile:", error);
       alert("No se pudo completar el registro. Por favor, inténtalo de nuevo.");
