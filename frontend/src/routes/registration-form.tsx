@@ -109,10 +109,12 @@ export default function RegistrationForm() {
   // Fetch User Image
   const [userImage, setUserImage] = useState<string | null>(null);
   useEffect(() => {
-    getUserImage().then(setUserImage);
-    if (!userImage) {
-      console.warn("No se pudo cargar la imagen del usuario");
-    }
+    getUserImage().then((image) => {
+      setUserImage(image);
+      if (!image) {
+        console.warn("No se pudo cargar la imagen del usuario");
+      }
+    });
   }, []);
 
   const [form, setForm] = useState<ProfileForm>({
