@@ -1,7 +1,8 @@
 import { supabase } from "../lib/supabase";
 import { useNavigate } from "@tanstack/react-router";
+import { Button } from "./ui/button";
 
-export default function LogoutButton() {
+export default function LogoutButton({ style }: { style?: string }) {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -9,5 +10,14 @@ export default function LogoutButton() {
     navigate({ to: "/" });
   };
 
-  return <button onClick={handleLogout}>Cerrar sesión</button>;
+  return (
+    <Button
+      onClick={handleLogout}
+      className={style}
+      size="sm"
+      variant="destructive"
+    >
+      Cerrar sesión
+    </Button>
+  );
 }
