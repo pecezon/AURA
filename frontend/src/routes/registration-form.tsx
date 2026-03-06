@@ -310,7 +310,7 @@ export default function RegistrationForm() {
               {mutation.isPending ? "Guardando..." : "Completar Registro"}
             </Button>
 
-            <LogoutButton style="bg-destructive/80 cursor-pointer hover:bg-destructive" />
+            <LogoutButton />
           </CardFooter>
         </form>
       </Card>
