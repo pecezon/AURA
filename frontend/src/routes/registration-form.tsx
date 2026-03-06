@@ -109,12 +109,13 @@ export default function RegistrationForm() {
   // Fetch User Image
   const [userImage, setUserImage] = useState<string | null>(null);
   useEffect(() => {
-    getUserImage().then((image) => {
+    const load = async () => {
+      const image = await getUserImage();
       setUserImage(image);
-      if (!image) {
-        console.warn("No se pudo cargar la imagen del usuario");
-      }
-    });
+    };
+
+    //Prevents loading 2 times
+    if (!userImage) load();
   }, []);
 
   const [form, setForm] = useState<ProfileForm>({
@@ -209,10 +210,14 @@ export default function RegistrationForm() {
         <CardHeader className="space-y-1 py-4 bg-gradient-to-r from-electric-royal-600 to-slate-indigo-600 rounded-t-xl">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-white/20">
-              <Avatar>
-                <AvatarImage src={userImage ?? undefined} />
+              <Avatar className="w-10 h-10">
+                <AvatarImage
+                  src={userImage || undefined}
+                  alt="User Image"
+                  referrerPolicy="no-referrer"
+                />
                 <AvatarFallback className="bg-transparent">
-                  <UserCircle2 className="w-5 h-5 text-white" />
+                  <UserCircle2 className="w-8 h-8 text-white" />
                 </AvatarFallback>
               </Avatar>
             </div>
