@@ -9,3 +9,17 @@ export async function getAccessToken() {
   const { data } = await supabase.auth.getSession();
   return data.session?.access_token;
 }
+
+export const getUserImage = async () => {
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      const imageUrl = user.user_metadata.avatar_url;
+      return imageUrl;
+    }
+  } catch (error) {
+    console.error("Error fetching user:", error);
+  }
+};
