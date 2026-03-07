@@ -17,7 +17,7 @@ export const Navbar: React.FC<NavbarProps> = () => {
           alt="Aura Logo"
           className="h-8 md:h-10 lg:h-12 xl:h-14"
         />
-        <div className="flex hidden md:flex items-center gap-2">
+        <div className="hidden md:flex items-center gap-2">
           <Button
             className="cursor-pointer hover:bg-gray-200"
             size="sm"
