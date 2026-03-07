@@ -42,7 +42,7 @@ export function AvatarDropdown() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="cursor-pointer flex space-x-2 px-2 py-1 rounded-md flex-between items-center hover:bg-gray-100 ">
+      <DropdownMenuTrigger className="cursor-pointer flex space-x-2 px-2 py-1 rounded-md justify-between gap-2 items-center hover:bg-gray-100 ">
         <div className="justify-end text-right">
           <p className="text-sm md:text-lg">{user.name}</p>
           <p className="text-xs text-muted-foreground">{user.userArea}</p>
