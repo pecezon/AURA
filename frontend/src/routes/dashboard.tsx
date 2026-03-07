@@ -1,6 +1,3 @@
-import { useEffect } from "react";
-import { useNavigate } from "@tanstack/react-router";
-import { api } from "../lib/api";
 import LogoutButton from "../components/logout-button";
 import { Navbar } from "../components/navbar";
 
