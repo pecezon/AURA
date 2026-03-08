@@ -12,10 +12,26 @@ class ConclictError extends Error {
 
 export class ModuleService {
 
-
     //GET METHODS (Get All modules by CourseId, Get all Modules by Type and CourseId, get by ID)
+    //Get All modules by CourseId
+    async getAllModulesByCourseId(courseId : string) : Promise<ModuleResponseDTO[]>{
+        const existsCourse = await prisma.course.findUnique({where : {id : courseId}})
+        if(!existsCourse){
+            throw new ConclictError("The course with id: " + courseId + "dont exist")
+        }
 
+        const findedModules = await prisma.module.findMany({
+            where : {courseId : courseId},
+            include : {contents : true},
+        });
 
+        return findedModules as unknown as ModuleResponseDTO[]
+    }
+
+    //Get all Modules by Type and CourseId
+    async getAllModulesByTypeAndCourseId(){
+        
+    }
 
     //POST METHODS (Create Full Module)
     async createFullModule(dto : ModuleCreateDTO): Promise <ModuleResponseDTO> {
@@ -36,7 +52,7 @@ export class ModuleService {
                         order : contentModule.order
                     }))
                 }
-                //TODO --- Add quizes, simulation, simulation attemp etc.
+                //TODO --- Add quizes, simulation, simulation attemp, question, question attemp, and reactives etc.
             },
             include : {
                 contents : true
