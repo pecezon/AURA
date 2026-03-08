@@ -31,3 +31,8 @@ export interface ModuleResponseDTO {
     courseId : string,
     contents  : ResponseModuleContentDTO[];
 }
+
+export interface ModuleGetByTypeAndCourseDTO {
+    courseId : string,
+    type: "READING" | "VIDEO" | "IMAGE";
+}

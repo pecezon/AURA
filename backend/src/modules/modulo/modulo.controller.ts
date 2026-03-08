@@ -5,9 +5,19 @@ const moduleService = new ModuleService()
 
 export async function getAllModulesByCourseId(req : Request, res: Response, next : NextFunction){
     try{
-        const response = await moduleService.getAllModulesByCourseId(req.body)
+        const { courseId } = req.params as { courseId : string };
+        const response = await moduleService.getAllModulesByCourseId(courseId)
         return res.status(200).json(response)
     } catch(error){
+        next(error)
+    }
+}
+
+export async function getAllModulesByTypeAndCourseId(req : Request, res : Response, next : NextFunction){
+    try{
+        const response = await moduleService.getAllModulesByTypeAndCourseId(req.body)
+        return res.status(200).json(response)
+    } catch (error){
         next(error)
     }
 }

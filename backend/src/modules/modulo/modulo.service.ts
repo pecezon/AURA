@@ -1,5 +1,5 @@
 import { prisma } from "../../config/prisma";
-import { ModuleCreateDTO, ModuleResponseDTO } from "./modulo.types";
+import { ModuleCreateDTO, ModuleGetByTypeAndCourseDTO, ModuleResponseDTO } from "./modulo.types";
 
 class ConclictError extends Error {
     statusCode = 409;
@@ -29,8 +29,29 @@ export class ModuleService {
     }
 
     //Get all Modules by Type and CourseId
-    async getAllModulesByTypeAndCourseId(){
-        
+    async getAllModulesByTypeAndCourseId(dto : ModuleGetByTypeAndCourseDTO) : Promise<ModuleResponseDTO[]>{
+        const existCourse = await prisma.course.findUnique({where : {id : dto.courseId}})
+        if(!existCourse){
+            throw new ConclictError("The course with id: " + dto.courseId + "dont exist")
+        }
+
+         const findedModules = await prisma.module.findMany({
+            where : {
+                courseId : dto.courseId,
+            },
+            include : {
+                contents : {
+                    where : {type : dto.type}
+                }
+            },
+        });
+
+        return findedModules as unknown as ModuleResponseDTO[]
+    }
+
+    //Get module by name
+    async getModuleByTitle(){
+
     }
 
     //POST METHODS (Create Full Module)
