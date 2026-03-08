@@ -29,7 +29,7 @@ export class ModuleService {
     }
 
     //Get all Modules by Type and CourseId
-    async getAllModulesByTypeAndCourseId(dto : ModuleGetByTypeAndCourseDTO) : Promise<ModuleResponseDTO[]>{
+    async getAllModulesContentByTypeAndCourseId(dto : ModuleGetByTypeAndCourseDTO) : Promise<ModuleResponseDTO[]>{
         const existCourse = await prisma.course.findUnique({where : {id : dto.courseId}})
         if(!existCourse){
             throw new ConclictError("The course with id: " + dto.courseId + "dont exist")
@@ -50,7 +50,7 @@ export class ModuleService {
     }
 
     //Get module by name
-    async getModuleByTitle(){
+    async getModuleByTitle(){ //Do it later
 
     }
 

@@ -13,9 +13,9 @@ export async function getAllModulesByCourseId(req : Request, res: Response, next
     }
 }
 
-export async function getAllModulesByTypeAndCourseId(req : Request, res : Response, next : NextFunction){
+export async function getAllModulesContentByTypeAndCourseId(req : Request, res : Response, next : NextFunction){
     try{
-        const response = await moduleService.getAllModulesByTypeAndCourseId(req.body)
+        const response = await moduleService.getAllModulesContentByTypeAndCourseId(req.body)
         return res.status(200).json(response)
     } catch (error){
         next(error)
