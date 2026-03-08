@@ -10,7 +10,7 @@ export const Navbar: React.FC<NavbarProps> = () => {
   const navigate = useNavigate();
 
   return (
-    <nav className="w-full border-b bg-background/50 backdrop-blur-sm px-4 py-2 flex items-center justify-between min-h-16">
+    <nav className="w-full border-b bg-white backdrop-blur-sm px-4 py-2 flex items-center justify-between min-h-16 md:px-16 md:py-4">
       <div className="flex items-center gap-8">
         <img
           src="/images/aura_logo.svg"
