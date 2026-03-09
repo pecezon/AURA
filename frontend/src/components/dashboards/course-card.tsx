@@ -1,8 +1,8 @@
 import React from "react";
-import { Badge } from "./ui/badge";
+import { Badge } from "../ui/badge";
 import { Clock, BadgeCheck, Play } from "lucide-react";
 import { StatProgressBar } from "./stat-progress-bar";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 
 interface CourseCardProps {
   title: string;
