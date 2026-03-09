@@ -14,7 +14,7 @@ const BehavioralProfile: React.FC<BehavioralProfileProps> = ({
   proceduralDiscipline,
 }) => {
   return (
-    <div className="w-full bg-gradient-to-br from-electric-royal-50 to-slate-indigo-50 border-blue-200 border border-blue-300 rounded-lg shadow p-4 flex flex-col items-start gap-4 px-6">
+    <div className="w-full bg-gradient-to-br from-electric-royal-50 to-slate-indigo-50 border border-blue-300 rounded-lg shadow p-4 flex flex-col items-start gap-4 px-6">
       <div className="flex gap-1 flex-col items-start w-full">
         <div className="flex justify-between items-center gap-1">
           <Award className="text-blue-500" />
