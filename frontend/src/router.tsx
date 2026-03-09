@@ -81,7 +81,7 @@ const workerDashboardRoute = createRoute({
       throw redirect({ to: "/registration-form" });
     }
 
-    // requireRole("worker"), Needs implementation of role-based access control
+    // requireRole("WORKER"), Needs implementation of role-based access control
   },
   component: WorkerDashboard,
 });
@@ -100,7 +100,7 @@ const supervisorDashboardRoute = createRoute({
       throw redirect({ to: "/registration-form" });
     }
 
-    // requireRole("worker"), Needs implementation of role-based access control
+    // requireRole("SUPERVISOR"), Needs implementation of role-based access control
   },
   component: SupervisorDashboard,
 });
@@ -119,7 +119,7 @@ const adminDashboardRoute = createRoute({
       throw redirect({ to: "/registration-form" });
     }
 
-    // requireRole("worker"), Needs implementation of role-based access control
+    // requireRole("ADMIN"), Needs implementation of role-based access control
   },
   component: AdminDashboard,
 });
