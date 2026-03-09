@@ -8,11 +8,13 @@ import { RouterProvider } from "@tanstack/react-router";
 import { Outlet } from "@tanstack/react-router";
 
 import Login from "./routes/login";
-import Dashboard from "./routes/dashboard";
+import WorkerDashboard from "./routes/worker-dashboard";
+import SupervisorDashboard from "./routes/supervisor-dashboard";
 import Landing from "./routes/landing";
 import RegistrationForm from "./routes/registration-form";
 
 import { getUserState } from "./lib/authGuard";
+import AdminDashboard from "./routes/admin-dashboard";
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -45,6 +47,7 @@ const loginRoute = createRoute({
   component: Login,
 });
 
+// General Dashboard Rout
 const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/dashboard",
@@ -58,10 +61,34 @@ const dashboardRoute = createRoute({
     if (!user.isProfileComplete) {
       throw redirect({ to: "/registration-form" });
     }
+
+    throw redirect({ to: "/dashboard/worker" }); // Default to worker dashboard for now, can be enhanced with role-based routing in the future
   },
-  component: Dashboard,
 });
 
+// Specific Dashboard Routes
+const workerDashboardRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/dashboard/worker",
+  // beforeLoad: () => requireRole("worker"), Needs implementation of role-based access control
+  component: WorkerDashboard,
+});
+
+const supervisorDashboardRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/dashboard/supervisor",
+  // beforeLoad: () => requireRole("supervisor"), Needs implementation of role-based access control
+  component: SupervisorDashboard,
+});
+
+const adminDashboardRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/dashboard/admin",
+  // beforeLoad: () => requireRole("admin"), Needs implementation of role-based access control
+  component: AdminDashboard,
+});
+
+// Registration Form Route
 const registrationFormRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/registration-form",
@@ -82,6 +109,9 @@ const registrationFormRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   loginRoute,
   dashboardRoute,
+  workerDashboardRoute,
+  supervisorDashboardRoute,
+  adminDashboardRoute,
   landingRoute,
   registrationFormRoute,
 ]);
