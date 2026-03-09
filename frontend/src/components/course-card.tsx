@@ -22,7 +22,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
   progress,
 }) => {
   return (
-    <div className="flex flex-col gap-4 p-4 md:p-6 border border-grey-300 bg-white rounded-lg overflow-hidden w-full hover:shadow-lg transition-shadow duration-300 min-h-[200px]">
+    <div className="flex flex-col gap-4 p-4 md:p-6 border border-gray-300 bg-white rounded-lg overflow-hidden w-full hover:shadow-lg transition-shadow duration-300 min-h-[200px]">
       {/* Header */}
       <div className="flex flex-col gap-2">
         <div className="flex flex-col gap-1 md:gap-0">
