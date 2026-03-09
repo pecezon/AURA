@@ -1,9 +1,12 @@
 import { Router } from "express";
-import { createCourseController, getAllCoursesController } from "./course.controller";
+import { createCourseController, getAllCoursesController, searchCoursesByNameController, getCourseByIdController } from "./course.controller";
 
 const router = Router();
 
-router.post("/create-course", createCourseController);
 router.get("/get-all-courses", getAllCoursesController);
+router.get("/search", searchCoursesByNameController);
+router.get("/:id", getCourseByIdController);
+
+router.post("/create-course", createCourseController);
 
 export default router;

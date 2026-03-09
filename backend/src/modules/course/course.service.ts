@@ -184,6 +184,61 @@ export class CourseService {
       })),
     }));
   }
+
+  async searchCoursesByName(name: string) {
+    const courses = await prisma.course.findMany({
+      where: {
+        title: {
+          contains: name,
+          mode: 'insensitive',
+        },
+      },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        imageUrl: true,
+        isPublished: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    return courses.map((course) => ({
+      id: course.id,
+      title: course.title,
+      description: course.description,
+      imageUrl: course.imageUrl,
+      isPublished: course.isPublished,
+      createdAt: course.createdAt.toISOString(),
+      updatedAt: course.updatedAt.toISOString(),
+    }));
+  }
+
+  async getCourseById(id: string) {
+    const course = await prisma.course.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        imageUrl: true,
+        isPublished: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    if (!course) return null;
+    return {
+      id: course.id,
+      title: course.title,
+      description: course.description,
+      imageUrl: course.imageUrl,
+      isPublished: course.isPublished,
+      createdAt: course.createdAt.toISOString(),
+      updatedAt: course.updatedAt.toISOString(),
+    };
+  }
+
 }
 
 export const courseService = new CourseService();
