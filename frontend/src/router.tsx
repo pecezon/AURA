@@ -70,21 +70,57 @@ const dashboardRoute = createRoute({
 const workerDashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/dashboard/worker",
-  // beforeLoad: () => requireRole("worker"), Needs implementation of role-based access control
+  beforeLoad: async () => {
+    const user = await getUserState();
+
+    if (!user.isAuthenticated) {
+      throw redirect({ to: "/login" });
+    }
+
+    if (!user.isProfileComplete) {
+      throw redirect({ to: "/registration-form" });
+    }
+
+    // requireRole("worker"), Needs implementation of role-based access control
+  },
   component: WorkerDashboard,
 });
 
 const supervisorDashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/dashboard/supervisor",
-  // beforeLoad: () => requireRole("supervisor"), Needs implementation of role-based access control
+  beforeLoad: async () => {
+    const user = await getUserState();
+
+    if (!user.isAuthenticated) {
+      throw redirect({ to: "/login" });
+    }
+
+    if (!user.isProfileComplete) {
+      throw redirect({ to: "/registration-form" });
+    }
+
+    // requireRole("worker"), Needs implementation of role-based access control
+  },
   component: SupervisorDashboard,
 });
 
 const adminDashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/dashboard/admin",
-  // beforeLoad: () => requireRole("admin"), Needs implementation of role-based access control
+  beforeLoad: async () => {
+    const user = await getUserState();
+
+    if (!user.isAuthenticated) {
+      throw redirect({ to: "/login" });
+    }
+
+    if (!user.isProfileComplete) {
+      throw redirect({ to: "/registration-form" });
+    }
+
+    // requireRole("worker"), Needs implementation of role-based access control
+  },
   component: AdminDashboard,
 });
 
