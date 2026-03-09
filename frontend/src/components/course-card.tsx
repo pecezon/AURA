@@ -27,7 +27,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
       <div className="flex flex-col gap-2">
         <div className="flex flex-col gap-1 md:gap-0">
           <div className="flex items-center gap-3">
-            <h4 className="font-base font-medium md:text-lg">{title}</h4>
+            <h4 className="font-medium md:text-lg">{title}</h4>
             {progress === 100 && <BadgeCheck className="text-green-500" />}
           </div>
 
