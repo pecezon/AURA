@@ -10,11 +10,11 @@ import { Outlet } from "@tanstack/react-router";
 import Login from "./routes/login";
 import WorkerDashboard from "./routes/worker-dashboard";
 import SupervisorDashboard from "./routes/supervisor-dashboard";
+import AdminDashboard from "./routes/admin-dashboard";
 import Landing from "./routes/landing";
 import RegistrationForm from "./routes/registration-form";
 
 import { getUserState } from "./lib/authGuard";
-import AdminDashboard from "./routes/admin-dashboard";
 
 const rootRoute = createRootRoute({
   component: () => (
