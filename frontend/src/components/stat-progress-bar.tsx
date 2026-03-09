@@ -21,7 +21,7 @@ export const StatProgressBar: React.FC<StatProgressBarProps> = ({
           {value} / {max}
         </span>
       </FieldLabel>
-      <Progress value={value} id="progress-upload" />
+      <Progress value={value} max={max} id="progress-upload" />
     </Field>
   );
 };
