@@ -44,8 +44,8 @@ export const CourseCard: React.FC<CourseCardProps> = ({
             {duration}
           </Badge>
           {regulations &&
-            regulations.map((reg, index) => (
-              <Badge key={index} variant="outline">
+            regulations.map((reg) => (
+              <Badge key={reg} variant="outline">
                 {reg}
               </Badge>
             ))}
