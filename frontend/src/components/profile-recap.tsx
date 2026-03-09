@@ -5,7 +5,7 @@ import BehavioralProfile from "./behavioral-profile";
 
 const mockUserData = {
   name: "Diego Lopez",
-  asignedCourses: 5,
+  assignedCourses: 5,
   inProgressCourses: 3,
   completedCourses: 2,
   riskScore: 20,
@@ -30,7 +30,7 @@ export const ProfileRecap: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
         <StatCard
           label="Cursos Asignados"
-          stat={<h1>{mockUserData.asignedCourses}</h1>}
+          stat={<h1>{mockUserData.assignedCourses}</h1>}
           icon={<BookOpenText className="text-blue-600" />}
           gradientColor="from-blue-500 to-blue-700"
         />
