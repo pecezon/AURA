@@ -26,9 +26,7 @@ export async function updateProfileController(
 ) {
   try {
     const parsed = updateProfileSchema.parse(req.body);
-    const parsedParams = profileIdParamsSchema.parse(req.params);
-    const profileId = parsedParams.id;    
-    const updated = await updateProfile(profileId, parsed);
+    const updated = await updateProfile(parsed.id, parsed);
     res.json(updated);
   } catch (err: any) {
     return next(err);
