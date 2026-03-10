@@ -1,5 +1,5 @@
-import { prisma } from "../../config/prisma";
-import { CourseCreateDTO, CourseResponse } from "./course.types";
+import { prisma } from "../config/prisma";
+import { CourseCreateDTO, CourseResponse } from "../modules/course/course.types";
 
 class ConflictError extends Error {
   statusCode = 409;

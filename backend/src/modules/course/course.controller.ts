@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { createCourseSchema } from "./course.validation";
-import { courseService } from "./course.service";
+import { courseService } from "../../services/course.service";
 
 export async function createCourseController(req: Request, res: Response, next: NextFunction) {
   try {
