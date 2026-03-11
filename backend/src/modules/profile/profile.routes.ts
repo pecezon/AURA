@@ -1,10 +1,15 @@
 import { Router } from "express";
-import { requireAuth, requireCompleteProfile } from "../../middleware/auth.middleware";
+import { requireCompleteProfile } from "../../middleware/auth.middleware";
 import { prisma } from "../../config/prisma";
+import { updateProfileController, searchProfilesController, getProfileByIdController } from "./profile.controller";
 
 const router = Router();
 
-router.post("/complete-profile", requireAuth, async (req, res) => {
+router.put("/update", updateProfileController);
+router.get("/search", searchProfilesController);
+router.get("/:id", getProfileByIdController);
+
+router.post("/complete-profile", async (req, res) => {
   const { firstName, lastName, birthDate, employeeId, area } = req.body;
 
   const parsedBirthDate = new Date(birthDate);
@@ -31,7 +36,6 @@ router.post("/complete-profile", requireAuth, async (req, res) => {
 
 router.get(
   "/dashboard-data",
-  requireAuth,
   requireCompleteProfile,
   async (req, res) => {
     res.json({ message: "Welcome to dashboard" });
