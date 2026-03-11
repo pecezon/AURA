@@ -1,7 +1,9 @@
 import { prisma } from "../config/prisma";
+import { Prisma } from "../generated/prisma/client";
 
 export class EnrollmentService {
   async enrollInCourse(courseId: string, profileId: string) {
+    try{
     const enrollment = await prisma.courseEnrollment.create({
       data: {
         courseId,
@@ -13,6 +15,19 @@ export class EnrollmentService {
       },
     });
     return { profileName: enrollment.profile.firstName, courseTitle: enrollment.course.title, enrolledAt: enrollment.enrolledAt.toISOString() };
+  } catch (error: unknown){
+          if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002"
+      ) {
+        const conflictError: any = new Error(
+          "Profile is already enrolled in this course"
+        );
+        conflictError.statusCode = 409;
+        throw conflictError;
+      }
+      throw error;
+  }
   }
 
   async getAllEnrollments() {
