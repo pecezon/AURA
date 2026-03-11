@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { supabase } from "../../config/supabase";
 import { updateProfile, searchProfiles, getProfileById } from "../../services/profile.service";
-import { updateProfileSchema, profileIdParamsSchema } from "./profile.validation";
+import { updateProfileSchema, profileIdParamsSchema,nameSchema } from "./profile.validation";
 
 export async function getMyProfile(
   req: Request & { user?: any },
@@ -25,8 +25,10 @@ export async function updateProfileController(
   res: Response, next: NextFunction
 ) {
   try {
+    const userId = req.user?.id;
     const parsed = updateProfileSchema.parse(req.body);
-    const updated = await updateProfile(parsed.id, parsed);
+    const { id: _ignoredId, ...updateData } = parsed as any;
+    const updated = await updateProfile(userId, updateData);
     res.json(updated);
   } catch (err: any) {
     return next(err);
@@ -36,10 +38,8 @@ export async function updateProfileController(
 export async function searchProfilesController(req: Request, res: Response, next: NextFunction) {
   try {
     const { name } = req.query;
-    if (!name || typeof name !== 'string') {
-      return res.status(400).json({ error: "Name query parameter is required" });
-    }
-    const profiles = await searchProfiles(name);
+    const safeName = nameSchema.parse(name)
+    const profiles = await searchProfiles(safeName);
     res.json(profiles);
   } catch (err: any) {
     return next(err);
