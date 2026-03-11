@@ -62,7 +62,16 @@ const dashboardRoute = createRoute({
       throw redirect({ to: "/registration-form" });
     }
 
-    throw redirect({ to: "/dashboard/worker" }); // Default to worker dashboard for now, can be enhanced with role-based routing in the future
+    switch (user.role) {
+      case "WORKER":
+        throw redirect({ to: "/dashboard/worker" });
+      case "SUPERVISOR":
+        throw redirect({ to: "/dashboard/supervisor" });
+      case "ADMIN":
+        throw redirect({ to: "/dashboard/admin" });
+      default:
+        throw redirect({ to: "/login" });
+    }
   },
 });
 

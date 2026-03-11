@@ -10,7 +10,7 @@ export async function getMyProfile(
   const userId = req.user?.id;
 
   const { data, error } = await supabase
-    .from("profile")
+    .from("Profile")
     .select("*")
     .eq("id", userId)
     .single();
@@ -19,6 +19,7 @@ export async function getMyProfile(
 
   res.json(data);
 }
+
 
 export async function updateProfileController(
   req: Request & { user?: any },
