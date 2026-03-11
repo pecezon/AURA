@@ -108,7 +108,7 @@ export const SupervisorProfileRecap: React.FC = () => {
             Cursos
           </TabsTrigger>
           <TabsTrigger value="analytics" className="cursor-pointer">
-            Analisis
+            Análisis
           </TabsTrigger>
         </TabsList>
         <TabsContent value="team">
