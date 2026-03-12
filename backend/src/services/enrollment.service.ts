@@ -1,5 +1,5 @@
 import { prisma } from "../config/prisma";
-import { Prisma } from "../generated/prisma/client";
+//import { Prisma } from "../generated/prisma/client";
 
 export class EnrollmentService {
   async enrollInCourse(courseId: string, profileId: string) {
@@ -16,7 +16,8 @@ export class EnrollmentService {
     });
     return { profileName: enrollment.profile.firstName, courseTitle: enrollment.course.title, enrolledAt: enrollment.enrolledAt.toISOString() };
   } catch (error: unknown){
-          if (
+        /*
+        if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2002"
       ) {
@@ -26,6 +27,7 @@ export class EnrollmentService {
         conflictError.statusCode = 409;
         throw conflictError;
       }
+        */
       throw error;
   }
   }
