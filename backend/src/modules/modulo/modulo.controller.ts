@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express"
-import { ModuleService } from "./modulo.service"
+import { ModuleService } from "../../services/modulo.service"
 
 const moduleService = new ModuleService()
 
@@ -16,6 +16,15 @@ export async function getAllModulesByCourseId(req : Request, res: Response, next
 export async function getAllModulesContentByTypeAndCourseId(req : Request, res : Response, next : NextFunction){
     try{
         const response = await moduleService.getAllModulesContentByTypeAndCourseId(req.body)
+        return res.status(200).json(response)
+    } catch (error){
+        next(error)
+    }
+}
+
+export async function getModuleByTitle(req : Request, res : Response, next : NextFunction){
+    try{
+        const response = await moduleService.getModuleByTitle(req.body)
         return res.status(200).json(response)
     } catch (error){
         next(error)

@@ -21,6 +21,8 @@ export interface ModuleCreateDTO {
     order : number,
     courseId : string,
     contents : ModuleContentCreateDTO[];
+    quizzes : QuizCreateDTO[];
+    simulation ?: SimulationCreateDTO | null
 }
 
 export interface ModuleResponseDTO {
@@ -30,9 +32,67 @@ export interface ModuleResponseDTO {
     createdAt : string,
     courseId : string,
     contents  : ResponseModuleContentDTO[];
+    quizzes : QuizResponseDTO[];
+    simulation: SimulationResponseDTO | null
+}
+
+export interface QuizCreateDTO{
+    title: string,
+    isGeneratedByAI?: boolean,
+    questions : QuestionCreateDTO[]
+}
+
+export interface QuizResponseDTO{
+    id : string,
+    title : string,
+    isGeneratedByAI: boolean,
+    moduleId : string
+    questions : QuestionResponseDTO[]
+}
+
+export interface QuestionCreateDTO{
+    text : string,
+    reactives ?: ReactiveCreateDTO[]
+}
+
+export interface QuestionResponseDTO{
+    id : string,
+    text : string,
+    reactives :  ReactiveResponseDTO[]
+}
+
+export interface ReactiveResponseDTO {
+    id : string,
+    text : string,
+    isCorrect : boolean,
+    questionId : string
+}
+
+export interface ReactiveCreateDTO{
+    text : string,
+    isCorrect?: boolean,
+}
+
+export interface SimulationCreateDTO{
+    title : string,
+    content : string,
+    passingScore : number,
+}
+
+export interface SimulationResponseDTO{
+    id : string,
+    title : string,
+    content : string,
+    passingScore : number,
+    moduleId : string
 }
 
 export interface ModuleGetByTypeAndCourseDTO {
     courseId : string,
     type: "READING" | "VIDEO" | "IMAGE";
+}
+
+export interface ModuleGetByName{
+    courseId : string,
+    title : string
 }
