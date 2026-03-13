@@ -25,3 +25,19 @@ export const getUserImage = async (): Promise<string | null> => {
     return null;
   }
 };
+
+export const getUserId = async (): Promise<string | null> => {
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      const id = user.id ?? null;
+      return id;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error fetching user id:", error);
+    return null;
+  }
+};
