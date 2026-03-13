@@ -11,6 +11,7 @@ import Login from "./routes/login";
 import WorkerDashboard from "./routes/worker-dashboard";
 import SupervisorDashboard from "./routes/supervisor-dashboard";
 import AdminDashboard from "./routes/admin-dashboard";
+import ProfilePage from "./routes/profile";
 import Landing from "./routes/landing";
 import RegistrationForm from "./routes/registration-form";
 
@@ -152,6 +153,24 @@ const registrationFormRoute = createRoute({
   component: RegistrationForm,
 });
 
+// Profile Route
+const profileRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/profile",
+  beforeLoad: async () => {
+    const user = await getUserState();
+
+    if (!user.isAuthenticated) {
+      throw redirect({ to: "/login" });
+    }
+
+    if (!user.isProfileComplete) {
+      throw redirect({ to: "/registration-form" });
+    }
+  },
+  component: ProfilePage,
+});
+
 const routeTree = rootRoute.addChildren([
   loginRoute,
   dashboardRoute,
@@ -160,6 +179,7 @@ const routeTree = rootRoute.addChildren([
   adminDashboardRoute,
   landingRoute,
   registrationFormRoute,
+  profileRoute,
 ]);
 
 export const router = createRouter({ routeTree });
