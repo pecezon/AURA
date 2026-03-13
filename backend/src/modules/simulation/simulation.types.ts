@@ -18,3 +18,9 @@ export interface SimulationByTitle{
     title : string
 }
 
+export interface SimulationChangeDTO{
+    title : string,
+    content : string,
+    passingScore : number,
+}
+

@@ -30,3 +30,13 @@ export async function createNewSimulation(req : Request, res : Response, next : 
         next(error)
     }
 }
+
+export async function updateSimulation(req: Request, res : Response, next : NextFunction){
+    try{
+        const {moduleId} = req.params as {moduleId : string}
+        const updatedSimulation = await simulationService.changeValuesFromSimulation(req.body, moduleId)
+        return res.status(200).json(updatedSimulation)
+    } catch (error){
+        next(error)
+    }
+}

@@ -1,5 +1,5 @@
 import { prisma } from "../config/prisma";
-import { SimulationByTitle, SimulationResponseDTO, SimulationCreateDTO} from "../modules/simulation/simulation.types";
+import { SimulationByTitle, SimulationResponseDTO, SimulationCreateDTO, SimulationChangeDTO} from "../modules/simulation/simulation.types";
 
 export class NotFoundError extends Error {
   statusCode: number
@@ -97,4 +97,31 @@ export class SimulationService{
             ...newSimulation
         }
     }
+
+    async changeValuesFromSimulation(dto : SimulationChangeDTO, moduleId : string) : Promise<SimulationResponseDTO>{
+        const existModule = await prisma.module.findUnique({where : {id : moduleId}, include : {simulation : true}})
+        if(!existModule){
+            throw new NotFoundError("The module with id : " + moduleId + "doesnt exist")
+        }
+
+        if(!existModule.simulation){
+            throw new ConflictError("This module has already a simulation")
+        }
+
+        const simulation = existModule.simulation
+
+        const updatedSimulation = await prisma.simulation.update({
+            where : {id : simulation.id},
+            data : {
+                title : dto.title,
+                content : dto.content,
+                passingScore : dto.passingScore
+            },
+        })
+
+        return {
+            ...updatedSimulation
+        }
+    }
+
 }
