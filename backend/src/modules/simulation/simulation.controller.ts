@@ -21,3 +21,12 @@ export async function getSimulationByTitle(req : Request, res : Response, next :
         next(error)
     }
 }
+
+export async function createNewSimulation(req : Request, res : Response, next : NextFunction) {
+    try{
+        const simulation = await simulationService.createNewSimulation(req.body)
+        return res.status(201).json(simulation)
+    } catch (error){
+        next(error)
+    }
+}

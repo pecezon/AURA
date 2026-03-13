@@ -1,4 +1,5 @@
 export interface SimulationCreateDTO{
+    moduleId : string,
     title : string,
     content : string,
     passingScore : number,
@@ -16,3 +17,4 @@ export interface SimulationByTitle{
     moduleId : string,
     title : string
 }
+

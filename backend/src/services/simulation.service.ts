@@ -1,6 +1,5 @@
 import { prisma } from "../config/prisma";
-import { SimulationResponseDTO } from "../modules/modulo/modulo.types";
-import { SimulationByTitle } from "../modules/simulation/simulation.types";
+import { SimulationByTitle, SimulationResponseDTO, SimulationCreateDTO} from "../modules/simulation/simulation.types";
 
 export class NotFoundError extends Error {
   statusCode: number
@@ -12,9 +11,19 @@ export class NotFoundError extends Error {
   }
 }
 
+export class ConflictError extends Error {
+  statusCode: number
+
+  constructor(message: string) {
+    super(message)
+    this.name = "Conflict error"
+    this.statusCode = 409
+  }
+}
+
 export class SimulationService{
     async getSimulationByModuleId(moduleId : string) : Promise<SimulationResponseDTO>{
-        const exist = prisma.module.findUnique({where : {id : moduleId}})
+        const exist = await prisma.module.findUnique({where : {id : moduleId}})
         if(!exist){
             throw new NotFoundError("The module with ID : " + moduleId + "doesnt exist")
         }
@@ -39,7 +48,7 @@ export class SimulationService{
     }
 
     async getSimulationByTitle(dto : SimulationByTitle) : Promise<SimulationResponseDTO>{
-         const exist = prisma.module.findUnique({where : {id : dto.moduleId}})
+         const exist = await prisma.module.findUnique({where : {id : dto.moduleId}})
         if(!exist){
             throw new NotFoundError("The module with id : " + dto.moduleId + "doesnt exist")
         }
@@ -60,6 +69,32 @@ export class SimulationService{
             content : simulation.content,
             passingScore : simulation.passingScore,
             moduleId : simulation.moduleId
+        }
+    }
+
+
+    //CREATE /POST METHODS -- Relation with module
+    async createNewSimulation(dto : SimulationCreateDTO) : Promise<SimulationResponseDTO>{
+        const existModule = await prisma.module.findUnique({where : {id : dto.moduleId}, include : {simulation : true}})
+        if(!existModule){
+            throw new NotFoundError("The module with id : " + dto.moduleId + "doesnt exist")
+        }
+
+        if(existModule.simulation){
+            throw new ConflictError("This module has already a simulation")
+        }
+
+        const newSimulation = await prisma.simulation.create({
+            data : {
+                title : dto.title,
+                content : dto.content,
+                passingScore : dto.passingScore,
+                moduleId : dto.moduleId
+            }
+        })
+
+        return {
+            ...newSimulation
         }
     }
 }
