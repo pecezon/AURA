@@ -1,7 +1,6 @@
-import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { Button } from "../../ui/button";
-import { Copy, Download, BookOpen } from "lucide-react";
+import { BookOpen } from "lucide-react";
 
 interface Module {
   title: string;
@@ -33,13 +32,9 @@ export const GeneratedPreview: React.FC<GeneratedPreviewProps> = ({
   isLoading = false, 
   setGeneratedContent
 }) => {
-  const [copied, setCopied] = useState(false);
   const hasContent = content && content.title;
 
-  const handleCopy = () => {
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+
   
   const handleDiscard = () => {
     if (window.confirm("¿Estás seguro de que deseas descartar el contenido generado? Esta acción no se puede deshacer.")) {

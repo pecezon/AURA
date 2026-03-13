@@ -1,7 +1,7 @@
 import React from "react";
 import { AvatarDropdown } from "./avatar-dropdown";
 import { Button } from "./ui/button";
-import { LayoutDashboard, BookOpen, Users, Settings, UserCheck, Sparkles } from "lucide-react";
+import { LayoutDashboard, BookOpen, Sparkles } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 
 interface NavbarProps {
@@ -22,10 +22,7 @@ const ROLE_NAV_ITEMS: Record<NavbarProps['role'], NavItem[]> = {
   WORKER: [
     { label: "Mis Cursos", to: "/courses", icon: <BookOpen /> },
   ],
-  SUPERVISOR: [
-    { label: "Cursos Supervisados", to: "/", icon: <UserCheck /> },
-    { label: "Gestión de Equipo", to: "/", icon: <Users /> },
-  ],
+  SUPERVISOR: [],
   ADMIN: [
     { label: "Crear Contenido", to: "/", icon: <Sparkles /> },
   ],
