@@ -20,10 +20,9 @@ app.use(requireAuth);
 app.use("/api/profile", profileRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/enrollments", enrollmentRoutes);
+app.use("/api/modules", modulesRoutes);
 
 // Error handling middleware (must be last)
 app.use(errorHandler);
-
-app.use("/api/modules", modulesRoutes);
 
 export default app;

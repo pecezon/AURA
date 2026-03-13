@@ -1,3 +1,5 @@
+import { Prisma } from "../../../generated/prisma";
+
 export interface ModuleContentCreateDTO {
     type : "READING" | "VIDEO" | "IMAGE";
     title?: string | null;
@@ -57,6 +59,7 @@ export interface QuestionCreateDTO{
 
 export interface QuestionResponseDTO{
     id : string,
+    quizId : string,
     text : string,
     reactives :  ReactiveResponseDTO[]
 }
@@ -96,3 +99,22 @@ export interface ModuleGetByName{
     courseId : string,
     title : string
 }
+
+//This type is for Make the mapper logic, before sending the findedModules
+//We made a PrismaPayload, that verifies the structure and make the mapper works
+
+export type ModuleWithRelations = Prisma.ModuleGetPayload<{
+  include: {
+    contents: true;
+    quizzes: {
+      include: {
+        questions: {
+          include: {
+            reactives: true;
+          };
+        };
+      };
+    };
+    simulation: true;
+  };
+}>;

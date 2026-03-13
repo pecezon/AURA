@@ -1,4 +1,5 @@
 import { prisma } from "../config/prisma";
+import { ModulesResponseReturn, ModuleResponseReturn } from "../modules/modulo/modulo.mapper";
 import { ModuleCreateDTO, ModuleGetByName, ModuleGetByTypeAndCourseDTO, ModuleResponseDTO } from "../modules/modulo/modulo.types";
 
 class ConflictError extends Error {
@@ -49,49 +50,7 @@ export class ModuleService {
             },
         });
 
-        return findedModules.map(module => ({ //Made a explicit mapping instead of using unkwon
-            id : module.id,
-            title : module.title,
-            order : module.order,
-            courseId : module.courseId,
-            createdAt : module.createdAt.toISOString(),
-            contents : module.contents.map(content => ({
-                id : content.id,
-                moduleId : content.moduleId,
-                type : content.type,
-                title : content.title,
-                content : content.content,
-                url : content.url,
-                order : content.order
-            })),
-            quizzes : module.quizzes.map(quiz => ({
-                id: quiz.id,
-                title: quiz.title,
-                isGeneratedByAI: quiz.isGeneratedByAI,
-                moduleId: quiz.moduleId,
-                questions : quiz.questions.map(question => ({
-                    id : question.id,
-                    quizId : question.quizId,
-                    text : question.text,
-                    reactives : question.reactives.map(reactive => ({
-                        id : reactive.id,
-                        text : reactive.text,
-                        isCorrect : reactive.isCorrect,
-                        questionId : reactive.questionId
-                    }))
-                }))
-            })),
-
-            simulation: module.simulation
-                ? {
-                    id: module.simulation.id,
-                    title: module.simulation.title,
-                    content: module.simulation.content,
-                    passingScore: module.simulation.passingScore,
-                    moduleId : module.simulation.moduleId
-                    }
-                : null
-        }))
+        return ModulesResponseReturn(findedModules)
     }
     
     //Get all Modules by Type and CourseId
@@ -122,49 +81,7 @@ export class ModuleService {
             },
         });
 
-        return findedModules.map(module => ({ //Made a explicit mapping instead of using unkwon
-            id : module.id,
-            title : module.title,
-            order : module.order,
-            courseId : module.courseId,
-            createdAt : module.createdAt.toISOString(),
-            contents : module.contents.map(content => ({
-                id : content.id,
-                moduleId : content.moduleId,
-                type : content.type,
-                title : content.title,
-                content : content.content,
-                url : content.url,
-                order : content.order
-            })),
-            quizzes : module.quizzes.map(quiz => ({
-                id: quiz.id,
-                title: quiz.title,
-                isGeneratedByAI: quiz.isGeneratedByAI,
-                moduleId: quiz.moduleId,
-                questions : quiz.questions.map(question => ({
-                    id : question.id,
-                    quizId : question.quizId,
-                    text : question.text,
-                    reactives : question.reactives.map(reactive => ({
-                        id : reactive.id,
-                        text : reactive.text,
-                        isCorrect : reactive.isCorrect,
-                        questionId : reactive.questionId
-                    }))
-                }))
-            })),
-
-            simulation: module.simulation
-                ? {
-                    id: module.simulation.id,
-                    title: module.simulation.title,
-                    content: module.simulation.content,
-                    passingScore: module.simulation.passingScore,
-                    moduleId : module.simulation.moduleId
-                    }
-                : null
-        }))
+        return ModulesResponseReturn(findedModules)
     }
 
     //Get module by name
@@ -197,49 +114,7 @@ export class ModuleService {
             throw new NotFoundError("Module Not Found")
         }
 
-        return { //Made a explicit mapping instead of using unkwon
-            id : module.id,
-            title : module.title,
-            order : module.order,
-            courseId : module.courseId,
-            createdAt : module.createdAt.toISOString(),
-            contents : module.contents.map(content => ({
-                id : content.id,
-                moduleId : content.moduleId,
-                type : content.type,
-                title : content.title,
-                content : content.content,
-                url : content.url,
-                order : content.order
-            })),
-            quizzes : module.quizzes.map(quiz => ({
-                id: quiz.id,
-                title: quiz.title,
-                isGeneratedByAI: quiz.isGeneratedByAI,
-                moduleId: quiz.moduleId,
-                questions : quiz.questions.map(question => ({
-                    id : question.id,
-                    quizId : question.quizId,
-                    text : question.text,
-                    reactives : question.reactives.map(reactive => ({
-                        id : reactive.id,
-                        text : reactive.text,
-                        isCorrect : reactive.isCorrect,
-                        questionId : reactive.questionId
-                    }))
-                }))
-            })),
-
-            simulation: module.simulation
-                ? {
-                    id: module.simulation.id,
-                    title: module.simulation.title,
-                    content: module.simulation.content,
-                    passingScore: module.simulation.passingScore,
-                    moduleId : module.simulation.moduleId
-                    }
-                : null
-        }
+        return ModuleResponseReturn(module)
     }
 
     //POST METHODS (Create Full Module)
