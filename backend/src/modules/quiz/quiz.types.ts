@@ -18,7 +18,7 @@ export interface QuestionCreateDTO{
 export interface QuestionResponse{
     id : string,
     text : string, 
-    reactives : ReactiveCreateDTO[],
+    reactives : ReactiveResponse[],
 }
 
 export interface QuizCreateDTO{
@@ -33,5 +33,5 @@ export interface QuizResponse{
     moduleId : string,
     title : string,
     isGeneratedByAI : boolean,
-    questions : QuestionCreateDTO[],
+    questions : QuestionResponse[],
 }
