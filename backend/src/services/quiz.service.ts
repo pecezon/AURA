@@ -1,4 +1,3 @@
-import { $Enums } from "../../generated/prisma";
 import { prisma } from "../config/prisma";
 import { QuestionResponse, QuizCreateDTO, QuizResponse } from "../modules/quiz/quiz.types";
 
@@ -68,9 +67,9 @@ export class QuizService{
             where: { id },
             include : {
                 module : true,
-                questions: {select : {
-                    id: true,
-                    text: true
+                questions: {
+                    include : {
+                        reactives: true
                 }}
             },
         });
@@ -82,7 +81,15 @@ export class QuizService{
             quizModule: quiz.module?.title ?? "Unknown", // return name rather than id 
             title: quiz.title,
             isGeneratedByAI : quiz.isGeneratedByAI,
-            questions: quiz.questions,
+            questions: quiz.questions.map(qq => ({
+                id : qq.id,
+                text : qq.text,
+                reactives : qq.reactives.map(r => ({
+                    id: r.id,
+                    text : r.text,
+                    isCorrect: r.isCorrect
+                }))
+            })),
         };
     }
 
