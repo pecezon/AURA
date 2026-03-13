@@ -48,7 +48,7 @@ export function ModulesResponseReturn(findedModules : ModuleWithRelations[]){
 }
 
 
-export function ModuleResponseReturn(module : ModuleWithRelations){
+export function ModuleResponseReturn(module : ModuleWithRelations){ //This is for a single Module Response
     return { //Made a explicit mapping instead of using unkwon
             id : module.id,
             title : module.title,

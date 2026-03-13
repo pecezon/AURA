@@ -54,19 +54,19 @@ export class ModuleService {
     }
     
     //Get all Modules by Type and CourseId
-    async getAllModulesContentByTypeAndCourseId(dto : ModuleGetByTypeAndCourseDTO) : Promise<ModuleResponseDTO[]>{
-        const existCourse = await prisma.course.findUnique({where : {id : dto.courseId}})
+    async getAllModulesContentByTypeAndCourseId(courseId : string, type : "READING" | "VIDEO" | "IMAGE") : Promise<ModuleResponseDTO[]>{
+        const existCourse = await prisma.course.findUnique({where : {id : courseId}})
         if(!existCourse){
-            throw new ConflictError("The course with id: " + dto.courseId + "doesn't exist")
+            throw new ConflictError("The course with id: " + courseId + "doesn't exist")
         }
 
         const findedModules = await prisma.module.findMany({
             where : {
-                courseId : dto.courseId,
+                courseId : courseId,
             },
             include : {
                 contents : {
-                    where : {type : dto.type}
+                    where : {type : type}
                 },
                 quizzes : {
                     include : {
@@ -85,15 +85,16 @@ export class ModuleService {
     }
 
     //Get module by name
-    async getModuleByTitle(dto : ModuleGetByName) : Promise<ModuleResponseDTO> { //Do it later
-        const existCourse = await prisma.course.findUnique({where : {id : dto.courseId}})
+    async getModuleByTitle( courseId : string , title : string) : Promise<ModuleResponseDTO> { //Do it later
+        const existCourse = await prisma.course.findUnique({where : {id : courseId}})
         if(!existCourse){
-            throw new ConflictError("The course with id: " + dto.courseId + "doesn't exist")
+            throw new ConflictError("The course with id: " + courseId + "doesn't exist")
         }
 
         const module = await prisma.module.findFirst({
             where : {
-                title : dto.title
+                courseId : courseId,
+                title : title
             },
             include : {
                 contents : true,

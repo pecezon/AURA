@@ -15,7 +15,8 @@ export async function getAllModulesByCourseId(req : Request, res: Response, next
 
 export async function getAllModulesContentByTypeAndCourseId(req : Request, res : Response, next : NextFunction){
     try{
-        const response = await moduleService.getAllModulesContentByTypeAndCourseId(req.body)
+        const { courseId , type } = req.query as {courseId : string, type : "READING" | "VIDEO" | "IMAGE"}
+        const response = await moduleService.getAllModulesContentByTypeAndCourseId(courseId,type)
         return res.status(200).json(response)
     } catch (error){
         next(error)
@@ -24,7 +25,8 @@ export async function getAllModulesContentByTypeAndCourseId(req : Request, res :
 
 export async function getModuleByTitle(req : Request, res : Response, next : NextFunction){
     try{
-        const response = await moduleService.getModuleByTitle(req.body)
+        const { courseId , title } = req.query as {courseId : string, title : string} //Use req.query for GET methods
+        const response = await moduleService.getModuleByTitle(courseId, title)
         return res.status(200).json(response)
     } catch (error){
         next(error)
