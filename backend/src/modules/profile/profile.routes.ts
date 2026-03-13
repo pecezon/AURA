@@ -9,6 +9,11 @@ const router = Router();
 router.get(
   "/dashboard-data/:id",
   requireCompleteProfile,
+  (req, _, next) => {
+     // Ensure users can only access their own dashboard data
+     req.params.id = req.user.id;
+     next();
+   },
   getProfileByIdController
 );
 
