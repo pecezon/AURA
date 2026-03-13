@@ -1,4 +1,4 @@
-import { getUserId, supabase } from "./supabase";
+import {  supabase } from "./supabase";
 
 export async function getUserState() {
   const { data } = await supabase.auth.getSession();
@@ -12,8 +12,10 @@ export async function getUserState() {
   const baseUrl =
     import.meta.env.VITE_AURA_BACKEND_URL ?? "http://localhost:8000";
 
-  const currUserId = await getUserId();
-  const res = await fetch(
+  const currUserId = data.session.user?.id;
+   if (!currUserId) {
+     return { isAuthenticated: false };
+   }  const res = await fetch(
     `${baseUrl}/api/profile/dashboard-data/${currUserId}`,
     {
       headers: {
