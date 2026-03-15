@@ -1,7 +1,8 @@
 import { prisma } from "../config/prisma";
+import { ModulesResponseReturn, ModuleResponseReturn } from "../modules/modulo/modulo.mapper";
 import { ModuleCreateDTO, ModuleGetByName, ModuleGetByTypeAndCourseDTO, ModuleResponseDTO } from "../modules/modulo/modulo.types";
 
-class ConclictError extends Error {
+class ConflictError extends Error {
     statusCode = 409;
     constructor(message : string){
         super(message)
@@ -27,7 +28,7 @@ export class ModuleService {
     async getAllModulesByCourseId(courseId : string) : Promise<ModuleResponseDTO[]>{
         const existsCourse = await prisma.course.findUnique({where : {id : courseId}})
         if(!existsCourse){
-            throw new ConclictError("The course with id: " + courseId + "dont exist")
+            throw new ConflictError("The course with id: " + courseId + "doesn't exist")
         }
 
         const findedModules = await prisma.module.findMany({
@@ -49,65 +50,23 @@ export class ModuleService {
             },
         });
 
-        return findedModules.map(module => ({ //Made a explicit mapping instead of using unkwon
-            id : module.id,
-            title : module.title,
-            order : module.order,
-            courseId : module.courseId,
-            createdAt : module.createdAt.toISOString(),
-            contents : module.contents.map(content => ({
-                id : content.id,
-                moduleId : content.moduleId,
-                type : content.type,
-                title : content.title,
-                content : content.content,
-                url : content.url,
-                order : content.order
-            })),
-            quizzes : module.quizzes.map(quiz => ({
-                id: quiz.id,
-                title: quiz.title,
-                isGeneratedByAI: quiz.isGeneratedByAI,
-                moduleId: quiz.moduleId,
-                questions : quiz.questions.map(question => ({
-                    id : question.id,
-                    quizId : question.quizId,
-                    text : question.text,
-                    reactives : question.reactives.map(reative => ({
-                        id : reative.id,
-                        text : reative.text,
-                        isCorrect : reative.isCorrect,
-                        questionId : reative.questionId
-                    }))
-                }))
-            })),
-
-            simulation: module.simulation
-                ? {
-                    id: module.simulation.id,
-                    title: module.simulation.title,
-                    content: module.simulation.content,
-                    passingScore: module.simulation.passingScore,
-                    moduleId : module.simulation.moduleId
-                    }
-                : null
-        }))
+        return ModulesResponseReturn(findedModules)
     }
     
     //Get all Modules by Type and CourseId
-    async getAllModulesContentByTypeAndCourseId(dto : ModuleGetByTypeAndCourseDTO) : Promise<ModuleResponseDTO[]>{
-        const existCourse = await prisma.course.findUnique({where : {id : dto.courseId}})
+    async getAllModulesContentByTypeAndCourseId(courseId : string, type : "READING" | "VIDEO" | "IMAGE") : Promise<ModuleResponseDTO[]>{
+        const existCourse = await prisma.course.findUnique({where : {id : courseId}})
         if(!existCourse){
-            throw new ConclictError("The course with id: " + dto.courseId + "dont exist")
+            throw new ConflictError("The course with id: " + courseId + "doesn't exist")
         }
 
         const findedModules = await prisma.module.findMany({
             where : {
-                courseId : dto.courseId,
+                courseId : courseId,
             },
             include : {
                 contents : {
-                    where : {type : dto.type}
+                    where : {type : type}
                 },
                 quizzes : {
                     include : {
@@ -122,61 +81,20 @@ export class ModuleService {
             },
         });
 
-        return findedModules.map(module => ({ //Made a explicit mapping instead of using unkwon
-            id : module.id,
-            title : module.title,
-            order : module.order,
-            courseId : module.courseId,
-            createdAt : module.createdAt.toISOString(),
-            contents : module.contents.map(content => ({
-                id : content.id,
-                moduleId : content.moduleId,
-                type : content.type,
-                title : content.title,
-                content : content.content,
-                url : content.url,
-                order : content.order
-            })),
-            quizzes : module.quizzes.map(quiz => ({
-                id: quiz.id,
-                title: quiz.title,
-                isGeneratedByAI: quiz.isGeneratedByAI,
-                moduleId: quiz.moduleId,
-                questions : quiz.questions.map(question => ({
-                    id : question.id,
-                    quizId : question.quizId,
-                    text : question.text,
-                    reactives : question.reactives.map(reative => ({
-                        id : reative.id,
-                        text : reative.text,
-                        isCorrect : reative.isCorrect,
-                        questionId : reative.questionId
-                    }))
-                }))
-            })),
-
-            simulation: module.simulation
-                ? {
-                    id: module.simulation.id,
-                    title: module.simulation.title,
-                    content: module.simulation.content,
-                    passingScore: module.simulation.passingScore,
-                    moduleId : module.simulation.moduleId
-                    }
-                : null
-        }))
+        return ModulesResponseReturn(findedModules)
     }
 
     //Get module by name
-    async getModuleByTitle(dto : ModuleGetByName) : Promise<ModuleResponseDTO> { //Do it later
-        const existCourse = await prisma.course.findUnique({where : {id : dto.courseId}})
+    async getModuleByTitle( courseId : string , title : string) : Promise<ModuleResponseDTO> { //Do it later
+        const existCourse = await prisma.course.findUnique({where : {id : courseId}})
         if(!existCourse){
-            throw new ConclictError("The course with id: " + dto.courseId + "dont exist")
+            throw new ConflictError("The course with id: " + courseId + "doesn't exist")
         }
 
         const module = await prisma.module.findFirst({
             where : {
-                title : dto.title
+                courseId : courseId,
+                title : title
             },
             include : {
                 contents : true,
@@ -197,55 +115,13 @@ export class ModuleService {
             throw new NotFoundError("Module Not Found")
         }
 
-        return { //Made a explicit mapping instead of using unkwon
-            id : module.id,
-            title : module.title,
-            order : module.order,
-            courseId : module.courseId,
-            createdAt : module.createdAt.toISOString(),
-            contents : module.contents.map(content => ({
-                id : content.id,
-                moduleId : content.moduleId,
-                type : content.type,
-                title : content.title,
-                content : content.content,
-                url : content.url,
-                order : content.order
-            })),
-            quizzes : module.quizzes.map(quiz => ({
-                id: quiz.id,
-                title: quiz.title,
-                isGeneratedByAI: quiz.isGeneratedByAI,
-                moduleId: quiz.moduleId,
-                questions : quiz.questions.map(question => ({
-                    id : question.id,
-                    quizId : question.quizId,
-                    text : question.text,
-                    reactives : question.reactives.map(reative => ({
-                        id : reative.id,
-                        text : reative.text,
-                        isCorrect : reative.isCorrect,
-                        questionId : reative.questionId
-                    }))
-                }))
-            })),
-
-            simulation: module.simulation
-                ? {
-                    id: module.simulation.id,
-                    title: module.simulation.title,
-                    content: module.simulation.content,
-                    passingScore: module.simulation.passingScore,
-                    moduleId : module.simulation.moduleId
-                    }
-                : null
-        }
+        return ModuleResponseReturn(module)
     }
 
     //POST METHODS (Create Full Module)
     async createFullModule(dto : ModuleCreateDTO): Promise <ModuleResponseDTO> {
         const existsModule = await prisma.module.findFirst({where : {title : dto.title}})
-        if(existsModule) throw new ConclictError("This module already exists")
+        if(existsModule) throw new ConflictError("This module already exists")
 
         const createdModule = await prisma.module.create({
             data : {

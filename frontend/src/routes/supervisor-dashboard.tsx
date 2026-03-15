@@ -1,7 +1,9 @@
+import { Navbar } from "../components/navbar";
+
 export default function SupervisorDashboard() {
   return (
     <div className="supervisor-dashboard">
-      <h1>Supervisor Dashboard</h1>
+      <Navbar role="SUPERVISOR"/>
     </div>
   );
 }

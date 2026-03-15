@@ -18,7 +18,7 @@ import { getUserState } from "./lib/authGuard";
 
 const rootRoute = createRootRoute({
   component: () => (
-    <div>
+    <div className="min-h-screen bg-gray-50 ">
       <Outlet />
     </div>
   ),
@@ -47,7 +47,7 @@ const loginRoute = createRoute({
   component: Login,
 });
 
-// General Dashboard Rout
+// General Dashboard Route
 const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/dashboard",
@@ -62,7 +62,17 @@ const dashboardRoute = createRoute({
       throw redirect({ to: "/registration-form" });
     }
 
-    throw redirect({ to: "/dashboard/worker" }); // Default to worker dashboard for now, can be enhanced with role-based routing in the future
+    switch (user.role) {
+      case "EMPLOYEE":
+        throw redirect({ to: "/dashboard/worker" });
+      case "SUPERVISOR":
+        throw redirect({ to: "/dashboard/supervisor" });
+      case "ADMIN":
+        throw redirect({ to: "/dashboard/admin" });
+      default:
+        throw redirect({ to: "/" }); // Redirige a landing si el rol es desconocido (no debería pasar)
+    }
+  
   },
 });
 
