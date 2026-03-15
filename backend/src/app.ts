@@ -22,13 +22,12 @@ app.use(requireAuth);
 app.use("/api/profile", profileRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/enrollments", enrollmentRoutes);
+app.use("/api/modules", modulesRoutes);
+app.use("/api/simulations", simulationRoutes)
+app.use("/api/simulations/attempt", simulationAttemptRoutes)
 
 // Error handling middleware (must be last)
 app.use(errorHandler);
 
-// Routes from MODULES, SIMULATION AND Simulation Attempt
-app.use("/api/modules", modulesRoutes);
-app.use("/api/simulations", simulationRoutes)
-app.use("/api/simulations/attempt", simulationAttemptRoutes)
 
 export default app;
