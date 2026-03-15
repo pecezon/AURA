@@ -6,6 +6,7 @@ import modulesRoutes from "./modules/modulo/modulo.routes"
 import courseRoutes from "./modules/course/course.routes";
 import enrollmentRoutes from "./modules/enrollment/enrollment.routes";
 import simulationRoutes from "./modules/simulation/simulation.routes"
+import simulationAttemptRoutes from "./modules/simulationAttempt/simuAttempt.routes"
 import { requireAuth } from "./middleware/auth.middleware";
 import { errorHandler } from "./middleware/error.middleware";
 dotenv.config();
@@ -27,6 +28,7 @@ app.use(errorHandler);
 
 // Routes from MODULES, SIMULATION AND Simulation Attempt
 app.use("/api/modules", modulesRoutes);
-app.use("api/simulations", simulationRoutes)
+app.use("/api/simulations", simulationRoutes)
+app.use("/api/simulations/attempt", simulationAttemptRoutes)
 
 export default app;
