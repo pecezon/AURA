@@ -11,6 +11,7 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
+  type ColumnDef,
 } from "@tanstack/react-table";
 
 import {
@@ -62,7 +63,7 @@ const data: TeamMember[] = [
   },
 ];
 
-const columns = [
+const columns: ColumnDef<TeamMember>[] = [
   {
     accessorKey: "name",
     header: "Trabajador",
@@ -125,7 +126,7 @@ const columns = [
             case "Bajo Riesgo":
               return "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300";
             default:
-              return "default";
+              return "bg-gray-50 text-gray-700 dark:bg-gray-950 dark:text-gray-300";
           }
         })()}
       >
@@ -136,7 +137,7 @@ const columns = [
 ];
 
 export const SupervisorTeamRecap: React.FC = () => {
-  const table = useReactTable({
+  const table = useReactTable<TeamMember>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
