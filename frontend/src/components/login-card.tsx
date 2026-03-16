@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-export default function LandingCard({
+export default function LoginCard({
   icon,
   title,
   description,

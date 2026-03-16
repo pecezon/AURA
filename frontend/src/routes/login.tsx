@@ -1,5 +1,5 @@
 import { Brain, ShieldCheck, Zap } from "lucide-react";
-import LandingCard from "../components/landing-card";
+import LoginCard from "../components/login-card";
 import LoginFormCard from "../components/login-form-card";
 
 export default function Login() {
@@ -37,7 +37,7 @@ export default function Login() {
         <div className="flex flex-col lg:flex-row items-center lg:items-stretch justify-center gap-5">
           <div className="flex flex-col gap-4 w-full">
             {CARDS_INFO.cards.map((card) => (
-              <LandingCard
+              <LoginCard
                 key={card.title}
                 icon={card.icon}
                 title={card.title}
