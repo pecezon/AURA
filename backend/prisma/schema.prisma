@@ -188,7 +188,8 @@ model CourseEnrollment {
   status      EnrollmentStatus @default(ASSIGNED)
   progress    Float            @default(0)
   completedAt DateTime?
-
+  enrolledAt  DateTime         @default(now())
+  
   profile Profile @relation(fields: [profileId], references: [id])
   course  Course  @relation(fields: [courseId], references: [id])
 

@@ -1,4 +1,4 @@
-import { supabase } from "./supabase";
+import {  supabase } from "./supabase";
 
 export async function getUserState() {
   const { data } = await supabase.auth.getSession();
@@ -12,8 +12,11 @@ export async function getUserState() {
   const baseUrl =
     import.meta.env.VITE_AURA_BACKEND_URL ?? "http://localhost:8000";
 
-  const res = await fetch(
-    `${baseUrl}/api/profile/dashboard-data`,
+  const currUserId = data.session.user?.id;
+   if (!currUserId) {
+     return { isAuthenticated: false };
+   }  const res = await fetch(
+    `${baseUrl}/api/profile/dashboard-data/${currUserId}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -40,9 +43,11 @@ export async function getUserState() {
   }
 
   if (res.ok) {
+    const profile = await res.json();
     return {
       isAuthenticated: true,
       isProfileComplete: true,
+      role: profile.role
     };
   }
 
