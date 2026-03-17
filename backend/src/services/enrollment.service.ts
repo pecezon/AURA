@@ -1,5 +1,5 @@
 import { prisma } from "../config/prisma";
-import { Prisma } from "../generated/prisma/client";
+import { Prisma } from "../../generated/prisma/client";
 
 export class EnrollmentService {
   async enrollInCourse(courseId: string, profileId: string) {

@@ -78,7 +78,8 @@ export class QuizService{
 
         return {
             id: quiz.id,
-            quizModule: quiz.module?.title ?? "Unknown", // return name rather than id 
+            quizModule: quiz.module?.title ?? "Unknown", 
+            moduleId : quiz.moduleId,
             title: quiz.title,
             isGeneratedByAI : quiz.isGeneratedByAI,
             questions: quiz.questions.map(qq => ({
@@ -146,6 +147,7 @@ export class QuizService{
                 isGeneratedByAI: true,
                 module: {
                     select: {
+                        id: true,
                         title: true
                     }
                 }
@@ -155,6 +157,7 @@ export class QuizService{
         return quizzes.map(quiz => ({
             id: quiz.id,
             moduleName: quiz.module.title,
+            moduleId : quiz.module.id,
             title : quiz.title,
             isGeneratedByAI : quiz.isGeneratedByAI,
         }))
