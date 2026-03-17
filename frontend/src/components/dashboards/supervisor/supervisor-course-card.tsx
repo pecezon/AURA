@@ -1,6 +1,5 @@
 import React from "react";
 import { Badge } from "../../ui/badge";
-import { Clock, BadgeCheck, Play } from "lucide-react";
 import { StatProgressBar } from "../stat-progress-bar";
 
 interface SupervisorCourseCardProps {
