@@ -6,6 +6,9 @@ import { get } from "node:http";
 
 const router = Router();
 
+// Get current user's profile
+router.get("/", getMyProfile);
+
 router.get(
   "/dashboard-data/:id",
   requireCompleteProfile,
