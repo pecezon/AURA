@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "@tanstack/react-router";
+import { User, LogOut } from "lucide-react";
 
 export function AvatarDropdown() {
   const navigate = useNavigate();
@@ -22,6 +23,10 @@ export function AvatarDropdown() {
       return;
     }
     navigate({ to: "/" });
+  };
+
+  const handleProfileClick = () => {
+    navigate({ to: "/profile" });
   };
 
   const user = {
@@ -73,12 +78,16 @@ export function AvatarDropdown() {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem>Profile</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleProfileClick} className="gap-2">
+          <User className="w-4 h-4" />
+          Mi Perfil
+        </DropdownMenuItem>
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem className="text-red-500" onClick={handleLogout}>
-          Log out
+        <DropdownMenuItem className="text-red-500 gap-2" onClick={handleLogout}>
+          <LogOut className="w-4 h-4" />
+          Cerrar Sesión
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
