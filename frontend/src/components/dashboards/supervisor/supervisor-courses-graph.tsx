@@ -51,7 +51,7 @@ export const SupervisorCoursesGraph: React.FC<CourseData> = ({
       <CardHeader>
         <CardTitle>{courseName}</CardTitle>
         <CardDescription>
-          <Badge variant={tag === "Seguridad" ? "outline" : "default"}>
+          <Badge variant={tag === "Seguridad" ? "secondary" : "default"}>
             {tag}
           </Badge>
         </CardDescription>
