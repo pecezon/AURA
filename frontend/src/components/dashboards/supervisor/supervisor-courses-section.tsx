@@ -8,6 +8,7 @@ import {
 } from "../../ui/card";
 import { SupervisorCoursesGraph } from "./supervisor-courses-graph";
 import { Button } from "../../ui/button";
+import { SupervisorCourseCard } from "./supervisor-course-card";
 
 interface CourseData {
   courseName: string;
@@ -16,6 +17,7 @@ interface CourseData {
   inProgressWorkers: number;
   completedWorkers: number;
   overdueWorkers: number;
+  regulations?: Array<string>;
 }
 
 const mockCourseData: CourseData[] = [
@@ -26,6 +28,7 @@ const mockCourseData: CourseData[] = [
     inProgressWorkers: 5,
     completedWorkers: 3,
     overdueWorkers: 2,
+    regulations: ["NOM-029-STPS-2011", "NFPA 52"],
   },
   {
     courseName: "Curso de Primeros Auxilios",
@@ -34,6 +37,7 @@ const mockCourseData: CourseData[] = [
     inProgressWorkers: 10,
     completedWorkers: 4,
     overdueWorkers: 1,
+    regulations: ["NOM-029-STPS-2011", "NFPA 350"],
   },
   {
     courseName: "Curso de Manejo de Maquinaria",
@@ -42,6 +46,7 @@ const mockCourseData: CourseData[] = [
     inProgressWorkers: 12,
     completedWorkers: 6,
     overdueWorkers: 2,
+    regulations: ["NOM-029-STPS-2011", "OSHA 1910.120"],
   },
   {
     courseName: "Curso de Ergonomía",
@@ -50,6 +55,7 @@ const mockCourseData: CourseData[] = [
     inProgressWorkers: 4,
     completedWorkers: 3,
     overdueWorkers: 1,
+    regulations: ["NOM-029-STPS-2011", "NFPA 52"],
   },
 ];
 
@@ -95,16 +101,20 @@ export const SupervisorCoursesSection: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Metrics Cards */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Perfiles de Riesgo del Equipo</CardTitle>
-          <CardDescription>
-            Evaluación conductual basada en simulaciones completadas
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="text-sm text-muted-foreground"></CardContent>
-      </Card>
+      {/* Courses Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {mockCourseData.map((course, index) => (
+          <SupervisorCourseCard
+            key={index}
+            title={course.courseName}
+            type={course.tag}
+            regulations={course.regulations}
+            progress={Math.round(
+              (course.completedWorkers / course.assignedWorkers) * 100,
+            )}
+          />
+        ))}
+      </div>
     </div>
   );
 };
