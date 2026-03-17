@@ -10,6 +10,7 @@ import {
 } from "../../ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
 import { SupervisorTeamRecap } from "./supervisor-team-recap";
+import { SupervisorCoursesSection } from "./supervisor-courses-section";
 
 const mockUserData = {
   name: "Diego Lopez",
@@ -112,19 +113,13 @@ export const SupervisorProfileRecap: React.FC = () => {
             Análisis
           </TabsTrigger>
         </TabsList>
+        {/* Team Tab Content */}
         <TabsContent value="team">
           <SupervisorTeamRecap />
         </TabsContent>
+        {/* Courses Tab Content */}
         <TabsContent value="courses">
-          <Card>
-            <CardHeader>
-              <CardTitle>Courses</CardTitle>
-              <CardDescription>Courses Card Description</CardDescription>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              Courses Card Content
-            </CardContent>
-          </Card>
+          <SupervisorCoursesSection />
         </TabsContent>
         <TabsContent value="analytics">
           <Card>
