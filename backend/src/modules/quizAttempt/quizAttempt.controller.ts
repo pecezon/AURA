@@ -14,8 +14,8 @@ export async function createQuizAttemptController(req: Request, res: Response, n
 
 export async function getAllAttemptsOfQuizByUserController(req: Request, res : Response, next : NextFunction) {
     try{
-        const {quizId, userId} = req.query as {quizId : string, userId : string}
-        const response = await quizAttemptService.getAllAttemptsOfQuizByUser(quizId,userId)
+        const {profileId, quizId} = req.query as {profileId : string, quizId : string}
+        const response = await quizAttemptService.getAllAttemptsOfQuizByUser(profileId,quizId)
         return res.status(200).json(response)
     }catch(error: any){
         next(error)

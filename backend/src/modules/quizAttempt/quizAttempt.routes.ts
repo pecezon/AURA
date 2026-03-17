@@ -5,7 +5,7 @@ const router = Router();
 
 router.post("/create-quiz-attempt", createQuizAttemptController);
 router.get("/get-by-quiz-and-profile", getAllAttemptsOfQuizByUserController);
-router.get("/:profileId", getAttemptsByProfileController);
-router.get("/:quizId", getAttemptsByQuizIdController);
+router.get("/by-profile/:profileId", getAttemptsByProfileController);
+router.get("/by-quiz/:quizId", getAttemptsByQuizIdController);
 
 export default router;
