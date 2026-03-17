@@ -7,6 +7,6 @@ const router = Router()
 router.get("/simulation-by-module/:moduleId", getSimulationByModuleId)
 router.get("/simulation-by-title", getSimulationByTitle)
 router.post("/simulation-create", createNewSimulation)
-router.put("/update-simulation", updateSimulation)
+router.put("/update-simulation/:simulationId", updateSimulation)
 
 export default router

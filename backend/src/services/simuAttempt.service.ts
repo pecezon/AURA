@@ -1,4 +1,3 @@
-import e from "express";
 import { prisma } from "../config/prisma";
 import { SimulationAttemptCreateDTO, SimulationAttemptResponseDTO, SimulationAttemptProgress } from "../modules/simulationAttempt/simuAttempt.types";
 

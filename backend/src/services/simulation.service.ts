@@ -98,17 +98,11 @@ export class SimulationService{
         }
     }
 
-    async changeValuesFromSimulation(dto : SimulationChangeDTO, moduleId : string) : Promise<SimulationResponseDTO>{
-        const existModule = await prisma.module.findUnique({where : {id : moduleId}, include : {simulation : true}})
-        if(!existModule){
-            throw new NotFoundError("The module with id : " + moduleId + "doesn't exist")
+    async changeValuesFromSimulation(simulationId : string, dto : SimulationChangeDTO) : Promise<SimulationResponseDTO>{
+        const simulation = await prisma.simulation.findUnique({where : {id : simulationId}})
+        if(!simulation){
+            throw new NotFoundError("The simulation with id : " + simulationId + "doesn't exist")
         }
-
-        if(!existModule.simulation){
-            throw new ConflictError("This module does not have a simulation")
-        }
-
-        const simulation = existModule.simulation
 
         const updatedSimulation = await prisma.simulation.update({
             where : {id : simulation.id},

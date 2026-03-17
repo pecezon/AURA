@@ -16,8 +16,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/modules", modulesRoutes);
-
 // Routes that need to be protected with authentication middleware should be registered after the auth middleware
 app.use(requireAuth);
 app.use("/api/profile", profileRoutes);

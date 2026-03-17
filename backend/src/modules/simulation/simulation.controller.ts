@@ -15,7 +15,7 @@ export async function getSimulationByModuleId(req : Request, res : Response, nex
 
 export async function getSimulationByTitle(req : Request, res : Response, next : NextFunction){
     try{
-        const simulation = await simulationService.getSimulationByModuleId(req.body)
+        const simulation = await simulationService.getSimulationByTitle(req.body)
         return res.status(200).json(simulation)
     } catch (error){
         next(error)
@@ -33,8 +33,8 @@ export async function createNewSimulation(req : Request, res : Response, next : 
 
 export async function updateSimulation(req: Request, res : Response, next : NextFunction){
     try{
-        const {moduleId} = req.params as {moduleId : string}
-        const updatedSimulation = await simulationService.changeValuesFromSimulation(req.body, moduleId)
+        const { simulationId } = req.params as {simulationId : string}
+        const updatedSimulation = await simulationService.changeValuesFromSimulation(simulationId,req.body)
         return res.status(200).json(updatedSimulation)
     } catch (error){
         next(error)
