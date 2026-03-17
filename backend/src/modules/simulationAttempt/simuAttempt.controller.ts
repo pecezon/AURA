@@ -25,7 +25,7 @@ export async function createNewAttempt(req : Request, res : Response, next : Nex
 
 export async function saveProgress(req : Request, res : Response, next : NextFunction){
     try{
-        const {attemptId} = req.query as {attemptId : string} 
+        const { attemptId } = req.params as {attemptId : string} 
         const savedAttempt = await simulationAttemptService.saveProgress(attemptId,req.body)
         return res.status(200).json(savedAttempt)
     } catch(error){
@@ -35,7 +35,7 @@ export async function saveProgress(req : Request, res : Response, next : NextFun
 
 export async function submitAttempt(req : Request, res : Response, next : NextFunction){
     try{
-        const {attemptId} = req.query as {attemptId : string} 
+        const { attemptId } = req.params as {attemptId : string} 
         const submitedAttempt = await simulationAttemptService.submitAttempt(attemptId,req.body)
         return res.status(200).json(submitedAttempt)
     } catch (error){

@@ -111,9 +111,6 @@ export class SimulationAttemptService{
         }
 
         const passed = dto.score >= simulation.passingScore 
-        if(!passed){
-            throw new NotCompletedError("The current score : " + dto.score + " is not enough to pass this simulation")
-        }
 
         const submitedAttempt = await prisma.simulationAttempt.update({
             where : {
@@ -124,6 +121,10 @@ export class SimulationAttemptService{
                 passed
             }
         })
+
+        if(!submitedAttempt.passed){
+            throw new NotCompletedError("The current score : " + dto.score + " is not enough to pass this simulation")
+        }
 
         return {
             id : submitedAttempt.id,
