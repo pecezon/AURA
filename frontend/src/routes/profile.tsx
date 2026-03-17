@@ -4,7 +4,12 @@ import { getUserImage } from "../lib/supabase";
 import { Navbar } from "../components/navbar";
 import { EditProfileModal } from "../components/edit-profile-modal";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "../components/ui/avatar";
 import { Alert, AlertDescription } from "../components/ui/alert";
@@ -27,7 +32,7 @@ interface ProfileData {
   birthDate: string;
   employeeId: string;
   area: string;
-  role: "WORKER" | "ADMIN" | "SUPERVISOR";
+  role: "EMPLOYEE" | "ADMIN" | "SUPERVISOR";
   isProfileComplete: boolean;
   createdAt: string;
 }
@@ -47,6 +52,8 @@ const MOCK_PROFILE: ProfileData = {
 
 async function fetchProfile(): Promise<ProfileData> {
   // Swap this out for when its implemented: const { data } = await api.get("/api/profile"); return data;
+  
+  
   return new Promise((resolve) => setTimeout(() => resolve(MOCK_PROFILE), 500));
 }
 
@@ -59,7 +66,7 @@ export default function ProfilePage() {
       const image = await getUserImage();
       setUserImage(image);
     };
-    if (!userImage) load();
+    load();
   }, []);
 
   const {
@@ -85,12 +92,14 @@ export default function ProfilePage() {
     });
   };
 
-  const getRoleBadgeVariant = (role: string) => {
+  const getRoleBadgeVariant = (role: ProfileData["role"]) => {
     switch (role) {
       case "ADMIN":
         return "destructive";
-      case "OWNER":
+      case "SUPERVISOR":
         return "default";
+      case "EMPLOYEE":
+        return "outline";
       default:
         return "secondary";
     }
@@ -99,7 +108,7 @@ export default function ProfilePage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navbar role="WORKER" />
+        <Navbar isLoading />
         <main className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center h-96">
             <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
@@ -112,7 +121,7 @@ export default function ProfilePage() {
   if (error || !profile) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navbar role="WORKER" />
+        <Navbar role="EMPLOYEE" />
         <main className="container mx-auto px-4 py-8">
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
@@ -160,7 +169,7 @@ export default function ProfilePage() {
                   <p className="text-gray-500">{profile.email}</p>
                   <div className="flex gap-2 mt-3 flex-wrap">
                     <Badge variant={getRoleBadgeVariant(profile.role)}>
-                      {profile.role === "WORKER"
+                      {profile.role === "EMPLOYEE"
                         ? "Empleado"
                         : profile.role === "ADMIN"
                           ? "Administrador"
@@ -201,7 +210,9 @@ export default function ProfilePage() {
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500 mb-1">Fecha de Nacimiento</p>
+                  <p className="text-sm text-gray-500 mb-1">
+                    Fecha de Nacimiento
+                  </p>
                   <div className="flex items-center gap-2 text-gray-900">
                     <Calendar className="w-4 h-4 text-gray-400" />
                     <span className="font-semibold">
@@ -220,7 +231,9 @@ export default function ProfilePage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <p className="text-sm text-gray-500 mb-1">Correo Electrónico</p>
+                  <p className="text-sm text-gray-500 mb-1">
+                    Correo Electrónico
+                  </p>
                   <p className="font-semibold text-gray-900 break-all">
                     {profile.email}
                   </p>
@@ -259,27 +272,36 @@ export default function ProfilePage() {
               <CardContent className="space-y-4">
                 <div>
                   <p className="text-sm text-gray-500 mb-2">Rol</p>
-                  <Badge variant={getRoleBadgeVariant(profile.role)} className="text-base">
-                    {profile.role === "WORKER"
+                  <Badge
+                    variant={getRoleBadgeVariant(profile.role)}
+                    className="text-base"
+                  >
+                    {profile.role === "EMPLOYEE"
                       ? "Empleado"
-                      : profile.role === "ADMIN"
-                        ? "Administrador"
+                      : profile.role === "SUPERVISOR"
+                        ? "Supervisor"
                         : "Propietario"}
                   </Badge>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500 mb-2">Estado del Perfil</p>
+                  <p className="text-sm text-gray-500 mb-2">
+                    Estado del Perfil
+                  </p>
                   <Badge
                     variant="default"
                     className={
-                      profile.isProfileComplete ? "bg-green-600" : "bg-yellow-600"
+                      profile.isProfileComplete
+                        ? "bg-green-600"
+                        : "bg-yellow-600"
                     }
                   >
                     {profile.isProfileComplete ? "Completo" : "Incompleto"}
                   </Badge>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500 mb-1">Fecha de Registro</p>
+                  <p className="text-sm text-gray-500 mb-1">
+                    Fecha de Registro
+                  </p>
                   <p className="text-sm text-gray-700">
                     {formatDate(profile.createdAt)}
                   </p>

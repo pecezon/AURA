@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import InputField from "@/components/input-field";
@@ -92,8 +92,6 @@ function purifyPayload(form: ProfileForm) {
   return {
     firstName: form.firstName.trim(),
     lastName: form.lastName.trim(),
-    birthDate: form.birthDate,
-    employeeId: form.employeeId.trim().toUpperCase(),
     area: form.area.trim(),
   };
 }
@@ -158,8 +156,8 @@ export function EditProfileModal({
     let hasErrors = false;
 
     (Object.keys(form) as (keyof ProfileForm)[]).forEach((field) => {
-      const error = validators[field](form[field]);
       if (error) {
+      const error = validators[field](form[field]);
         allErrors[field] = error;
         hasErrors = true;
       }
@@ -178,6 +176,12 @@ export function EditProfileModal({
       mutation.mutate(form);
     }
   };
+
+  useEffect(() => {
+    setForm(initialData);
+    setErrors({});
+    setTouched({});
+  }, [isOpen] )
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
