@@ -14,7 +14,6 @@ export interface SimulationResponseDTO{
 }
 
 export interface SimulationByTitle{
-    moduleId : string,
     title : string
 }
 

@@ -48,19 +48,14 @@ export class SimulationService{
     }
 
     async getSimulationByTitle(dto : SimulationByTitle) : Promise<SimulationResponseDTO>{
-         const exist = await prisma.module.findUnique({where : {id : dto.moduleId}})
-        if(!exist){
-            throw new NotFoundError("The module with id : " + dto.moduleId + "doesn't exist")
-        }
-
-        const simulation = await prisma.simulation.findUnique({
+        const simulation = await prisma.simulation.findFirst({
             where : {
-                moduleId : dto.title
+                title : dto.title
             }
         })
 
         if(!simulation){
-            throw new NotFoundError("No simulation found for this module")
+            throw new NotFoundError("No simulation found with this name")
         }
 
         return {
