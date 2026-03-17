@@ -2,12 +2,12 @@ export interface SimulationAttemptProgress{
     score : number
 }
 
-export interface SimulationAttempCreateDTO{
+export interface SimulationAttemptCreateDTO{
     simulationId : string,
     profileId : string
 }
 
-export interface SimulationAttempResponseDTO{
+export interface SimulationAttemptResponseDTO{
     id : string,
     simulationId : string,
     score: number,

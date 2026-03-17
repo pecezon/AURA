@@ -25,7 +25,7 @@ export class SimulationService{
     async getSimulationByModuleId(moduleId : string) : Promise<SimulationResponseDTO>{
         const exist = await prisma.module.findUnique({where : {id : moduleId}})
         if(!exist){
-            throw new NotFoundError("The module with ID : " + moduleId + "doesnt exist")
+            throw new NotFoundError("The module with ID : " + moduleId + "doesn't exist")
         }
 
         const simulation = await prisma.simulation.findUnique({
@@ -35,7 +35,7 @@ export class SimulationService{
         })
 
         if(!simulation){
-            throw new NotFoundError("The not simulation on this module")
+            throw new NotFoundError("No simulation found for this module")
         }
 
         return {
@@ -50,7 +50,7 @@ export class SimulationService{
     async getSimulationByTitle(dto : SimulationByTitle) : Promise<SimulationResponseDTO>{
          const exist = await prisma.module.findUnique({where : {id : dto.moduleId}})
         if(!exist){
-            throw new NotFoundError("The module with id : " + dto.moduleId + "doesnt exist")
+            throw new NotFoundError("The module with id : " + dto.moduleId + "doesn't exist")
         }
 
         const simulation = await prisma.simulation.findUnique({
@@ -60,7 +60,7 @@ export class SimulationService{
         })
 
         if(!simulation){
-            throw new NotFoundError("The not simulation on this module")
+            throw new NotFoundError("No simulation found for this module")
         }
 
         return {
@@ -77,7 +77,7 @@ export class SimulationService{
     async createNewSimulation(dto : SimulationCreateDTO) : Promise<SimulationResponseDTO>{
         const existModule = await prisma.module.findUnique({where : {id : dto.moduleId}, include : {simulation : true}})
         if(!existModule){
-            throw new NotFoundError("The module with id : " + dto.moduleId + "doesnt exist")
+            throw new NotFoundError("The module with id : " + dto.moduleId + "doesn't exist")
         }
 
         if(existModule.simulation){
@@ -101,11 +101,11 @@ export class SimulationService{
     async changeValuesFromSimulation(dto : SimulationChangeDTO, moduleId : string) : Promise<SimulationResponseDTO>{
         const existModule = await prisma.module.findUnique({where : {id : moduleId}, include : {simulation : true}})
         if(!existModule){
-            throw new NotFoundError("The module with id : " + moduleId + "doesnt exist")
+            throw new NotFoundError("The module with id : " + moduleId + "doesn't exist")
         }
 
         if(!existModule.simulation){
-            throw new ConflictError("This module has already a simulation")
+            throw new ConflictError("This module does not have a simulation")
         }
 
         const simulation = existModule.simulation

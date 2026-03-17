@@ -1,6 +1,6 @@
 import e from "express";
 import { prisma } from "../config/prisma";
-import { SimulationAttempCreateDTO, SimulationAttempResponseDTO, SimulationAttemptProgress } from "../modules/simulationAttempt/simuAttempt.types";
+import { SimulationAttemptCreateDTO, SimulationAttemptResponseDTO, SimulationAttemptProgress } from "../modules/simulationAttempt/simuAttempt.types";
 
 export class NotFoundError extends Error {
   statusCode: number
@@ -24,7 +24,7 @@ export class NotCompletedError extends Error {
 
 export class SimulationAttemptService{
 
-    async getAllAttemptsByProfile(profileId : string) : Promise<SimulationAttempResponseDTO[]>{
+    async getAllAttemptsByProfile(profileId : string) : Promise<SimulationAttemptResponseDTO[]>{
         const existProfile = await prisma.profile.findUnique({where : {id : profileId}})
         if(!existProfile){
             throw new NotFoundError("The profile with ID : " + profileId + " doesn't exist")   
@@ -44,7 +44,7 @@ export class SimulationAttemptService{
         }))
     }
 
-    async startAttempt(dto : SimulationAttempCreateDTO) : Promise<SimulationAttempResponseDTO>{
+    async startAttempt(dto : SimulationAttemptCreateDTO) : Promise<SimulationAttemptResponseDTO>{
         const existSimulation = await prisma.simulation.findUnique({where : {id : dto.simulationId}}) //1. verify if the simulation already exists
         if(!existSimulation){
             throw new NotFoundError("The simulation with ID : " + dto.simulationId + " doesn't exist")   
@@ -75,7 +75,7 @@ export class SimulationAttemptService{
     }
 
 
-    async saveProgress(attemptId : string, dto : SimulationAttemptProgress) : Promise<SimulationAttempResponseDTO>{
+    async saveProgress(attemptId : string, dto : SimulationAttemptProgress) : Promise<SimulationAttemptResponseDTO>{
         const exist = await prisma.simulationAttempt.findUnique({where : {id : attemptId}})
         if(!exist){
             throw new NotFoundError("The attempt with ID : " + attemptId + " doesn't exist")   
@@ -100,7 +100,7 @@ export class SimulationAttemptService{
         }
     }
 
-    async submitAttempt(attemptId : string, dto : SimulationAttemptProgress) : Promise<SimulationAttempResponseDTO>{
+    async submitAttempt(attemptId : string, dto : SimulationAttemptProgress) : Promise<SimulationAttemptResponseDTO>{
         const exist = await prisma.simulationAttempt.findUnique({where : {id : attemptId}})
         if(!exist){
             throw new NotFoundError("The attempt with ID : " + attemptId + " doesn't exist")   
@@ -113,7 +113,7 @@ export class SimulationAttemptService{
 
         const passed = dto.score >= simulation.passingScore 
         if(!passed){
-            throw new NotCompletedError("The current score : " + dto.score + " is not enough to passed this simulation")
+            throw new NotCompletedError("The current score : " + dto.score + " is not enough to pass this simulation")
         }
 
         const submitedAttempt = await prisma.simulationAttempt.update({
