@@ -172,7 +172,7 @@ export class QuizService{
     }
 
     // get all quizzes
-    async getQuizzez() : Promise<QuizResponse[]>{
+    async getQuizzes() : Promise<QuizResponse[]>{
         const quizzes = await prisma.quiz.findMany({
             include: {
                 questions : {
