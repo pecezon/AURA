@@ -66,7 +66,7 @@ export class QuizAttemptService{
             answers : attempt.answers.map(aa  => ({
                 id: aa.id,
                 questionText: aa.question.text,
-                reactivetext : aa.reactive.text,
+                reactiveText : aa.reactive.text,
                 reactiveCorrect : aa.reactive.isCorrect
             })),
         }
