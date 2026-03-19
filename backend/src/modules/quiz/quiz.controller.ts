@@ -43,8 +43,11 @@ export async function getAllQuizzesInAModuleController(req : Request, res : Resp
 
 export async function getQuizByNameController(req : Request, res : Response, next : NextFunction) {
     try{
-        const {name} = req.query.name as {name: string}
-        const response = await quizService.getQuizByName(name)
+        const name = req.query.name;
+        if (typeof name !== "string" || name.trim() === "") {
+            return res.status(400).json({ error: 'Query parameter "name" is required and must be a non-empty string.' });
+        }
+        const response = await quizService.getQuizByName(name);
         return res.status(200).json(response)
     }catch(error : any ){
         next(error)
