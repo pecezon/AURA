@@ -10,6 +10,14 @@ class ConflictError extends Error {
     }
 }
 
+class NotFoundError extends Error {
+    statusCode = 404;
+    constructor(message: string) {
+        super(message);
+        this.name = "NotFoundError";
+    }
+}
+
 export class QuizService{
 
     //post 
@@ -102,7 +110,7 @@ export class QuizService{
             }
         });
 
-        if(!moduleExists) throw new ConflictError(`Module with ID ${moduleId} doesn't exists.`);
+        if(!moduleExists) throw new NotFoundError(`Module with ID ${moduleId} doesn't exists.`);
 
         const quizzes = await prisma.quiz.findMany({
             where: {moduleId},
