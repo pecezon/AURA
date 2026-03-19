@@ -159,7 +159,7 @@ export class QuizAttemptService{
             id : att.id,
             quizId : att.quiz.id,
             quizName : att.quiz.title,
-            profileID : att.profile.id,
+            profileId : att.profile.id,
             profileFirstName : att.profile.firstName,
             profileLastName : att.profile.lastName,
             employeeId : att.profile.employeeId,
