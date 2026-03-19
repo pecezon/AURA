@@ -26,7 +26,7 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/enrollments", enrollmentRoutes);
 app.use("/api/quizzes", quizRoutes);
-app.use("/api/quizAttempt", quizAttemptRoutes);
+app.use("/api/quiz-attempts", quizAttemptRoutes);
 
 // Error handling middleware (must be last)
 app.use(errorHandler);
