@@ -18,10 +18,10 @@ export async function getQuizByIdController(req : Request, res : Response, next 
         const {id} = req.params as {id: string}
         const quiz = await quizService.getQuizById(id)
 
-        if(!id) {
+        if(!quiz) {
             return res.status(404).json({error: "Quiz not Found."})
         }
-            return res.status(200).json(quiz)
+        return res.status(200).json(quiz)
         
             
     }catch(error : any ){
