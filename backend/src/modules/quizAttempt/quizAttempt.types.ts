@@ -6,7 +6,7 @@ export interface AnswerDTO{
 export interface AnswerResponse{
     id: string,
     questionText : string,
-    reactiveText : string
+    reactiveText : string,
     reactiveCorrect : boolean
 }
 
@@ -17,11 +17,11 @@ export interface QuizAttemptDTO{
 }
 
 export interface QuizAttemptResponse{
-    id: string
+    id: string,
     quizName : string,
     firstName : string,
     score : number,
     passed : boolean,
-    createdAt : string
+    createdAt : string,
     answers : AnswerResponse[]
 }
