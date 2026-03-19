@@ -54,7 +54,7 @@ export async function getQuizByNameController(req : Request, res : Response, nex
 
 export async function getAllQuizzesController(req : Request, res : Response, next : NextFunction) {
     try{
-        const response = await quizService.getQuizzez()
+        const response = await quizService.getQuizzes()
         return res.status(200).json(response)
     }catch(error : any ){
         next(error)

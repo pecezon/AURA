@@ -9,7 +9,7 @@ import { getAllQuizzesController } from "./quiz.controller";
 const router = Router();
 
 router.post("/create-quiz", createQuizController);
-router.get("/search-quizz-by-name", getQuizByNameController);
+router.get("/search-quiz-by-name", getQuizByNameController);
 router.get("/get-quizzes-in-module/:moduleId", getAllQuizzesInAModuleController);
 router.get("/", getAllQuizzesController);
 router.get("/:id", getQuizByIdController);
