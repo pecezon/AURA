@@ -95,8 +95,8 @@ export const SupervisorAnalyticsCard: React.FC = () => {
                       startAngle={90}
                       endAngle={-270}
                     >
-                      {riskData.map((entry, index) => (
-                        <Cell key={index} fill={entry.color} />
+                      {riskData.map((entry) => (
+                        <Cell key={entry.name} fill={entry.color} />
                       ))}
                     </Pie>
                   </PieChart>
@@ -105,15 +105,24 @@ export const SupervisorAnalyticsCard: React.FC = () => {
 
               {/* Legend */}
               <div className="flex flex-col gap-3 text-sm">
-                <div className="text-red-500 font-medium">
-                  Alto Riesgo (&lt;70): 1
-                </div>
-                <div className="text-green-500 font-medium">
-                  Bajo Riesgo (≥85): 0
-                </div>
-                <div className="text-orange-500 font-medium">
-                  Riesgo Medio (70–85): 1
-                </div>
+                {riskData.map((entry) => {
+                  let textColor = "";
+                  if (entry.name === "Alto Riesgo") {
+                    textColor = "text-red-500";
+                  } else if (entry.name === "Riesgo Medio") {
+                    textColor = "text-orange-500";
+                  } else if (entry.name === "Bajo Riesgo") {
+                    textColor = "text-green-500";
+                  }
+                  return (
+                    <div
+                      key={entry.name}
+                      className={`${textColor} font-medium`}
+                    >
+                      {entry.name}: {entry.value}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </CardContent>
