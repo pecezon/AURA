@@ -30,7 +30,7 @@ export class EnrollmentService {
         conflictError.statusCode = 409;
         throw conflictError;
       }
-        */
+
       throw error;
     }
   }
