@@ -1,13 +1,6 @@
 import React from "react";
 import StatCard from "../stat-card";
 import { Users, Award, TriangleAlert, CircleCheckBig } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../../ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
 import { SupervisorTeamRecap } from "./supervisor-team-recap";
 import { SupervisorCoursesSection } from "./supervisor-courses-section";
