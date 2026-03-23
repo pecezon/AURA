@@ -192,7 +192,7 @@ export const SupervisorTeamRecap: React.FC = () => {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Sin Resultados.
                 </TableCell>
               </TableRow>
             )}
