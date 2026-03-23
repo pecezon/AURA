@@ -11,6 +11,7 @@ import Login from "./routes/login";
 import WorkerDashboard from "./routes/worker-dashboard";
 import SupervisorDashboard from "./routes/supervisor-dashboard";
 import AdminDashboard from "./routes/admin-dashboard";
+import ProfilePage from "./routes/profile";
 import Landing from "./routes/landing";
 import RegistrationForm from "./routes/registration-form";
 
@@ -18,7 +19,7 @@ import { getUserState } from "./lib/authGuard";
 
 const rootRoute = createRootRoute({
   component: () => (
-    <div>
+    <div className="min-h-screen bg-gray-50 ">
       <Outlet />
     </div>
   ),
@@ -47,7 +48,7 @@ const loginRoute = createRoute({
   component: Login,
 });
 
-// General Dashboard Rout
+// General Dashboard Route
 const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/dashboard",
@@ -62,7 +63,17 @@ const dashboardRoute = createRoute({
       throw redirect({ to: "/registration-form" });
     }
 
-    throw redirect({ to: "/dashboard/worker" }); // Default to worker dashboard for now, can be enhanced with role-based routing in the future
+    switch (user.role) {
+      case "EMPLOYEE":
+        throw redirect({ to: "/dashboard/worker" });
+      case "SUPERVISOR":
+        throw redirect({ to: "/dashboard/supervisor" });
+      case "ADMIN":
+        throw redirect({ to: "/dashboard/admin" });
+      default:
+        throw redirect({ to: "/" }); // Redirige a landing si el rol es desconocido (no debería pasar)
+    }
+  
   },
 });
 
@@ -142,6 +153,24 @@ const registrationFormRoute = createRoute({
   component: RegistrationForm,
 });
 
+// Profile Route
+const profileRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/profile",
+  beforeLoad: async () => {
+    const user = await getUserState();
+
+    if (!user.isAuthenticated) {
+      throw redirect({ to: "/login" });
+    }
+
+    if (!user.isProfileComplete) {
+      throw redirect({ to: "/registration-form" });
+    }
+  },
+  component: ProfilePage,
+});
+
 const routeTree = rootRoute.addChildren([
   loginRoute,
   dashboardRoute,
@@ -150,6 +179,7 @@ const routeTree = rootRoute.addChildren([
   adminDashboardRoute,
   landingRoute,
   registrationFormRoute,
+  profileRoute,
 ]);
 
 export const router = createRouter({ routeTree });

@@ -4,7 +4,7 @@ import { SupervisorProfileRecap } from "../components/dashboards/supervisor/supe
 export default function SupervisorDashboard() {
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-100 gap-6 md:gap-8">
-      <Navbar />
+      <Navbar role="SUPERVISOR" />
       <SupervisorProfileRecap />
     </div>
   );
