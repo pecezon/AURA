@@ -1,27 +1,31 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "../components/ui/accordion";
+import LandingAbout from "../components/landing/landing-about";
+import LandingCTA from "../components/landing/landing-cta";
+import LandingLayers from "../components/landing/landing-layers";
+import LandingNavbar from "../components/landing/landing-navbar";
+import LandingRoles from "../components/landing/landing-roles";
+import LandingRules from "../components/landing/landing-rules";
+import LandingScore from "../components/landing/landing-score";
+import LandingStats from "../components/landing/landing-stats";
 
 export default function Landing() {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-wisteria-blue-400 mb-4">
-          Welcome
-        </h1>
-        <p className="text-lg text-gray-600">Landing page</p>
-        <Accordion type="single" collapsible defaultValue="item-1">
-          <AccordionItem value="item-1">
-            <AccordionTrigger>Is it accessible?</AccordionTrigger>
-            <AccordionContent>
-              Yes. It adheres to the WAI-ARIA design pattern.
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
+    <div className="flex flex-col justify-center min-h-screen bg-gray-100">
+
+        <LandingNavbar />
+
+        <LandingAbout />
+
+        <LandingStats />
+
+        <LandingLayers />
+
+        <LandingRoles />
+
+        <LandingScore />
+
+        <LandingRules />
+
+        <LandingCTA />
     </div>
   );
 }

@@ -1,4 +1,5 @@
-import { supabase } from "../lib/supabase";
+import { supabase } from "../../lib/supabase";
+
 
 function GoogleIcon() {
   return (
@@ -47,7 +48,7 @@ export default function LoginFormCard() {
       </p>
 
       {/* Security notice */}
-      <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
+      {/* <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
         <div className="flex items-center gap-2 mb-1">
           <span className="w-2 h-2 rounded-full bg-green-500 inline-block" />
           <span className="text-[10px] font-bold text-green-700 uppercase tracking-wider">
@@ -59,7 +60,7 @@ export default function LoginFormCard() {
           <strong className="text-slate-700">@sempra.com</strong> pueden acceder
           a esta plataforma.
         </p>
-      </div>
+      </div> */}
 
       {/* Google SSO button */}
       <button

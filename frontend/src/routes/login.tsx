@@ -1,6 +1,6 @@
 import { Brain, ShieldCheck, Zap } from "lucide-react";
-import LoginCard from "../components/login-card";
-import LoginFormCard from "../components/login-form-card";
+import LoginCard from "../components/login/login-card";
+import LoginFormCard from "../components/login/login-form-card";
 
 export default function Login() {
   const CARDS_INFO = {
