@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { supabase } from "../../config/supabase";
-import { updateProfile, searchProfiles, getProfileById } from "../../services/profile.service";
+import { updateProfile, searchProfiles, getProfileById, getAllProfiles } from "../../services/profile.service";
 import { updateProfileSchema, profileIdParamsSchema,nameSchema } from "./profile.validation";
 
 export async function getMyProfile(
@@ -41,6 +41,15 @@ export async function searchProfilesController(req: Request, res: Response, next
     const { name } = req.query;
     const safeName = nameSchema.parse(name)
     const profiles = await searchProfiles(safeName);
+    res.json(profiles);
+  } catch (err: any) {
+    return next(err);
+  }
+}
+
+export async function getAllProfilesController(req: Request, res: Response, next: NextFunction) {
+  try {
+    const profiles = await getAllProfiles();
     res.json(profiles);
   } catch (err: any) {
     return next(err);
