@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "@tanstack/react-router";
 import { User, LogOut } from "lucide-react";
+import { useMyProfile } from "@/hooks/useProfile";
 
 export function AvatarDropdown() {
   const navigate = useNavigate();
@@ -29,10 +30,12 @@ export function AvatarDropdown() {
     navigate({ to: "/profile" });
   };
 
+  const { data: profile, isLoading } = useMyProfile();
+
   const user = {
-    name: "Diego Lopez",
-    email: "diego@email.com",
-    userArea: "IT",
+    name: profile ? `${profile.firstName} ${profile.lastName}` : "Diego Lopez",
+    email: profile ? profile.email : "diego@email.com",
+    role: profile ? profile.role : "IT",
   };
 
   // Fetch User Image
@@ -47,14 +50,16 @@ export function AvatarDropdown() {
     if (!userImage) load();
   }, []);
 
-  //TODO: Fetch user data from API
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="cursor-pointer flex space-x-2 px-2 py-1 rounded-md justify-between gap-2 items-center hover:bg-gray-100 ">
         <div className="justify-end text-right">
           <p className="text-sm md:text-lg">{user.name}</p>
-          <p className="text-xs text-muted-foreground">{user.userArea}</p>
+          <p className="text-xs text-muted-foreground">{user.role}</p>
         </div>
         <Avatar className="md:w-10 md:h-10 ">
           <AvatarImage

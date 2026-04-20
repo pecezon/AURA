@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../../ui/card";
+import { useAllProfiles } from "@/hooks/useProfile";
 
 import {
   flexRender,
@@ -36,7 +37,7 @@ type TeamMember = {
   email: string;
 };
 
-const data: TeamMember[] = [
+const fallbackData: TeamMember[] = [
   {
     name: "Trabajador 1",
     email: "trabajador1@example.com",
@@ -137,8 +138,23 @@ const columns: ColumnDef<TeamMember>[] = [
 ];
 
 export const SupervisorTeamRecap: React.FC = () => {
+  const { data: profiles } = useAllProfiles();
+
+  const mappedData = React.useMemo<TeamMember[]>(() => {
+    if (!profiles) return fallbackData;
+    const employeeProfiles = profiles.filter((p: any) => p.role === "WORKER" || p.role === "EMPLOYEE");
+    return employeeProfiles.map((p: any) => ({
+      name: `${p.firstName} ${p.lastName}`,
+      email: p.email,
+      riskScore: Math.floor(Math.random() * 100), // Default for now
+      reactionIndex: Math.floor(Math.random() * 100), // Default
+      proceduralDiscipline: Math.floor(Math.random() * 100), // Default
+      state: "Bajo Riesgo", // Default
+    }));
+  }, [profiles]);
+
   const table = useReactTable<TeamMember>({
-    data,
+    data: mappedData,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
