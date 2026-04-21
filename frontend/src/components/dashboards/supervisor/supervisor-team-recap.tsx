@@ -88,7 +88,7 @@ const columns: ColumnDef<TeamMember>[] = [
     cell: ({ row }) => (
       <div className="w-24 flex flex-col items-start gap-1">
         <p>
-          <span className="font-bold">{row.getValue("riskScore")}</span> /100
+          <span className="font-bold">{row.getValue("riskScore")}?</span> /100
         </p>
         <Progress
           value={Number(row.getValue("riskScore"))}
@@ -105,12 +105,12 @@ const columns: ColumnDef<TeamMember>[] = [
   {
     accessorKey: "reactionIndex",
     header: "Reacción",
-    cell: ({ row }) => <span>{row.getValue("reactionIndex")}/100</span>,
+    cell: ({ row }) => <span>{row.getValue("reactionIndex")}?/100</span>,
   },
   {
     accessorKey: "proceduralDiscipline",
     header: "Disciplina",
-    cell: ({ row }) => <span>{row.getValue("proceduralDiscipline")}/100</span>,
+    cell: ({ row }) => <span>{row.getValue("proceduralDiscipline")}?/100</span>,
   },
   {
     accessorKey: "state",
@@ -131,7 +131,7 @@ const columns: ColumnDef<TeamMember>[] = [
           }
         })()}
       >
-        {row.getValue("state")}
+        {row.getValue("state")}?
       </Badge>
     ),
   },

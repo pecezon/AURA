@@ -64,7 +64,7 @@ export const SupervisorProfileRecap: React.FC = () => {
           ¡Bienvenido al Dashboard de Supervisor!
         </h1>
         <p className="text-gray-500 md:text-lg">
-          {`Análisis de desempeño y riesgo del equipo - ${mockUserData.team}`}
+          {`Análisis de desempeño y riesgo del equipo - ${mockUserData.team}?`}
         </p>
       </div>
 
@@ -83,7 +83,7 @@ export const SupervisorProfileRecap: React.FC = () => {
               {mockUserData.workers.reduce(
                 (acc, worker) => acc + worker.riskScore,
                 0,
-              ) / mockUserData.workers.length || 0}
+              ) / mockUserData.workers.length || 0}?
             </h1>
           }
           icon={<Award className="text-purple-500" />}
@@ -93,7 +93,7 @@ export const SupervisorProfileRecap: React.FC = () => {
           label="Alto Riesgo"
           stat={
             <h1>
-              {mockUserData.workers.filter((w) => w.riskScore > 50).length}
+              {mockUserData.workers.filter((w) => w.riskScore > 50).length}?
             </h1>
           }
           icon={<TriangleAlert className="text-red-500" />}
