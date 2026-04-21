@@ -6,14 +6,21 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { getUserId } from "@/lib/supabase";
 import { useEffect, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 
 export default function WorkerDashboard() {
-  const [profileId, setProfileId] = useState<string>("");
+  const [profileId, setProfileId] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadProfileId = async () => {
-      const id = await getUserId();
-      setProfileId(id || "");
+      try {
+        const id = await getUserId();
+        setProfileId(id || "");
+      } catch (error) {
+        console.error("Error fetching user ID:", error);
+        setProfileId("");
+      }
     };
     loadProfileId();
   }, []);
@@ -21,7 +28,7 @@ export default function WorkerDashboard() {
   const { isLoading: isProfileLoading } = useQuery({
     queryKey: ["profile", profileId],
     queryFn: async () => {
-      const response = await api.get(`api/profile`);
+      const response = await api.get(`/api/profile`);
       return response.data;
     },
     staleTime: 5 * 60 * 1000,
@@ -31,14 +38,29 @@ export default function WorkerDashboard() {
   const { isLoading: isEnrollmentsLoading } = useQuery({
     queryKey: ["enrollments", profileId],
     queryFn: async () => {
-      const response = await api.get(`api/enrollments/${profileId}`);
+      const response = await api.get(`/api/enrollments/${profileId}`);
       return response.data;
     },
     staleTime: 0.5 * 60 * 1000,
     enabled: !!profileId,
   });
 
-  const isLoading = !profileId || isProfileLoading || isEnrollmentsLoading;
+  if (profileId === "") {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+        <h1 className="text-2xl font-bold text-gray-800">Sesión no encontrada</h1>
+        <p className="text-gray-500 mt-2">Por favor, inicia sesión nuevamente para ver tu panel.</p>
+        <button 
+          onClick={() => navigate({ to: "/" })} 
+          className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+        >
+          Ir al Inicio
+        </button>
+      </div>
+    );
+  }
+
+  const isLoading = profileId === null || isProfileLoading || isEnrollmentsLoading;
 
   if (isLoading) {
     return (
