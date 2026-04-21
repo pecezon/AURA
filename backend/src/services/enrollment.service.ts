@@ -17,7 +17,6 @@ export class EnrollmentService {
       return {
         profileName: enrollment.profile.firstName,
         courseTitle: enrollment.course.title,
-        enrolledAt: enrollment.enrolledAt.toISOString(),
       };
     } catch (error: unknown) {
       if (
