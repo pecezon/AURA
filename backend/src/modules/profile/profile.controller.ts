@@ -6,18 +6,21 @@ import { updateProfileSchema, profileIdParamsSchema,nameSchema } from "./profile
 export async function getMyProfile(
   req: Request & { user?: any },
   res: Response,
+  next: NextFunction
 ) {
-  const userId = req.user?.id;
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
 
-  const { data, error } = await supabase
-    .from("Profile")
-    .select("*")
-    .eq("id", userId)
-    .single();
+    const profile = await getProfileById(userId);
+    if (!profile) return res.status(404).json({ error: "Profile not found" });
 
-  if (error) return res.status(400).json({ error });
-
-  res.json(data);
+    res.json(profile);
+  } catch (err: any) {
+    next(err);
+  }
 }
 
 

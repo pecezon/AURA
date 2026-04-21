@@ -11,6 +11,12 @@ const fetchEnrollments = async (profileId: string) => {
   return response.data;
 };
 
+const translateCourseType = (type: string) => {
+  if (type === "TECHNICAL") return "Técnico";
+  if (type === "SECURITY") return "Seguridad";
+  return type;
+};
+
 export const MyCourses: React.FC = () => {
   const [profileId, setProfileId] = useState<string>("");
 
@@ -45,7 +51,7 @@ export const MyCourses: React.FC = () => {
           title={enrollment.courseTitle}
           description={enrollment.courseDescription ?? "No description"}
           regulations={enrollment.courseRegulations ?? []}
-          type={enrollment.courseType ?? "Técnico"}
+          type={translateCourseType(enrollment.courseType ?? "") || "Técnico"}
           duration={enrollment.courseDuration ?? "N/A"}
           progress={enrollment.progress ?? 0}
         />

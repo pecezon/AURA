@@ -26,6 +26,33 @@ Seguimos una arquitectura de N capas:
 - Lógica compleja o consumo de API debe encapsularse en Custom Hooks (ej. `useUser`, `useAuth`).
 - Mantener los componentes UI lo más "tontos" (dumb) posible.
 
+### Peticiones a la API (TanStack Query)
+- **Regla Estricta:** TODAS las peticiones de red al backend deben realizarse utilizando `@tanstack/react-query` (`useQuery`, `useMutation`). No usar `fetch` o `axios` directamente dentro de un `useEffect` para guardar en estados locales.
+- **Registro de Query Keys:** Para evitar peticiones duplicadas y permitir que la caché se comparta entre componentes (ej. *ProfileRecap* y *MyCourses*), se deben unificar las Query Keys.
+- **Cuándo usar el patrón:** Siempre que necesites leer o escribir datos del servidor en el Frontend.
+- **Snippet de Referencia:**
+  ```typescript
+  // 1. Unificar claves para consistencia (pueden vivir en un archivo central o exportarse)
+  export const QUERY_KEYS = {
+    profile: (id: string) => ["profile", id],
+    enrollments: (profileId: string) => ["enrollments", profileId],
+  };
+
+  // 2. Implementación con manejo de estados
+  const { data, isLoading, isError } = useQuery({
+    queryKey: QUERY_KEYS.enrollments(profileId),
+    queryFn: async () => {
+      const response = await api.get(`/api/enrollments/${profileId}`);
+      return response.data;
+    },
+    staleTime: 5 * 60 * 1000, // Ajustar staleTime para evitar saturar el backend
+    enabled: !!profileId, // Previene la ejecución si falta el ID
+  });
+  ```
+- **Gotchas / Detalles importantes:**
+  - Siempre maneja `isLoading` (preferiblemente con `Skeleton` de shadcn) y `isError` (con fallbacks visuales).
+  - Usa el parámetro `enabled` si la query depende de un dato previo (ej. obtener primero el perfil, luego los cursos).
+
 ### Componentes
 - Separar componentes de UI genéricos (botones, inputs) de los componentes de negocio (formularios específicos, vistas completas).
 - Preferir funciones puras y evitar efectos secundarios (`useEffect`) si se pueden derivar del estado.
