@@ -9,13 +9,13 @@ import { getUserId } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 
 const fetchEnrollments = async (profileId: string) => {
-  const response = await api.get(`api/enrollments/${profileId}`);
+  const response = await api.get(`/api/enrollments/${profileId}`);
   if (response.status !== 200) throw new Error("Failed to fetch enrollments");
   return response.data;
 };
 
 const fetchProfile = async () => {
-  const response = await api.get(`api/profile`);
+  const response = await api.get(`/api/profile`);
   if (response.status !== 200) throw new Error("Failed to fetch profile");
   return response.data;
 };
@@ -45,9 +45,7 @@ export const ProfileRecap: React.FC = () => {
     enabled: !!profileId,
   });
 
-  const assignedCourses = enrollments.filter(
-    (e: any) => e.status === "ASSIGNED" || (e.status == null && e.progress <= 0),
-  ).length;
+  const assignedCourses = enrollments.length;
   const completedCourses = enrollments.filter(
     (e: any) => e.status === "COMPLETED" || (e.status == null && e.progress >= 100),
   ).length;
