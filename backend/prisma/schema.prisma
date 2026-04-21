@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output = "../generated/prisma"
+  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -19,6 +19,11 @@ enum Role {
   EMPLOYEE
   ADMIN
   OWNER
+}
+
+enum CourseType {
+  TECHNICAL
+  SECURITY
 }
 
 enum ContentType {
@@ -36,16 +41,16 @@ enum EnrollmentStatus {
 // ================= PROFILE =================
 
 model Profile {
-  id                String   @id @default(uuid()) @db.Uuid
+  id                String    @id @default(uuid()) @db.Uuid
   email             String?
   firstName         String?
   lastName          String?
   birthDate         DateTime?
   employeeId        String?
   area              String?
-  role              Role     @default(EMPLOYEE)
-  isProfileComplete Boolean  @default(false)
-  createdAt         DateTime @default(now())
+  role              Role      @default(EMPLOYEE)
+  isProfileComplete Boolean   @default(false)
+  createdAt         DateTime  @default(now())
 
   enrollments        CourseEnrollment[]
   quizAttempts       QuizAttempt[]
@@ -55,16 +60,29 @@ model Profile {
 // ================= COURSE =================
 
 model Course {
-  id          String   @id @default(uuid()) @db.Uuid
+  id          String     @id @default(uuid()) @db.Uuid
   title       String
   description String?
   imageUrl    String?
-  isPublished Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  duration    String?
+  type        CourseType @default(TECHNICAL)
+  isPublished Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
   modules     Module[]
   enrollments CourseEnrollment[]
+  regulations Regulation[]
+}
+
+// ================= REGULATION =================
+
+model Regulation {
+  id          String  @id @default(uuid()) @db.Uuid
+  name        String  @unique
+  description String?
+
+  courses Course[]
 }
 
 // ================= MODULE =================
@@ -76,7 +94,7 @@ model Module {
   courseId  String   @db.Uuid
   createdAt DateTime @default(now())
 
-  course     Course         @relation(fields: [courseId], references: [id])
+  course     Course          @relation(fields: [courseId], references: [id])
   contents   ModuleContent[]
   quizzes    Quiz[]
   simulation Simulation?
@@ -85,24 +103,24 @@ model Module {
 // ================= MODULE CONTENT =================
 
 model ModuleContent {
-  id       String   @id @default(uuid()) @db.Uuid
-  moduleId String   @db.Uuid
+  id       String      @id @default(uuid()) @db.Uuid
+  moduleId String      @db.Uuid
   type     ContentType
   title    String?
-  content  String?  @db.Text
+  content  String?     @db.Text
   url      String?
   order    Int
 
-  module   Module   @relation(fields: [moduleId], references: [id])
+  module Module @relation(fields: [moduleId], references: [id])
 }
 
 // ================= SIMULATION =================
 
 model Simulation {
-  id           String   @id @default(uuid()) @db.Uuid
-  moduleId     String   @unique @db.Uuid
+  id           String @id @default(uuid()) @db.Uuid
+  moduleId     String @unique @db.Uuid
   title        String
-  content      String   @db.Text
+  content      String @db.Text
   passingScore Int
 
   module   Module              @relation(fields: [moduleId], references: [id])
@@ -124,10 +142,10 @@ model SimulationAttempt {
 // ================= QUIZ =================
 
 model Quiz {
-  id              String   @id @default(uuid()) @db.Uuid
-  moduleId        String   @db.Uuid
+  id              String  @id @default(uuid()) @db.Uuid
+  moduleId        String  @db.Uuid
   title           String
-  isGeneratedByAI Boolean  @default(true)
+  isGeneratedByAI Boolean @default(true)
 
   module    Module        @relation(fields: [moduleId], references: [id])
   questions Question[]
@@ -135,9 +153,9 @@ model Quiz {
 }
 
 model Question {
-  id      String   @id @default(uuid()) @db.Uuid
-  quizId  String   @db.Uuid
-  text    String   @db.Text
+  id     String @id @default(uuid()) @db.Uuid
+  quizId String @db.Uuid
+  text   String @db.Text
 
   quiz      Quiz       @relation(fields: [quizId], references: [id])
   reactives Reactive[]
@@ -145,10 +163,10 @@ model Question {
 }
 
 model Reactive {
-  id         String   @id @default(uuid()) @db.Uuid
-  questionId String   @db.Uuid
+  id         String  @id @default(uuid()) @db.Uuid
+  questionId String  @db.Uuid
   text       String
-  isCorrect  Boolean  @default(false)
+  isCorrect  Boolean @default(false)
 
   question Question @relation(fields: [questionId], references: [id])
   answers  Answer[]
@@ -164,16 +182,16 @@ model QuizAttempt {
   passed    Boolean
   createdAt DateTime @default(now())
 
-  quiz     Quiz     @relation(fields: [quizId], references: [id])
-  profile  Profile  @relation(fields: [profileId], references: [id])
-  answers  Answer[]
+  quiz    Quiz     @relation(fields: [quizId], references: [id])
+  profile Profile  @relation(fields: [profileId], references: [id])
+  answers Answer[]
 }
 
 model Answer {
-  id         String   @id @default(uuid()) @db.Uuid
-  attemptId  String   @db.Uuid
-  questionId String   @db.Uuid
-  reactiveId String   @db.Uuid
+  id         String @id @default(uuid()) @db.Uuid
+  attemptId  String @db.Uuid
+  questionId String @db.Uuid
+  reactiveId String @db.Uuid
 
   attempt  QuizAttempt @relation(fields: [attemptId], references: [id])
   question Question    @relation(fields: [questionId], references: [id])
@@ -183,13 +201,13 @@ model Answer {
 // ================= COURSE ENROLLMENT =================
 
 model CourseEnrollment {
-  profileId   String   @db.Uuid
-  courseId    String   @db.Uuid
+  profileId   String           @db.Uuid
+  courseId    String           @db.Uuid
   status      EnrollmentStatus @default(ASSIGNED)
   progress    Float            @default(0)
   completedAt DateTime?
   enrolledAt  DateTime         @default(now())
-  
+
   profile Profile @relation(fields: [profileId], references: [id])
   course  Course  @relation(fields: [courseId], references: [id])
 
