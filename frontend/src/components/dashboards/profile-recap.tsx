@@ -45,9 +45,17 @@ export const ProfileRecap: React.FC = () => {
     enabled: !!profileId,
   });
 
-  const assignedCourses = enrollments.filter((e: any) => e.progress === 0).length;
-  const completedCourses = enrollments.filter((e: any) => e.progress === 100).length;
-  const inProgressCourses = enrollments.filter((e: any) => e.progress > 0 && e.progress < 100).length;
+  const assignedCourses = enrollments.filter(
+    (e: any) => e.status === "ASSIGNED" || (e.status == null && e.progress <= 0),
+  ).length;
+  const completedCourses = enrollments.filter(
+    (e: any) => e.status === "COMPLETED" || (e.status == null && e.progress >= 100),
+  ).length;
+  const inProgressCourses = enrollments.filter(
+    (e: any) =>
+      e.status === "IN_PROGRESS" ||
+      (e.status == null && e.progress > 0 && e.progress < 100),
+  ).length;
 
   const mockRiskScore = 20;
   const mockReactionIndex = 75;
