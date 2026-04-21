@@ -6,7 +6,7 @@ import { getUserId } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 
 const fetchEnrollments = async (profileId: string) => {
-  const response = await api.get(`api/enrollments/${profileId}`);
+  const response = await api.get(`/api/enrollments/${profileId}`);
   if (response.status !== 200) throw new Error("Failed to fetch enrollments");
   return response.data;
 };
