@@ -80,6 +80,9 @@ export interface CourseCreateDTO {
   title: string;
   description?: string | null;
   imageUrl?: string | null;
+  duration?: string | null;
+  type?: "TECHNICAL" | "SECURITY";
+  regulations?: string[];
   isPublished: boolean;
   createdAt?: number;
   updatedAt?: number;
@@ -95,6 +98,9 @@ export interface CourseResponse {
   title: string;
   description?: string | null;
   imageUrl?: string | null;
+  duration?: string | null;
+  type: string;
+  regulations: { id: string; name: string }[];
   isPublished: boolean;
   createdAt: string;
   updatedAt: string;
