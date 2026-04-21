@@ -43,10 +43,10 @@ export const MyCourses: React.FC = () => {
         <CourseCard
           key={enrollment.courseId}
           title={enrollment.courseTitle}
-          description={enrollment.courseDescription ?? ""}
-          regulations={enrollment.regulations ?? ""}
-          type={enrollment.courseType ?? ""}
-          duration={enrollment.duration ?? ""}
+          description={enrollment.courseDescription ?? "No description"}
+          regulations={enrollment.courseRegulations ?? []}
+          type={enrollment.courseType ?? "Técnico"}
+          duration={enrollment.courseDuration ?? "N/A"}
           progress={enrollment.progress ?? 0}
         />
       ))}
