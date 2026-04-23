@@ -156,7 +156,7 @@ export function EditProfileModal({
     let hasErrors = false;
 
     (Object.keys(form) as (keyof ProfileForm)[]).forEach((field) => {
-      if (error) {
+      if (errors) {
       const error = validators[field](form[field]);
         allErrors[field] = error;
         hasErrors = true;

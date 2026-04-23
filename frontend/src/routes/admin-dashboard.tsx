@@ -2,11 +2,12 @@ import { Navbar } from "../components/navbar";
 import { GeneratedPreview } from "../components/dashboards/admin/generated-preview";
 import { Tutorial } from "../components/dashboards/admin/tutorial";
 import { AIForm } from "../components/dashboards/admin/ai-form";
+import { CreateForm } from "../components/dashboards/admin/create-form/index";
 import { CourseLibrary } from "../components/dashboards/admin/course-library";
 import { useState, useEffect } from "react";
 import { Button } from "../components/ui/button";
 
-type AdminTab = "create" | "library";
+type AdminTab = "create" | "manual" | "library";
 
 export default function AdminDashboard() {
   const [generatedContent, setGeneratedContent] = useState<any>(null);
@@ -45,7 +46,14 @@ export default function AdminDashboard() {
               onClick={() => setActiveTab("create")}
               className="px-4"
             >
-              Crear Contenido
+              Generar con IA
+            </Button>
+            <Button
+              variant={activeTab === "manual" ? "default" : "outline"}
+              onClick={() => setActiveTab("manual")}
+              className="px-4"
+            >
+              Crear Manualmente
             </Button>
             <Button
               variant={activeTab === "library" ? "default" : "outline"}
@@ -57,7 +65,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Create Content Tab */}
+        {/* Create Content Tab - AI Generation */}
         {activeTab === "create" && (
           <>
             {/* AI Form and Preview Section */}
@@ -71,6 +79,11 @@ export default function AdminDashboard() {
               <Tutorial />
             </div>
           </>
+        )}
+
+        {/* Manual Creation Tab */}
+        {activeTab === "manual" && (
+          <CreateForm />
         )}
 
         {/* Library Tab */}
