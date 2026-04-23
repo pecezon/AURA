@@ -30,3 +30,10 @@ export function requireCompleteProfile(req: any, res: any, next: any) {
   }
   next();
 }
+
+export function requireAdmin(req: any, res: any, next: any) {
+  if (req.profile?.role !== "ADMIN" && req.profile?.role !== "OWNER") {
+    return res.status(403).json({ message: "Admin access required" });
+  }
+  next();
+}

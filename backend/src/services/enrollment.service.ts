@@ -17,7 +17,6 @@ export class EnrollmentService {
       return {
         profileName: enrollment.profile.firstName,
         courseTitle: enrollment.course.title,
-        enrolledAt: enrollment.enrolledAt.toISOString(),
       };
     } catch (error: unknown) {
       if (
@@ -39,7 +38,7 @@ export class EnrollmentService {
     const enrollments = await prisma.courseEnrollment.findMany({
       include: {
         profile: true,
-        course: true,
+        course: { include: { regulations: true } },
       },
     });
     return enrollments.map((e) => ({
@@ -47,6 +46,10 @@ export class EnrollmentService {
       courseId: e.courseId,
       profileName: e.profile.firstName,
       courseTitle: e.course.title,
+      courseDescription: e.course.description,
+      courseDuration: e.course.duration,
+      courseType: e.course.type,
+      courseRegulations: e.course.regulations.map(r => r.name),
       enrolledAt: e.enrolledAt.toISOString(),
       status: e.status,
       progress: e.progress,
@@ -58,7 +61,7 @@ export class EnrollmentService {
       where: { profileId },
       include: {
         profile: true,
-        course: true,
+        course: { include: { regulations: true } },
       },
     });
     return enrollments.map((e) => ({
@@ -66,6 +69,10 @@ export class EnrollmentService {
       courseId: e.courseId,
       profileName: e.profile.firstName,
       courseTitle: e.course.title,
+      courseDescription: e.course.description,
+      courseDuration: e.course.duration,
+      courseType: e.course.type,
+      courseRegulations: e.course.regulations.map(r => r.name),
       enrolledAt: e.enrolledAt.toISOString(),
       status: e.status,
       progress: e.progress,

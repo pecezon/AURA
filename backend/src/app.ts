@@ -9,6 +9,7 @@ import quizRoutes from "./modules/quiz/quiz.routes";
 import quizAttemptRoutes from "./modules/quizAttempt/quizAttempt.routes"
 import simulationRoutes from "./modules/simulation/simulation.routes"
 import simulationAttemptRoutes from "./modules/simulationAttempt/simuAttempt.routes"
+import regulationRoutes from "./modules/regulation/regulation.routes"
 import { requireAuth } from "./middleware/auth.middleware";
 import { errorHandler } from "./middleware/error.middleware";
 
@@ -30,6 +31,7 @@ app.use("/api/quiz-attempts", quizAttemptRoutes);
 app.use("/api/modules", modulesRoutes);
 app.use("/api/simulations", simulationRoutes)
 app.use("/api/simulations/attempt", simulationAttemptRoutes)
+app.use("/api/regulations", regulationRoutes)
 
 // Error handling middleware (must be last)
 app.use(errorHandler);

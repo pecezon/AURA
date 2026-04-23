@@ -20,6 +20,9 @@ export class CourseService {
           title: dto.title,
           description: dto.description ?? null,
           imageUrl: dto.imageUrl ?? null,
+          duration: dto.duration ?? null,
+          type: dto.type ?? "TECHNICAL",
+          regulations: dto.regulations ? { connect: dto.regulations.map(id => ({ id })) } : undefined,
           isPublished: dto.isPublished,
           createdAt: dto.createdAt ? new Date(dto.createdAt) : new Date(),
           updatedAt: dto.updatedAt ? new Date(dto.updatedAt) : new Date(),
@@ -67,6 +70,7 @@ export class CourseService {
           },
         },
         include: {
+          regulations: true,
           modules: {
             include: {
               contents: true,
@@ -83,6 +87,9 @@ export class CourseService {
       title: created.title,
       description: created.description,
       imageUrl: created.imageUrl,
+      duration: created.duration,
+      type: created.type,
+      regulations: created.regulations.map((r: any) => ({ id: r.id, name: r.name })),
       isPublished: created.isPublished,
       createdAt: created.createdAt.toISOString(),
       updatedAt: created.updatedAt.toISOString(),
@@ -128,6 +135,7 @@ export class CourseService {
   async getAllCourses(): Promise<CourseResponse[]> {
     const courses = await prisma.course.findMany({
       include: {
+        regulations: true,
         modules: {
           include: {
             contents: true,
@@ -143,6 +151,9 @@ export class CourseService {
       title: course.title,
       description: course.description,
       imageUrl: course.imageUrl,
+      duration: course.duration,
+      type: course.type,
+      regulations: course.regulations.map((r: any) => ({ id: r.id, name: r.name })),
       isPublished: course.isPublished,
       createdAt: course.createdAt.toISOString(),
       updatedAt: course.updatedAt.toISOString(),
@@ -198,6 +209,9 @@ export class CourseService {
         title: true,
         description: true,
         imageUrl: true,
+        duration: true,
+        type: true,
+        regulations: true,
         isPublished: true,
         createdAt: true,
         updatedAt: true,
@@ -208,6 +222,9 @@ export class CourseService {
       title: course.title,
       description: course.description,
       imageUrl: course.imageUrl,
+      duration: course.duration,
+      type: course.type,
+      regulations: course.regulations.map((r: any) => ({ id: r.id, name: r.name })),
       isPublished: course.isPublished,
       createdAt: course.createdAt.toISOString(),
       updatedAt: course.updatedAt.toISOString(),
@@ -222,6 +239,9 @@ export class CourseService {
         title: true,
         description: true,
         imageUrl: true,
+        duration: true,
+        type: true,
+        regulations: true,
         isPublished: true,
         createdAt: true,
         updatedAt: true,
@@ -233,6 +253,9 @@ export class CourseService {
       title: course.title,
       description: course.description,
       imageUrl: course.imageUrl,
+      duration: course.duration,
+      type: course.type,
+      regulations: course.regulations.map((r: any) => ({ id: r.id, name: r.name })),
       isPublished: course.isPublished,
       createdAt: course.createdAt.toISOString(),
       updatedAt: course.updatedAt.toISOString(),
