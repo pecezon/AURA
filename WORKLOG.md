@@ -2,6 +2,26 @@
 
 Este documento mantiene un registro cronológico de las sesiones de trabajo, tareas en curso, decisiones importantes y tareas pendientes. Esto asegura que el contexto no se pierda entre sesiones.
 
+## Sesión: 2026-04-22 (Planeación de Simulaciones y Risk Score)
+
+**Qué implementamos en esta sesión:**
+- Recepción y análisis del "Design Document" del proyecto AURA, enfocado en simulaciones interactivas y el motor de evaluación conductual (Risk Score).
+- Reestructuración completa del archivo `SPEC.md` para reflejar con exactitud las 5 Fases de desarrollo, marcando las Fases 1 y 2 como completadas según el estado real del código.
+- Creación de un detallado **Plan de Implementación** (`implementation_plan.md`) para transformar las simulaciones de texto a un modelo JSON interactivo y flexible.
+- Organización del Sprint: Definición de la tarea "Implementar Simulación SS101 – Identificación de peligros y riesgos", desglosándola en 7 subtareas (desde el diseño hasta el tracking de eventos) e integrándolas en el `SPEC.md`.
+
+**Qué quedó en progreso:**
+- La ejecución en código de la Task SS101 recién planificada (incluyendo modificaciones al Prisma schema, servicios backend y componentes frontend).
+
+**Bloqueos:**
+- Ninguno técnico. La fase de planificación arquitectónica concluyó con éxito y estamos listos para la fase de desarrollo.
+
+**Próximos pasos en orden de prioridad:**
+1. Modificar `schema.prisma` para que `Simulation` y `SimulationAttempt` soporten configuración y eventos en formato JSON.
+2. Implementar el motor de scoring en el backend (`scoring.service.ts`) aplicando la fórmula de penalizaciones por tiempo e indecisión.
+3. Desarrollar el `SimulationEngine.tsx` en el frontend, incorporando hotspots clicables y tracking de eventos.
+
+---
 ## Sesión: 2026-04-22
 
 **Qué implementamos en esta sesión:**
