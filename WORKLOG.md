@@ -2,6 +2,32 @@
 
 Este documento mantiene un registro cronológico de las sesiones de trabajo, tareas en curso, decisiones importantes y tareas pendientes. Esto asegura que el contexto no se pierda entre sesiones.
 
+## Sesión: 2026-04-22
+
+**Qué implementamos en esta sesión:**
+- Sustitución de datos ficticios (mock data) en `ProfileRecap` y `MyCourses` por datos dinámicos extraídos de la API usando `@tanstack/react-query`.
+- Creación de un script temporal (`seed-courses.ts`) para inyectar enrolamientos de prueba (Asignados, En Progreso y Completados) en la base de datos para la visualización del dashboard.
+- Solución de múltiples bugs reportados por el usuario, incluyendo:
+  - Error 400 en `GET /api/profile` (se refactorizó para usar Prisma en lugar del cliente directo de Supabase).
+  - Rutas relativas en las llamadas Axios (`api.get('api/profile')` corregido a `/api/profile`).
+  - Lógica del cálculo de `assignedCourses` corregida para representar la totalidad de los cursos matriculados.
+  - Bloqueo infinito del UI por estado de sesión, solucionado aplicando tipos explícitos (`null` vs `""`), manejo de `try/catch`, e implementando `useNavigate` de `@tanstack/react-router`.
+- Mejora de Experiencia de Usuario (UX): Se implementó un estado de carga tipo "Skeleton" (usando shadcn) global para `worker-dashboard.tsx`, asegurando contraste sobre el fondo gris.
+- Actualización de `REFERENCES.md` para asentar reglas estrictas de Fetching: Obligación de usar TanStack Query y estandarización del patrón de `QUERY_KEYS`.
+
+**Qué quedó en progreso:**
+- La refactorización del frontend para extraer los bloques de `useQuery` duplicados hacia Custom Hooks centralizados (ej. `use-profile.ts`, `use-enrollments.ts`), los cuales deben consumir las `QUERY_KEYS` establecidas en `REFERENCES.md`.
+- Interfaz del administrador para gestionar Normativas.
+
+**Bloqueos:**
+- Ninguno técnico. La CLI de shadcn se atascó brevemente al añadir el componente Skeleton interactivamente, solucionado creándolo manualmente.
+
+**Próximos pasos en orden de prioridad:**
+1. Refactorizar `worker-dashboard.tsx`, `profile-recap.tsx` y `my-courses.tsx` para usar Custom Hooks y eliminar el boilerplate duplicado de `useQuery`.
+2. Crear la interfaz en el Frontend para que el Administrador/Owner pueda registrar nuevas normativas utilizando el endpoint creado en la sesión anterior.
+3. Iniciar el desarrollo del feature "Risk Score / Behavioral Profile" (que actualmente sigue con datos hardcodeados en el componente `BehavioralProfile`).
+
+---
 ## Sesión: 2026-04-21
 
 **Qué implementamos en esta sesión:**
