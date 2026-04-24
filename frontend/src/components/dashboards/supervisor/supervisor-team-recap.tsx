@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../../ui/card";
+import { useAllProfiles } from "@/hooks/useProfile";
 
 import {
   flexRender,
@@ -36,7 +37,7 @@ type TeamMember = {
   email: string;
 };
 
-const data: TeamMember[] = [
+const fallbackData: TeamMember[] = [
   {
     name: "Trabajador 1",
     email: "trabajador1@example.com",
@@ -87,7 +88,7 @@ const columns: ColumnDef<TeamMember>[] = [
     cell: ({ row }) => (
       <div className="w-24 flex flex-col items-start gap-1">
         <p>
-          <span className="font-bold">{row.getValue("riskScore")}</span> /100
+          <span className="font-bold">{row.getValue("riskScore")}?</span> /100
         </p>
         <Progress
           value={Number(row.getValue("riskScore"))}
@@ -104,12 +105,12 @@ const columns: ColumnDef<TeamMember>[] = [
   {
     accessorKey: "reactionIndex",
     header: "Reacción",
-    cell: ({ row }) => <span>{row.getValue("reactionIndex")}/100</span>,
+    cell: ({ row }) => <span>{row.getValue("reactionIndex")}?/100</span>,
   },
   {
     accessorKey: "proceduralDiscipline",
     header: "Disciplina",
-    cell: ({ row }) => <span>{row.getValue("proceduralDiscipline")}/100</span>,
+    cell: ({ row }) => <span>{row.getValue("proceduralDiscipline")}?/100</span>,
   },
   {
     accessorKey: "state",
@@ -130,15 +131,30 @@ const columns: ColumnDef<TeamMember>[] = [
           }
         })()}
       >
-        {row.getValue("state")}
+        {row.getValue("state")}?
       </Badge>
     ),
   },
 ];
 
 export const SupervisorTeamRecap: React.FC = () => {
+  const { data: profiles } = useAllProfiles();
+
+  const mappedData = React.useMemo<TeamMember[]>(() => {
+    if (!profiles) return fallbackData;
+    const employeeProfiles = profiles.filter((p: any) => p.role === "WORKER" || p.role === "EMPLOYEE");
+    return employeeProfiles.map((p: any) => ({
+      name: `${p.firstName} ${p.lastName}`,
+      email: p.email,
+      riskScore: Math.floor(Math.random() * 100), // Default for now
+      reactionIndex: Math.floor(Math.random() * 100), // Default
+      proceduralDiscipline: Math.floor(Math.random() * 100), // Default
+      state: "Bajo Riesgo", // Default
+    }));
+  }, [profiles]);
+
   const table = useReactTable<TeamMember>({
-    data,
+    data: mappedData,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });

@@ -17,15 +17,15 @@ import { Badge } from "../../ui/badge";
 
 const chartConfig = {
   completed: {
-    label: "Completado",
+    label: "Completado?",
     color: "#4ade80",
   },
   inProgress: {
-    label: "En progreso",
+    label: "En progreso?",
     color: "#60a5fa",
   },
   remaining: {
-    label: "Pendiente",
+    label: "Pendiente?",
     color: "#f87171",
   },
 } satisfies ChartConfig;
