@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { BookOpen, Pencil, CheckCircle2, Link, FileText, Film, Image } from "lucide-react";
-import { EditModuleModal, type EditableModule, type ContentType } from "./edit-module-modal";
+import { EditModuleModal } from "./edit-module-modal";
+import { type EditableModule, type ContentType } from "./types/module.types";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

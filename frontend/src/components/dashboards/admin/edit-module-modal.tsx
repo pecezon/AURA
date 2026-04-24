@@ -1,49 +1,24 @@
-import React, { useState, useRef, useCallback } from "react";
-import { Button } from "../../ui/button"
+import React from "react";
+import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Textarea } from "../../ui/textarea";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "../../ui/dialog";
-import { X, FileText, Link, Upload, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
-import { useModuleUpload } from "./hooks/use-module-upload";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, } from "../../ui/dialog";
+import { X, FileText, Link, Upload, CheckCircle2, AlertCircle, Loader2, } from "lucide-react";
+import { useModuleEditor } from "./hooks/use-module-editor";
+import { type EditableModule, type EditorTab, CONTENT_TYPE_LABELS } from "./types/module.types";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
 
-export type ContentType = "READING" | "VIDEO" | "IMAGE" | "PDF";
 
-export interface EditableModule {
-  title: string;
-  description: string;
-  duration: string;
-  contentType: ContentType;
-  contentText: string;
-  contentUrl: string;
-  contentFile: File | null;
-}
+// ─── Tab definitions (presentation-only, JSX icons live here) ────────────────
 
-type EditorTab = "text" | "file" | "url";
+const TABS: { id: EditorTab; label: string; icon: React.ReactNode }[] = [
+  { id: "text", label: "Texto", icon: <FileText className="w-4 h-4" /> },
+  { id: "file", label: "Subir archivo", icon: <Upload className="w-4 h-4" /> },
+  { id: "url", label: "URL externa", icon: <Link className="w-4 h-4" /> },
+];
 
-const ACCEPTED_EXTENSIONS: Record<ContentType, string> = {
-  READING: ".txt,.md",
-  PDF: ".pdf",
-  IMAGE: ".jpg,.jpeg,.png,.webp,.gif",
-  VIDEO: ".mp4,.mov,.webm",
-};
-
-const CONTENT_TYPE_LABELS: Record<ContentType, string> = {
-  READING: "Texto / Lectura",
-  PDF: "PDF",
-  IMAGE: "Imagen",
-  VIDEO: "Video",
-};
-
-// ─── Component ────────────────────────────────────────────────────────────────
+// ─── Props ────────────────────────────────────────────────────────────────────
 
 interface EditModuleModalProps {
   module: EditableModule;
@@ -52,72 +27,32 @@ interface EditModuleModalProps {
   onSave: (updated: EditableModule) => void;
 }
 
+// ─── Component ────────────────────────────────────────────────────────────────
+
 export const EditModuleModal: React.FC<EditModuleModalProps> = ({
   module,
   open,
   onClose,
   onSave,
 }) => {
-  const [draft, setDraft] = useState<EditableModule>({ ...module });
-  const [activeTab, setActiveTab] = useState<EditorTab>("text");
-  const [isDragging, setIsDragging] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const { uploadFile, status: uploadStatus, error: uploadError, reset: resetUpload } = useModuleUpload();
-
-  const updateDraft = (partial: Partial<EditableModule>) => {
-    setDraft((prev) => ({ ...prev, ...partial }));
-  };
-
-  // ── File handling ────────────────────────────────────────────────────────
-
-  const handleFile = (file: File) => {
-    updateDraft({ contentFile: file, contentUrl: "" });
-    resetUpload();
-  };
-
-  const handleDrop = useCallback(
-    (e: React.DragEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      setIsDragging(false);
-      const file = e.dataTransfer.files[0];
-      if (file) handleFile(file);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [draft.contentType]
-  );
-
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => setIsDragging(false);
-
-  // ── Save ─────────────────────────────────────────────────────────────────
-
-  const handleSave = async () => {
-    let finalUrl = draft.contentUrl;
-
-    // If user selected a file, upload to Supabase Storage first
-    if (draft.contentFile && activeTab === "file") {
-      const publicUrl = await uploadFile(draft.contentFile, draft.title);
-      if (!publicUrl) return; // upload failed, error shown by hook
-      finalUrl = publicUrl;
-    }
-
-    onSave({ ...draft, contentUrl: finalUrl, contentFile: null });
-    onClose();
-  };
-
-  const isSaving = uploadStatus === "uploading";
-
-  // ── Tabs ─────────────────────────────────────────────────────────────────
-
-  const tabs: { id: EditorTab; label: string; icon: React.ReactNode }[] = [
-    { id: "text", label: "Texto", icon: <FileText className="w-4 h-4" /> },
-    { id: "file", label: "Subir archivo", icon: <Upload className="w-4 h-4" /> },
-    { id: "url", label: "URL externa", icon: <Link className="w-4 h-4" /> },
-  ];
+  const {
+    draft,
+    updateDraft,
+    activeTab,
+    setActiveTab,
+    isDragging,
+    handleDrop,
+    handleDragOver,
+    handleDragLeave,
+    fileInputRef,
+    handleFileInputChange,
+    handleClearFile,
+    acceptedExtensions,
+    handleSave,
+    isSaving,
+    uploadStatus,
+    uploadError,
+  } = useModuleEditor(module, onSave, onClose);
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
@@ -167,18 +102,20 @@ export const EditModuleModal: React.FC<EditModuleModalProps> = ({
                 value={draft.contentType}
                 onChange={(e) =>
                   updateDraft({
-                    contentType: e.target.value as ContentType,
+                    contentType: e.target.value as EditableModule["contentType"],
                     contentFile: null,
                     contentUrl: "",
                   })
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                {(Object.keys(CONTENT_TYPE_LABELS) as ContentType[]).map((ct) => (
-                  <option key={ct} value={ct}>
-                    {CONTENT_TYPE_LABELS[ct]}
-                  </option>
-                ))}
+                {(Object.keys(CONTENT_TYPE_LABELS) as EditableModule["contentType"][]).map(
+                  (ct) => (
+                    <option key={ct} value={ct}>
+                      {CONTENT_TYPE_LABELS[ct]}
+                    </option>
+                  )
+                )}
               </select>
             </div>
           </div>
@@ -187,7 +124,7 @@ export const EditModuleModal: React.FC<EditModuleModalProps> = ({
           <div className="border border-gray-200 rounded-lg overflow-hidden">
             {/* Tab bar */}
             <div className="flex border-b border-gray-200 bg-gray-50">
-              {tabs.map((tab) => (
+              {TABS.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
@@ -227,7 +164,7 @@ export const EditModuleModal: React.FC<EditModuleModalProps> = ({
                   <p className="text-sm text-gray-500">
                     Tipos aceptados para{" "}
                     <strong>{CONTENT_TYPE_LABELS[draft.contentType]}</strong>:{" "}
-                    {ACCEPTED_EXTENSIONS[draft.contentType]}
+                    {acceptedExtensions}
                   </p>
 
                   {/* Drag & drop zone */}
@@ -243,8 +180,7 @@ export const EditModuleModal: React.FC<EditModuleModalProps> = ({
                       }`}
                   >
                     <Upload
-                      className={`w-10 h-10 ${isDragging ? "text-blue-500" : "text-gray-400"
-                        }`}
+                      className={`w-10 h-10 ${isDragging ? "text-blue-500" : "text-gray-400"}`}
                     />
                     <div className="text-center">
                       <p className="text-sm font-medium text-gray-700">
@@ -258,12 +194,9 @@ export const EditModuleModal: React.FC<EditModuleModalProps> = ({
                     <input
                       ref={fileInputRef}
                       type="file"
-                      accept={ACCEPTED_EXTENSIONS[draft.contentType]}
+                      accept={acceptedExtensions}
                       className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleFile(file);
-                      }}
+                      onChange={handleFileInputChange}
                     />
                   </div>
 
@@ -275,7 +208,7 @@ export const EditModuleModal: React.FC<EditModuleModalProps> = ({
                         {draft.contentFile.name}
                       </span>
                       <button
-                        onClick={() => updateDraft({ contentFile: null })}
+                        onClick={handleClearFile}
                         className="text-gray-400 hover:text-red-500 shrink-0"
                       >
                         <X className="w-4 h-4" />
