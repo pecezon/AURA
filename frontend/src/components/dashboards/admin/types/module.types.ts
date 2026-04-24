@@ -4,16 +4,21 @@ export type ContentType = "READING" | "VIDEO" | "IMAGE" | "PDF";
 
 export type EditorTab = "text" | "file" | "url";
 
-// ─── Module Shape ─────────────────────────────────────────────────────────────
+export interface ModuleContent {
+  id: string;
+  title: string;
+  type: ContentType;
+  text: string;
+  url: string;
+  file: File | null;
+}
 
 export interface EditableModule {
+  id: string;
   title: string;
   description: string;
   duration: string;
-  contentType: ContentType;
-  contentText: string;
-  contentUrl: string;
-  contentFile: File | null;
+  contents: ModuleContent[];
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
