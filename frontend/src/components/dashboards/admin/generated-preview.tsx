@@ -1,11 +1,12 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { Button } from "../../ui/button";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Loader2 } from "lucide-react";
 import { EditModuleModal } from "./edit-module-modal";
 import { PreviewModuleList } from "./preview-module-list";
 import { type EditableModule, type ContentType } from "./types/module.types";
 import { type DropResult } from "@hello-pangea/dnd";
+import { useCreateCourse } from "../../../hooks/useCourses";
 
 interface Scenario {
   question: string;
@@ -16,6 +17,7 @@ interface Scenario {
 interface GeneratedContent {
   title?: string;
   description?: string;
+  duration?: string;
   modules?: EditableModule[];
   scenarios?: Scenario[];
 }
@@ -43,10 +45,33 @@ function toEditableModule(mod: any, idx: number): EditableModule {
     title: mod.title ?? `Módulo ${idx + 1}`,
     description: mod.description ?? "",
     duration: mod.duration ?? "",
-    contents: [{ id: crypto.randomUUID(), title: "", type, text: mod.contentText ?? "", url: mod.contentUrl ?? "", file: null }],
+    contents: [{ id: crypto.randomUUID(), title: "", type, content: mod.contentText ?? "", url: mod.contentUrl ?? "", file: null }],
   };
 }
 
+/**
+ * Serializes editor state into the shape CourseCreateDTO expects.
+ * Index → order for both modules and their contents.
+ */
+function buildPayload(content: GeneratedContent) {
+  return {
+    title: content.title ?? "Curso sin título",
+    description: content.description ?? null,
+    isPublished: true,
+    duration: content.duration ?? "",
+    modules: (content.modules ?? []).map((mod, mIdx) => ({
+      title: mod.title,
+      order: mIdx,
+      contents: mod.contents.map((c, cIdx) => ({
+        type: c.type,
+        title: c.title || null,
+        content: c.content || null,
+        url: c.url || null,
+        order: cIdx,
+      })),
+    })),
+  };
+}
 
 
 export const GeneratedPreview: React.FC<GeneratedPreviewProps> = ({
@@ -55,6 +80,7 @@ export const GeneratedPreview: React.FC<GeneratedPreviewProps> = ({
   setGeneratedContent,
 }) => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const { mutate: publishCourse, isPending: isPublishing } = useCreateCourse();
   const hasContent = content && content.title;
 
   // Normalize all modules to EditableModule (supports old AI flat format)
@@ -105,6 +131,19 @@ export const GeneratedPreview: React.FC<GeneratedPreviewProps> = ({
     if (window.confirm("¿Descartar el contenido generado? Esta acción no se puede deshacer.")) {
       setGeneratedContent?.(undefined);
     }
+  };
+
+  const handlePublish = () => {
+    if (!content) return;
+    publishCourse(buildPayload(content), {
+      onSuccess: () => {
+        alert(`Curso "${content.title}" publicado exitosamente.`);
+        setGeneratedContent?.(undefined);
+      },
+      onError: (err: any) => {
+        alert(`Error al publicar: ${err?.response?.data?.message ?? err.message}`);
+      },
+    });
   };
 
   const moduleBeingEdited =
@@ -170,11 +209,13 @@ export const GeneratedPreview: React.FC<GeneratedPreviewProps> = ({
 
               {/* Action buttons */}
               <div className="flex gap-2 pt-4 border-t mt-auto shrink-0 bg-white">
-                <Button onClick={handleDiscard} variant="outline" className="flex-1">
+                <Button onClick={handleDiscard} variant="outline" className="flex-1" disabled={isPublishing}>
                   Descartar
                 </Button>
-                <Button className="flex-1" disabled={isLoading}>
-                  Publicar Curso
+                <Button className="flex-1" onClick={handlePublish} disabled={isLoading || isPublishing}>
+                  {isPublishing
+                    ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Publicando...</>
+                    : "Publicar Curso"}
                 </Button>
               </div>
             </div>

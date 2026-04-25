@@ -51,7 +51,7 @@ export function useModuleEditor(
       id: crypto.randomUUID(),
       title: "",
       type,
-      text: "",
+      content: "",
       url: "",
       file: null,
     };
@@ -110,8 +110,13 @@ export function useModuleEditor(
       return; // Keep modal open
     }
 
-    onSave({ ...draft, contents: results.map((r) => r.content) });
-    console.log("draft : ", draft);
+    const finalContents = results.map((r) => r.content);
+
+    // Sync draft with resolved upload URLs before handing off to parent
+    updateDraft({ contents: finalContents });
+
+    onSave({ ...draft, contents: finalContents });
+    console.log("draft: ", draft);
     onClose();
   };
 

@@ -98,7 +98,7 @@ export const ModuleContentItem: React.FC<Props> = ({ content, index, onUpdate, o
                         type: e.target.value as ContentType,
                         file: null,
                         url: "",
-                        text: "",
+                        content: "",
                       });
                     }}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -147,8 +147,8 @@ export const ModuleContentItem: React.FC<Props> = ({ content, index, onUpdate, o
                   {activeTab === "text" && (
                     <Textarea
                       rows={isDescriptionType ? 3 : 5}
-                      value={content.text}
-                      onChange={(e) => onUpdate(content.id, { text: e.target.value })}
+                      value={content.content}
+                      onChange={(e) => onUpdate(content.id, { content: e.target.value })}
                       placeholder={
                         isDescriptionType
                           ? "Describe brevemente este contenido..."
@@ -176,8 +176,8 @@ export const ModuleContentItem: React.FC<Props> = ({ content, index, onUpdate, o
                         onDragLeave={() => setIsDraggingFile(false)}
                         onClick={() => fileInputRef.current?.click()}
                         className={`border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors ${isDraggingFile
-                            ? "border-blue-500 bg-blue-50"
-                            : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"
+                          ? "border-blue-500 bg-blue-50"
+                          : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"
                           }`}
                       >
                         <Upload className={`w-8 h-8 ${isDraggingFile ? "text-blue-500" : "text-gray-400"}`} />

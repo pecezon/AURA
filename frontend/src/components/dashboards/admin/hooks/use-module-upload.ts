@@ -37,11 +37,13 @@ export function useModuleUpload(): UseModuleUploadReturn {
 
       const fileExt = file.name.split(".").pop();
       const timestamp = Date.now();
-      const filePath = `${sanitizedTitle}/${timestamp}.${fileExt}`;
+      // Flat path — no subfolders. contentType is required so Supabase
+      // stores the correct MIME type (needed for PDF inline-open and video uploads).
+      const filePath = `${timestamp}-${sanitizedTitle}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from(BUCKET_NAME)
-        .upload(filePath, file, { upsert: false });
+        .upload(filePath, file, { upsert: false, contentType: file.type });
 
       if (uploadError) {
         throw new Error(uploadError.message);

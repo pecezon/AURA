@@ -6,16 +6,14 @@ import { Draggable } from "@hello-pangea/dnd";
 
 const CONTENT_TYPE_ICON: Record<ContentType, React.ReactNode> = {
   READING: <FileText className="w-3.5 h-3.5" />,
-  PDF:     <FileText className="w-3.5 h-3.5" />,
-  IMAGE:   <Image    className="w-3.5 h-3.5" />,
-  VIDEO:   <Film     className="w-3.5 h-3.5" />,
+  IMAGE: <Image className="w-3.5 h-3.5" />,
+  VIDEO: <Film className="w-3.5 h-3.5" />,
 };
 
 const CONTENT_TYPE_LABEL: Record<ContentType, string> = {
   READING: "Lectura",
-  PDF:     "PDF",
-  IMAGE:   "Imagen",
-  VIDEO:   "Video",
+  IMAGE: "Imagen",
+  VIDEO: "Video",
 };
 
 interface ModuleCardProps {
@@ -31,9 +29,8 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index, onEdit, o
       <div
         ref={provided.innerRef}
         {...provided.draggableProps}
-        className={`bg-white border rounded-lg p-4 flex gap-3 ${
-          snapshot.isDragging ? "shadow-lg border-blue-400" : "border-gray-200"
-        }`}
+        className={`bg-white border rounded-lg p-4 flex gap-3 ${snapshot.isDragging ? "shadow-lg border-blue-400" : "border-gray-200"
+          }`}
       >
         <div {...provided.dragHandleProps} className="mt-1 text-gray-400 hover:text-gray-600 cursor-grab">
           <GripVertical className="w-5 h-5" />
@@ -69,15 +66,14 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index, onEdit, o
               module.contents.map((c) => (
                 <span
                   key={c.id}
-                  className={`flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border ${
-                    c.url || c.text || c.file
+                  className={`flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border ${c.url || c.content || c.file
                       ? "bg-green-50 text-green-700 border-green-200"
                       : "bg-gray-50 text-gray-600 border-gray-200"
-                  }`}
+                    }`}
                 >
                   {CONTENT_TYPE_ICON[c.type]}
                   {CONTENT_TYPE_LABEL[c.type]}
-                  {(c.url || c.text || c.file) && <CheckCircle2 className="w-3 h-3 ml-0.5" />}
+                  {(c.url || c.content || c.file) && <CheckCircle2 className="w-3 h-3 ml-0.5" />}
                 </span>
               ))
             ) : (

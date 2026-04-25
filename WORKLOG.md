@@ -2,7 +2,51 @@
 
 Este documento mantiene un registro cronológico de las sesiones de trabajo, tareas en curso, decisiones importantes y tareas pendientes. Esto asegura que el contexto no se pierda entre sesiones.
 
+## Sesión: 2026-04-24 — Refactorización del Editor de Módulos (Multi-Contenido)
+
+**Qué implementamos en esta sesión:**
+
+- **Nuevo modelo de datos de Módulos:** Se refactorizó `EditableModule` en `types/module.types.ts` para que cada módulo soporte **múltiples contenidos** (`contents: ModuleContent[]`). `ModuleContent` ahora incluye: `id`, `title`, `type`, `text`, `url` y `file`.
+
+- **Instalación de `@hello-pangea/dnd`:** Se integró la librería para Drag & Drop fluido en reordenamiento.
+
+- **Nuevo hook `useModuleEditor` (reescrito):**
+  - Maneja un array de contenidos con las operaciones `addContent`, `updateContent`, `removeContent`, `moveContent`.
+  - `handleSave` usa `Promise.all` para subir múltiples archivos en paralelo y detecta fallos por valor retornado (no por stale closure).
+  - Añadido `saveError: string | null` y `clearSaveError` para informar fallos de subida sin cerrar el modal.
+
+- **Nuevos componentes modulares:**
+  - `ModuleContentItem.tsx` (246 líneas): Tarjeta individual de contenido con grip de arrastre, input de título, placeholder contextual (VIDEO/IMAGE → "Descripción"), y exclusividad URL/archivo con indicadores 🔒.
+  - `ModuleContentList.tsx` (61 líneas): Zona `Droppable` que mapea items y contiene los botones "Añadir X".
+
+- **`EditModuleModal.tsx` refactorizado (120 líneas):** Eliminado el sistema de tabs monolítico. Ahora delega la lista de contenidos a `ModuleContentList`. Muestra banner descartable de `saveError`.
+
+- **`GeneratedPreview.tsx` actualizado:**
+  - Drag & Drop para reordenar módulos completos mediante `DragDropContext` + `Draggable`.
+  - Badges de contenido actualizados: muestra un badge por cada `ModuleContent` con su tipo e ícono, en verde si tiene datos.
+  - Función `toEditableModule` con retrocompatibilidad para el formato de IA antiguo (campo plano `contentType`).
+
+- **Bugs corregidos (3 ciclos de `/review-code`):**
+  1. Stale closure en `uploadStatus` dentro de `handleSave` — reemplazado por sentinel `null`.
+  2. Imports `React` faltantes en `ModuleContentList`, `EditModuleModal` y `ModuleContentItem`.
+  3. `activeTab` local no reseteaba al cambiar el tipo de contenido — se añadió `setActiveTab("text")` en el onChange del select.
+  4. Dead code en mensajes de lock de tabs — condición corregida para que sean siempre visibles cuando aplica.
+
+**Qué quedó en progreso:**
+- `ModuleContentItem` tiene 246 líneas (6 sobre el límite de 200). El bloque "Tab: Archivo" puede extraerse a `<FileDropZone>` si el componente sigue creciendo.
+- El WORKLOG no había sido actualizado hasta ahora con el trabajo de esta sesión.
+
+**Bloqueos:**
+- El plugin `@tanstack/router-plugin` en `vite.config.ts` sigue activo y rompe `npm run build` porque el proyecto usa routing manual (no file-based). No bloquea `dev`, pero impide builds de producción.
+
+**Próximos pasos en orden de prioridad:**
+1. Deshabilitar `tanstackRouter` en `vite.config.ts` para desbloquear `npm run build`.
+2. Iniciar **Simulación SS101** (tarea principal del SPEC, 7 subtareas definidas): schema Prisma → scoring service → SimulationEngine frontend.
+3. Crear interfaz admin para gestionar Normativas (pendiente desde sesión 2026-04-21).
+
+---
 ## Sesión: 2026-04-22 (Planeación de Simulaciones y Risk Score)
+
 
 **Qué implementamos en esta sesión:**
 - Recepción y análisis del "Design Document" del proyecto AURA, enfocado en simulaciones interactivas y el motor de evaluación conductual (Risk Score).

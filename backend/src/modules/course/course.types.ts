@@ -65,14 +65,14 @@ export interface QuizResponse {
 
 export interface SimulationCreateDTO {
   title: string;
-  content: string;
+  //content: string;
   passingScore: number;
 }
 
 export interface SimulationResponse {
   id: string;
   title: string;
-  content: string;
+  //content: string;
   passingScore: number;
 }
 
