@@ -93,6 +93,7 @@ export function useModuleEditor(
         }
         return { content, failed: false };
       })
+
     );
 
     const failedCount = results.filter((r) => r.failed).length;
@@ -110,6 +111,7 @@ export function useModuleEditor(
     }
 
     onSave({ ...draft, contents: results.map((r) => r.content) });
+    console.log("draft : ", draft);
     onClose();
   };
 
