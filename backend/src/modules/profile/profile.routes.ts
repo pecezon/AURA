@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { requireCompleteProfile } from "../../middleware/auth.middleware";
 import { prisma } from "../../config/prisma";
-import { updateProfileController, searchProfilesController, getProfileByIdController, getMyProfile } from "./profile.controller";
+import { updateProfileController, searchProfilesController, getProfileByIdController, getMyProfile, getAllProfilesController } from "./profile.controller";
 import { get } from "node:http";
 
 const router = Router();
@@ -20,7 +20,7 @@ router.get(
   getProfileByIdController
 );
 
-
+router.get("/all", getAllProfilesController);
 router.put("/update", updateProfileController);
 router.get("/search", searchProfilesController);
 router.get("/:id", getProfileByIdController);

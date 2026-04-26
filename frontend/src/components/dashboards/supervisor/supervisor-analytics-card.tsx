@@ -119,7 +119,7 @@ export const SupervisorAnalyticsCard: React.FC = () => {
                       key={entry.name}
                       className={`${textColor} font-medium`}
                     >
-                      {entry.name}: {entry.value}
+                      {entry.name}: {entry.value}?
                     </div>
                   );
                 })}
@@ -142,7 +142,7 @@ export const SupervisorAnalyticsCard: React.FC = () => {
                 <div className="flex justify-between text-sm text-gray-700">
                   <span>{ind.label}</span>
                   <span className="font-medium">
-                    {ind.value}/{ind.max}
+                    {ind.value}?/{ind.max}
                   </span>
                 </div>
                 <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
@@ -162,7 +162,7 @@ export const SupervisorAnalyticsCard: React.FC = () => {
                   <span className="text-gray-700">
                     Trabajadores de Alto Riesgo:{" "}
                   </span>
-                  <span className="text-red-500 font-semibold">1</span>
+                  <span className="text-red-500 font-semibold">1?</span>
                 </div>
                 <p className="text-gray-500 text-xs mt-0.5">
                   Requieren capacitación adicional y seguimiento cercano
@@ -194,7 +194,7 @@ export const SupervisorAnalyticsCard: React.FC = () => {
                   <p
                     className={`text-sm md:text-base font-semibold ${styles.title}`}
                   >
-                    {item.title}
+                    {item.title}?
                   </p>
                   <p className={`text-xs md:text-sm mt-0.5 ${styles.desc}`}>
                     {item.description}

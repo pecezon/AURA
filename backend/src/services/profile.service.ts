@@ -26,6 +26,32 @@ export async function updateProfile(profileId: string, data: Partial<{ firstName
   return updated;
 }
 
+export async function getAllProfiles() {
+  const profiles = await prisma.profile.findMany({
+    select: {
+      id: true,
+      email: true,
+      firstName: true,
+      lastName: true,
+      employeeId: true,
+      area: true,
+      role: true,
+      isProfileComplete: true,
+      createdAt: true,
+    },
+  });
+  return profiles.map((profile) => ({
+    id: profile.id,
+    email: profile.email,
+    firstName: profile.firstName,
+    lastName: profile.lastName,
+    employeeId: profile.employeeId,
+    area: profile.area,
+    role: profile.role,
+    isProfileComplete: profile.isProfileComplete,
+    createdAt: profile.createdAt.toISOString(),
+  }));
+}
 
 export async function searchProfiles(name: string) {
   const profiles = await prisma.profile.findMany({
