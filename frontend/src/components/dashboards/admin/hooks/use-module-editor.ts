@@ -80,14 +80,19 @@ export function useModuleEditor(
   const handleSave = async () => {
     setSaveError(null);
 
+    const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+
     // Upload any staged files and collect results (null = upload failed for that content)
     const results = await Promise.all(
       draft.contents.map(async (content) => {
         if (content.file) {
+          if (content.file.size > MAX_FILE_SIZE) {
+             return { content, failed: true, reason: 'size' };
+          }
           const publicUrl = await uploadFile(content.file, `${draft.title}-${content.type}`);
           if (!publicUrl) {
             // Signal failure — we'll strip this content's file and report it
-            return { content, failed: true };
+            return { content, failed: true, reason: 'upload' };
           }
           return { content: { ...content, url: publicUrl, file: null }, failed: false };
         }
@@ -104,9 +109,14 @@ export function useModuleEditor(
         r.failed ? { ...r.content, file: null } : r.content
       );
       updateDraft({ contents: cleanedContents });
-      setSaveError(
-        `${failedCount} archivo${failedCount > 1 ? "s" : ""} no pudo subirse y fue eliminado de la lista. Revisa tu conexión e intenta de nuevo.`
-      );
+      const sizeFailedCount = results.filter(r => r.failed && (r as any).reason === 'size').length;
+      let errorMsg = `${failedCount} archivo${failedCount > 1 ? "s" : ""} no pudo subirse.`;
+      if (sizeFailedCount > 0) {
+        errorMsg += ` ${sizeFailedCount} de ellos superaba el límite de 50MB.`;
+      }
+      errorMsg += ` Revisa los archivos y vuelve a intentarlo.`;
+      
+      setSaveError(errorMsg);
       return; // Keep modal open
     }
 

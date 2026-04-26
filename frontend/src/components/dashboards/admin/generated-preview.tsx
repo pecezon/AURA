@@ -18,6 +18,8 @@ interface GeneratedContent {
   title?: string;
   description?: string;
   duration?: string;
+  courseType?: string;
+  applicableNorms?: string[];
   modules?: EditableModule[];
   scenarios?: Scenario[];
 }
@@ -58,7 +60,8 @@ function buildPayload(content: GeneratedContent) {
     title: content.title ?? "Curso sin título",
     description: content.description ?? null,
     isPublished: true,
-    duration: content.duration ?? "",
+    duration: content.duration || null,
+    courseType: content.courseType || null,
     modules: (content.modules ?? []).map((mod, mIdx) => ({
       title: mod.title,
       order: mIdx,
@@ -135,6 +138,7 @@ export const GeneratedPreview: React.FC<GeneratedPreviewProps> = ({
 
   const handlePublish = () => {
     if (!content) return;
+    console.log("PAYLOAD", buildPayload(content));
     publishCourse(buildPayload(content), {
       onSuccess: () => {
         alert(`Curso "${content.title}" publicado exitosamente.`);

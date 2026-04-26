@@ -2,6 +2,29 @@
 
 Este documento mantiene un registro cronológico de las sesiones de trabajo, tareas en curso, decisiones importantes y tareas pendientes. Esto asegura que el contexto no se pierda entre sesiones.
 
+## Sesión: 2026-04-25 — Finalización de Publicación de Cursos y Editor de Módulos
+
+**Qué implementamos en esta sesión:**
+- **Gestión manual de Módulos:** Funcionalidad de agregar y eliminar módulos generados por IA en `generated-preview.tsx` con alertas de confirmación.
+- **Uploads a Supabase optimizados:** En `use-module-upload.ts`, aplanamos la ruta de subida (`timestamp-nombre.ext`) para evitar subdirectorios complejos y se inyectó `contentType: file.type` para soportar videos y lectura inline de PDFs.
+- **Integración API de Publicación:** Conexión del botón "Publicar Curso". Creación de `buildPayload` para mapear el estado local (`EditableModule`) al `CourseCreateDTO` del backend (manteniendo los índices/order).
+- **Límite y validación de archivos:** Implementación de un límite estricto de 50MB en el `use-module-editor.ts`, con manejo parcial de errores para indicar explícitamente cuando fallan los archivos pesados.
+- **Limpieza de Deuda Técnica (Backend/DB):** Alineación del `CourseCreateDTO` y `course.service.ts` con el `schema.prisma` real (que descartó `content` de las simulaciones y usa JSON). Se solventaron todos los errores de tipado de TypeScript.
+- **Fix de Encodings:** Corrección de textos corruptos (como `MÃ³dulo`) que habían sido dañados accidentalmente.
+
+**Qué quedó en progreso:**
+- La UI para gestión de Normativas (todavía solo en backend).
+- El motor interactivo de simulaciones en el frontend (`SimulationEngine.tsx`).
+
+**Bloqueos:**
+- Ninguno técnico crítico, aunque la restricción de `@tanstack/router-plugin` que rompe el `build` de producción aún no se ha deshabilitado.
+
+**Próximos pasos en orden de prioridad:**
+1. Deshabilitar `tanstackRouter` en `vite.config.ts` para desbloquear `npm run build`.
+2. Iniciar el desarrollo del **SimulationEngine** para las tareas SS101 (renderizar Hotspots e ingestar clics).
+3. Construir la UI del dashboard Admin para la administración de `Regulations`.
+
+---
 ## Sesión: 2026-04-24 — Refactorización del Editor de Módulos (Multi-Contenido)
 
 **Qué implementamos en esta sesión:**

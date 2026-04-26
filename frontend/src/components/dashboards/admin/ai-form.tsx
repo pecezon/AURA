@@ -71,6 +71,9 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent }) => {
     return {
       title: `Curso: ${formData.topic}`,
       description: `Curso especializado en ${formData.topic}. Tipo: ${formData.courseType}. Duración estimada: ${formData.duration} horas.`,
+      duration: `${formData.duration} horas`,
+      courseType: formData.courseType,
+      applicableNorms: formData.applicableNorms,
       modules,
       scenarios,
     };
@@ -82,16 +85,16 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent }) => {
       alert("Por favor completa el tema del curso");
       return;
     }
-    
+
     setIsGenerating(true);
     setTimeout(() => {
       const generatedContent = generateMockContent(formData);
       setIsGenerating(false);
-      
+
       if (onGenerateContent) {
         onGenerateContent(generatedContent);
       }
-      
+
       if ("Notification" in window && Notification.permission === "granted") {
         new Notification("¡Contenido Generado!", {
           body: `El curso "${formData.topic}" ha sido generado exitosamente.`,
