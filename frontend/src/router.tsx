@@ -171,6 +171,25 @@ const profileRoute = createRoute({
   component: ProfilePage,
 });
 
+import CourseDetail from "./routes/course-detail";
+
+const courseDetailRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/course/$courseId",
+  beforeLoad: async () => {
+    const user = await getUserState();
+
+    if (!user.isAuthenticated) {
+      throw redirect({ to: "/login" });
+    }
+
+    if (!user.isProfileComplete) {
+      throw redirect({ to: "/registration-form" });
+    }
+  },
+  component: CourseDetail,
+});
+
 const routeTree = rootRoute.addChildren([
   loginRoute,
   dashboardRoute,
@@ -180,6 +199,7 @@ const routeTree = rootRoute.addChildren([
   landingRoute,
   registrationFormRoute,
   profileRoute,
+  courseDetailRoute,
 ]);
 
 export const router = createRouter({ routeTree });

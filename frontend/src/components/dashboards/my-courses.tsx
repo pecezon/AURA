@@ -48,6 +48,7 @@ export const MyCourses: React.FC = () => {
       {enrollments.map((enrollment: any) => (
         <CourseCard
           key={enrollment.courseId}
+          courseId={enrollment.courseId}
           title={enrollment.courseTitle}
           description={enrollment.courseDescription ?? "No description"}
           regulations={enrollment.courseRegulations ?? []}
