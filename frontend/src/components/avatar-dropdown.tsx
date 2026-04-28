@@ -6,8 +6,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getUserImage } from "@/lib/supabase";
 import { useEffect, useState } from "react";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "@tanstack/react-router";
@@ -31,10 +31,11 @@ export function AvatarDropdown() {
   };
 
   const { data: profile, isLoading } = useMyProfile();
+  const [authUser, setAuthUser] = useState<SupabaseUser | null>(null);
 
   const user = {
-    name: profile ? `${profile.firstName} ${profile.lastName}` : "Diego Lopez",
-    email: profile ? profile.email : "diego@email.com",
+    name: profile ? `${profile.firstName} ${profile.lastName}` : (authUser?.user_metadata?.full_name || authUser?.email?.split('@')[0] || ""),
+    email: profile ? profile.email : (authUser?.email || ""),
     role: profile ? profile.role : "IT",
   };
 
@@ -42,8 +43,11 @@ export function AvatarDropdown() {
   const [userImage, setUserImage] = useState<string | null>(null);
   useEffect(() => {
     const load = async () => {
-      const image = await getUserImage();
-      setUserImage(image);
+      const { data: { user: sessionUser } } = await supabase.auth.getUser();
+      if (sessionUser) {
+        setAuthUser(sessionUser);
+        setUserImage(sessionUser.user_metadata?.avatar_url ?? null);
+      }
     };
 
     //Prevents loading 2 times

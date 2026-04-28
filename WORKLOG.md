@@ -2,6 +2,25 @@
 
 Este documento mantiene un registro cronológico de las sesiones de trabajo, tareas en curso, decisiones importantes y tareas pendientes. Esto asegura que el contexto no se pierda entre sesiones.
 
+## Sesión: 2026-04-28 (Fix Dropdown & Carga de Proyecto)
+
+**Qué implementamos en esta sesión:**
+- Análisis del estado actual del proyecto (`/load-project`), identificando los avances en las Fases 1 y 2, y los preparativos para la Simulación SS101 de la Fase 3.
+- Resolución de un bug en `avatar-dropdown.tsx` (`/fix-bug`): Se eliminaron los datos estáticos de respaldo ("Diego Lopez") y se integró directamente con `supabase.auth.getUser()` para asegurar que se muestre el email real (y opcionalmente el nombre) si el backend retrasa la carga o falla el `useMyProfile`.
+
+**Qué quedó en progreso:**
+- La refactorización de los Custom Hooks en el Worker Dashboard (eliminando duplicación de `useQuery`).
+- La Task "Implementar Simulación SS101 – Identificación de peligros y riesgos" (modelos, scoring, visualización).
+
+**Bloqueos:**
+- Ninguno.
+
+**Próximos pasos en orden de prioridad:**
+1. Modificar `schema.prisma` para que `Simulation` y `SimulationAttempt` soporten configuración y eventos en formato JSON.
+2. Implementar el motor de scoring en el backend (`scoring.service.ts`) aplicando la fórmula de penalizaciones por tiempo e indecisión.
+3. Desarrollar el `SimulationEngine.tsx` en el frontend, incorporando hotspots clicables y tracking de eventos.
+
+---
 ## Sesión: 2026-04-22 (Planeación de Simulaciones y Risk Score)
 
 **Qué implementamos en esta sesión:**
