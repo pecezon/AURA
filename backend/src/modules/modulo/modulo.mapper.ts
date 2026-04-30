@@ -39,7 +39,6 @@ export function ModulesResponseReturn(findedModules : ModuleWithRelations[]){
                 ? {
                     id: module.simulation.id,
                     title: module.simulation.title,
-                    content: module.simulation.content,
                     passingScore: module.simulation.passingScore,
                     moduleId : module.simulation.moduleId
                     }
@@ -86,7 +85,6 @@ export function ModuleResponseReturn(module : ModuleWithRelations){ //This is fo
                 ? {
                     id: module.simulation.id,
                     title: module.simulation.title,
-                    content: module.simulation.content,
                     passingScore: module.simulation.passingScore,
                     moduleId : module.simulation.moduleId
                     }

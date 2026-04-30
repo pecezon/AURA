@@ -109,7 +109,7 @@ export function useModuleEditor(
         r.failed ? { ...r.content, file: null } : r.content
       );
       updateDraft({ contents: cleanedContents });
-      const sizeFailedCount = results.filter(r => r.failed && (r as any).reason === 'size').length;
+      const sizeFailedCount = results.filter(r => r.failed && r.reason === 'size').length;
       let errorMsg = `${failedCount} archivo${failedCount > 1 ? "s" : ""} no pudo subirse.`;
       if (sizeFailedCount > 0) {
         errorMsg += ` ${sizeFailedCount} de ellos superaba el límite de 50MB.`;

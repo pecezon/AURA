@@ -61,7 +61,6 @@ export class CourseService {
                 ? {
                   create: {
                     title: m.simulation.title,
-                    //content: m.simulation.content,
                     passingScore: m.simulation.passingScore,
                   },
                 }
