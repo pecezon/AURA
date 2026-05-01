@@ -2,6 +2,30 @@
 
 Este documento mantiene un registro cronológico de las sesiones de trabajo, tareas en curso, decisiones importantes y tareas pendientes. Esto asegura que el contexto no se pierda entre sesiones.
 
+## Sesión: 2026-05-01 (Refactorización Frontend y Manejo de Sesión)
+
+**Qué implementamos en esta sesión:**
+- Centralización de sesión: Se creó el Custom Hook `useSessionId` (con TanStack Query) para reemplazar la lógica duplicada de `getUserId` con `useEffect`, reduciendo el boilerplate en `worker-dashboard`, `profile-recap` y `my-courses`.
+- Múltiples `/fix-bug` y revisiones de Senior (`/review-code`) que corrigieron vulnerabilidades de rendimiento (Rate-limits N+1 en Supabase Auth) deduplicando los requests de sesión.
+- Solución de "Race Conditions": Se implementó un parámetro `enabled: !!profileId` en los hooks de TanStack (`useMyProfile`, `useProfileEnrollments`) para evitar que dispararan requests y mostraran errores 401 antes de que se verificara si había sesión local.
+- Manejo de Caché de Sesión: Ajuste del `staleTime` a 5 minutos y limpieza del query caché (`queryClient.clear()`) en el botón de "Cerrar Sesión".
+- Mejora de UI en Errores: Creación de una pantalla de error (*Fallback UI*) en `worker-dashboard` al presentarse fallas en la red (con botón de reintento).
+- Actualización de `REFERENCES.md` (vía `/add-reference`) exigiendo a partir de ahora que todas las peticiones a la API se agrupen en Custom Hooks estructurados (Capa API -> Capa Hook -> Componente).
+
+**Qué quedó en progreso:**
+- El desarrollo de la Simulación interactiva SS101 de la Fase 3.
+- (Opcional) Limpieza de *código muerto* de spinners de carga en `ProfileRecap` y `MyCourses` que ahora son inalcanzables gracias a la barrera de carga global en el `WorkerDashboard`.
+
+**Bloqueos:**
+- Ninguno. La limpieza técnica de la Fase 1/2 está completa.
+
+**Próximos pasos en orden de prioridad:**
+1. Modificar `schema.prisma` para que `Simulation` y `SimulationAttempt` soporten configuración y eventos en formato JSON (Inicio Oficial de Fase 3).
+2. Implementar el motor de scoring en el backend (`scoring.service.ts`) aplicando la fórmula de penalizaciones por tiempo e indecisión.
+3. Desarrollar el `SimulationEngine.tsx` en el frontend, incorporando hotspots clicables y tracking de eventos.
+
+---
+
 ## Sesión: 2026-04-28 (Fix Dropdown & Carga de Proyecto)
 
 **Qué implementamos en esta sesión:**
