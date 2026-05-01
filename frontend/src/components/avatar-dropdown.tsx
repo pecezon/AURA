@@ -9,6 +9,7 @@ import {
 import { useEffect, useState } from "react";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "@tanstack/react-router";
 import { User, LogOut } from "lucide-react";
@@ -55,7 +56,15 @@ export function AvatarDropdown() {
   }, []);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex space-x-2 px-2 py-1 items-center gap-2">
+        <div className="flex flex-col space-y-2 items-end">
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-3 w-16" />
+        </div>
+        <Skeleton className="h-10 w-10 rounded-full" />
+      </div>
+    );
   }
 
   return (

@@ -1,49 +1,19 @@
 import { Navbar } from "../components/navbar";
+import { AlertCircle } from "lucide-react";
 import { ProfileRecap } from "../components/dashboards/profile-recap";
 import MyCourses from "../components/dashboards/my-courses";
 import { Skeleton } from "../components/ui/skeleton";
-import { useQuery } from "@tanstack/react-query";
-import { api } from "@/lib/api";
-import { getUserId } from "@/lib/supabase";
-import { useEffect, useState } from "react";
+import { useMyProfile } from "@/hooks/useProfile";
+import { useProfileEnrollments } from "@/hooks/useEnrollments";
+import { useSessionId } from "@/hooks/useSession";
 import { useNavigate } from "@tanstack/react-router";
 
 export default function WorkerDashboard() {
-  const [profileId, setProfileId] = useState<string | null>(null);
+  const profileId = useSessionId();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const loadProfileId = async () => {
-      try {
-        const id = await getUserId();
-        setProfileId(id || "");
-      } catch (error) {
-        console.error("Error fetching user ID:", error);
-        setProfileId("");
-      }
-    };
-    loadProfileId();
-  }, []);
-
-  const { isLoading: isProfileLoading } = useQuery({
-    queryKey: ["profile", profileId],
-    queryFn: async () => {
-      const response = await api.get(`/api/profile`);
-      return response.data;
-    },
-    staleTime: 5 * 60 * 1000,
-    enabled: !!profileId,
-  });
-
-  const { isLoading: isEnrollmentsLoading } = useQuery({
-    queryKey: ["enrollments", profileId],
-    queryFn: async () => {
-      const response = await api.get(`/api/enrollments/${profileId}`);
-      return response.data;
-    },
-    staleTime: 0.5 * 60 * 1000,
-    enabled: !!profileId,
-  });
+  const { isLoading: isProfileLoading, isError: isProfileError } = useMyProfile();
+  const { isLoading: isEnrollmentsLoading, isError: isEnrollmentsError } = useProfileEnrollments(profileId || "");
 
   if (profileId === "") {
     return (
@@ -60,7 +30,26 @@ export default function WorkerDashboard() {
     );
   }
 
+  const isError = isProfileError || isEnrollmentsError;
   const isLoading = profileId === null || isProfileLoading || isEnrollmentsLoading;
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 gap-4">
+        <AlertCircle className="w-16 h-16 text-red-500" />
+        <h1 className="text-2xl font-bold text-gray-800">Error al cargar datos</h1>
+        <p className="text-gray-500 text-center max-w-md px-4">
+          No pudimos conectar con el servidor para obtener tu información. Verifica tu conexión o intenta nuevamente.
+        </p>
+        <button 
+          onClick={() => window.location.reload()} 
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+        >
+          Reintentar
+        </button>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
