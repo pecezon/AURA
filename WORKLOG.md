@@ -2,6 +2,28 @@
 
 Este documento mantiene un registro cronológico de las sesiones de trabajo, tareas en curso, decisiones importantes y tareas pendientes. Esto asegura que el contexto no se pierda entre sesiones.
 
+## Sesión: 2026-04-26 (Course Detail Page UI & Bugfixes)
+
+**Qué implementamos en esta sesión:**
+- Desarrollo de la vista `CourseDetail` (`frontend/src/routes/course-detail.tsx`) para mostrar información de cursos, progreso dinámico, duración y cumplimiento normativo.
+- Integración de `Navbar` y alertas visuales (ej. componente `Award`) para felicitar al usuario al llegar al 100% de progreso.
+- Implementación de lógica local vía `localStorage` con el hook `use-course-progress.ts` para persistir la finalización de módulos.
+- Manejo de estados vacíos en el acordeón de módulos ("Este curso aún no tiene módulos registrados").
+- Corrección de enrutamiento: Se envolvió el botón de "Iniciar Curso" de `CourseCard` (`course-card.tsx`) en un `<Link>` directo hacia `/course/$courseId` para asegurar la redirección desde el dashboard.
+
+
+**Qué quedó en progreso:**
+- La integración completa de la simulación SS101 en el nuevo módulo de cursos detallados.
+
+**Bloqueos:**
+- Vite colapsó debido a advertencias estrictas del plugin de auto-enrutamiento de TanStack. 
+
+**Próximos pasos en orden de prioridad:**
+1. Iniciar la Task SS101: Desarrollar el componente interactivo `SimulationEngine.tsx` y los "hotspots".
+2. Modificar el Schema de Prisma para soportar configuraciones JSON requeridas en la simulación.
+3. Terminar la capa de servicios (`scoring.service.ts`) para el Risk Score conductual en el backend.
+
+---
 ## Sesión: 2026-04-22 (Planeación de Simulaciones y Risk Score)
 
 **Qué implementamos en esta sesión:**

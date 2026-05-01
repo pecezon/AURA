@@ -5,7 +5,19 @@ import CourseCard from "./course-card";
 import { getUserId } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 
-const fetchEnrollments = async (profileId: string) => {
+interface Enrollment {
+  profileId: string;
+  courseId: string;
+  profileName: string;
+  courseTitle: string;
+  courseDescription?: string;
+  courseDuration?: string;
+  courseType?: string;
+  courseRegulations?: string[];
+  progress: number;
+}
+
+const fetchEnrollments = async (profileId: string): Promise<Enrollment[]> => {
   const response = await api.get(`/api/enrollments/${profileId}`);
   if (response.status !== 200) throw new Error("Failed to fetch enrollments");
   return response.data;
@@ -32,20 +44,20 @@ export const MyCourses: React.FC = () => {
     data: enrollments = [],
     isLoading,
     error,
-  } = useQuery({
+  } = useQuery<Enrollment[]>({
     queryKey: ["enrollments", profileId],
     queryFn: () => fetchEnrollments(profileId),
-    staleTime: 0.5 * 60 * 1000, // 30 seconds
+    staleTime: 5 * 60 * 1000, // 5 minutes
     enabled: !!profileId,
   });
 
   if (isLoading) return <div className="p-4">Loading courses...</div>;
-  if (error) return <div className="p-4">Error loading courses</div>;
+  if (error) return <div className="p-4 text-red-500">Error loading courses</div>;
 
   return (
     <div className="w-full flex flex-col pb-4 justify-center gap-4 md:gap-6 px-4 md:px-16">
       <h2 className="text-xl font-bold md:text-2xl">My Courses</h2>
-      {enrollments.map((enrollment: any) => (
+      {enrollments.map((enrollment) => (
         <CourseCard
           key={enrollment.courseId}
           courseId={enrollment.courseId}

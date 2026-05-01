@@ -19,6 +19,7 @@ export function useCourseProgress(profileId: string, courseId: string) {
   }, [key, profileId, courseId]);
 
   const markModuleAsCompleted = (moduleId: string) => {
+    if (!profileId || !courseId) return;
     setCompletedModules(prev => {
       if (prev.includes(moduleId)) return prev; // Ya estaba completado
       const newCompleted = [...prev, moduleId];
