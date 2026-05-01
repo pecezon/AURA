@@ -9,6 +9,7 @@ import {
 import { SupervisorCoursesGraph } from "./supervisor-courses-graph";
 import { Button } from "../../ui/button";
 import { SupervisorCourseCard } from "./supervisor-course-card";
+import { useCourses } from "@/hooks/useCourses";
 
 interface CourseData {
   courseName: string;
@@ -61,8 +62,23 @@ const mockCourseData: CourseData[] = [
 
 export const SupervisorCoursesSection: React.FC = () => {
   const [showAll, setShowAll] = useState(false);
-  const coursesToShow = showAll ? mockCourseData : mockCourseData.slice(0, 3);
-  const hasMoreCourses = mockCourseData.length > 3;
+  const { data: apiCourses } = useCourses();
+
+  const mappedCourses: CourseData[] = React.useMemo(() => {
+    if (!apiCourses) return mockCourseData;
+    return apiCourses.map((c: any) => ({
+      courseName: c.title || "Curso Sin Título",
+      tag: c.type || "General",
+      assignedWorkers: c.enrolledWorkers || 10,
+      inProgressWorkers: Math.floor((c.enrolledWorkers || 10) / 2),
+      completedWorkers: Math.floor((c.enrolledWorkers || 10) / 4),
+      overdueWorkers: 0,
+      regulations: [],
+    }));
+  }, [apiCourses]);
+
+  const coursesToShow = showAll ? mappedCourses : mappedCourses.slice(0, 3);
+  const hasMoreCourses = mappedCourses.length > 3;
 
   return (
     <div className="w-full flex flex-col gap-4">
@@ -103,7 +119,7 @@ export const SupervisorCoursesSection: React.FC = () => {
 
       {/* Courses Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {mockCourseData.map((course, index) => (
+        {mappedCourses.map((course, index) => (
           <SupervisorCourseCard
             key={index}
             title={course.courseName}

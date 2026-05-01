@@ -22,6 +22,47 @@ Este documento mantiene un registro cronológico de las sesiones de trabajo, tar
 1. Iniciar la Task SS101: Desarrollar el componente interactivo `SimulationEngine.tsx` y los "hotspots".
 2. Modificar el Schema de Prisma para soportar configuraciones JSON requeridas en la simulación.
 3. Terminar la capa de servicios (`scoring.service.ts`) para el Risk Score conductual en el backend.
+## Sesión: 2026-05-01 (Refactorización Frontend y Manejo de Sesión)
+
+**Qué implementamos en esta sesión:**
+- Centralización de sesión: Se creó el Custom Hook `useSessionId` (con TanStack Query) para reemplazar la lógica duplicada de `getUserId` con `useEffect`, reduciendo el boilerplate en `worker-dashboard`, `profile-recap` y `my-courses`.
+- Múltiples `/fix-bug` y revisiones de Senior (`/review-code`) que corrigieron vulnerabilidades de rendimiento (Rate-limits N+1 en Supabase Auth) deduplicando los requests de sesión.
+- Solución de "Race Conditions": Se implementó un parámetro `enabled: !!profileId` en los hooks de TanStack (`useMyProfile`, `useProfileEnrollments`) para evitar que dispararan requests y mostraran errores 401 antes de que se verificara si había sesión local.
+- Manejo de Caché de Sesión: Ajuste del `staleTime` a 5 minutos y limpieza del query caché (`queryClient.clear()`) en el botón de "Cerrar Sesión".
+- Mejora de UI en Errores: Creación de una pantalla de error (*Fallback UI*) en `worker-dashboard` al presentarse fallas en la red (con botón de reintento).
+- Actualización de `REFERENCES.md` (vía `/add-reference`) exigiendo a partir de ahora que todas las peticiones a la API se agrupen en Custom Hooks estructurados (Capa API -> Capa Hook -> Componente).
+
+**Qué quedó en progreso:**
+- El desarrollo de la Simulación interactiva SS101 de la Fase 3.
+- (Opcional) Limpieza de *código muerto* de spinners de carga en `ProfileRecap` y `MyCourses` que ahora son inalcanzables gracias a la barrera de carga global en el `WorkerDashboard`.
+
+**Bloqueos:**
+- Ninguno. La limpieza técnica de la Fase 1/2 está completa.
+
+**Próximos pasos en orden de prioridad:**
+1. Modificar `schema.prisma` para que `Simulation` y `SimulationAttempt` soporten configuración y eventos en formato JSON (Inicio Oficial de Fase 3).
+2. Implementar el motor de scoring en el backend (`scoring.service.ts`) aplicando la fórmula de penalizaciones por tiempo e indecisión.
+3. Desarrollar el `SimulationEngine.tsx` en el frontend, incorporando hotspots clicables y tracking de eventos.
+
+---
+
+## Sesión: 2026-04-28 (Fix Dropdown & Carga de Proyecto)
+
+**Qué implementamos en esta sesión:**
+- Análisis del estado actual del proyecto (`/load-project`), identificando los avances en las Fases 1 y 2, y los preparativos para la Simulación SS101 de la Fase 3.
+- Resolución de un bug en `avatar-dropdown.tsx` (`/fix-bug`): Se eliminaron los datos estáticos de respaldo ("Diego Lopez") y se integró directamente con `supabase.auth.getUser()` para asegurar que se muestre el email real (y opcionalmente el nombre) si el backend retrasa la carga o falla el `useMyProfile`.
+
+**Qué quedó en progreso:**
+- La refactorización de los Custom Hooks en el Worker Dashboard (eliminando duplicación de `useQuery`).
+- La Task "Implementar Simulación SS101 – Identificación de peligros y riesgos" (modelos, scoring, visualización).
+
+**Bloqueos:**
+- Ninguno.
+
+**Próximos pasos en orden de prioridad:**
+1. Modificar `schema.prisma` para que `Simulation` y `SimulationAttempt` soporten configuración y eventos en formato JSON.
+2. Implementar el motor de scoring en el backend (`scoring.service.ts`) aplicando la fórmula de penalizaciones por tiempo e indecisión.
+3. Desarrollar el `SimulationEngine.tsx` en el frontend, incorporando hotspots clicables y tracking de eventos.
 
 ---
 ## Sesión: 2026-04-22 (Planeación de Simulaciones y Risk Score)

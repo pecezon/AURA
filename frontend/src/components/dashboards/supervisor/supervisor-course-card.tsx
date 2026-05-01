@@ -35,9 +35,8 @@ export const SupervisorCourseCard: React.FC<SupervisorCourseCardProps> = ({
         </div>
       </div>
 
-      {/* Progress & Buttons */}
       <StatProgressBar
-        label="Progreso Promedio"
+        label="Progreso Promedio?"
         value={progress}
         max={100}
         percentage={true}

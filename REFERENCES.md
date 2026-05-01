@@ -26,32 +26,51 @@ Seguimos una arquitectura de N capas:
 - Lógica compleja o consumo de API debe encapsularse en Custom Hooks (ej. `useUser`, `useAuth`).
 - Mantener los componentes UI lo más "tontos" (dumb) posible.
 
-### Peticiones a la API (TanStack Query)
-- **Regla Estricta:** TODAS las peticiones de red al backend deben realizarse utilizando `@tanstack/react-query` (`useQuery`, `useMutation`). No usar `fetch` o `axios` directamente dentro de un `useEffect` para guardar en estados locales.
-- **Registro de Query Keys:** Para evitar peticiones duplicadas y permitir que la caché se comparta entre componentes (ej. *ProfileRecap* y *MyCourses*), se deben unificar las Query Keys.
+### Peticiones a la API (TanStack Query y Custom Hooks)
+- **Regla Estricta:** TODAS las peticiones de red al backend deben realizarse utilizando `@tanstack/react-query` (`useQuery`, `useMutation`) a través de **Custom Hooks centralizados**. Está estrictamente prohibido usar `useQuery` o `fetch`/`axios` directamente dentro de los componentes visuales para evitar duplicación de lógica.
+- **Estructura Requerida:**
+  1. Definir la lógica de la petición HTTP y las `Query Keys` en un archivo en `src/api/` (ej. `profileApi.ts`).
+  2. Encapsular la llamada de TanStack Query en un archivo en `src/hooks/` (ej. `useProfile.ts`).
+  3. Consumir únicamente el Custom Hook en el componente visual.
 - **Cuándo usar el patrón:** Siempre que necesites leer o escribir datos del servidor en el Frontend.
 - **Snippet de Referencia:**
   ```typescript
-  // 1. Unificar claves para consistencia (pueden vivir en un archivo central o exportarse)
-  export const QUERY_KEYS = {
-    profile: (id: string) => ["profile", id],
-    enrollments: (profileId: string) => ["enrollments", profileId],
+  // 1. Definición de API y Query Keys (src/api/enrollmentApi.ts)
+  import { api } from '@/lib/api';
+
+  export const enrollmentKeys = {
+    all: ['enrollments'] as const,
+    byProfile: (profileId: string) => ['enrollments', 'profile', profileId] as const,
   };
 
-  // 2. Implementación con manejo de estados
-  const { data, isLoading, isError } = useQuery({
-    queryKey: QUERY_KEYS.enrollments(profileId),
-    queryFn: async () => {
-      const response = await api.get(`/api/enrollments/${profileId}`);
-      return response.data;
-    },
-    staleTime: 5 * 60 * 1000, // Ajustar staleTime para evitar saturar el backend
-    enabled: !!profileId, // Previene la ejecución si falta el ID
-  });
+  export const enrollmentApi = {
+    getByProfileId: (profileId: string) => api.get(`/api/enrollments/${profileId}`).then(r => r.data),
+  };
+
+  // 2. Custom Hook Centralizado (src/hooks/useEnrollments.ts)
+  import { useQuery } from '@tanstack/react-query';
+  import { enrollmentApi, enrollmentKeys } from '@/api/enrollmentApi';
+
+  export const useProfileEnrollments = (profileId: string) =>
+    useQuery({ 
+      queryKey: enrollmentKeys.byProfile(profileId), 
+      queryFn: () => enrollmentApi.getByProfileId(profileId), 
+      enabled: !!profileId 
+    });
+
+  // 3. Consumo en el Componente (ej. my-courses.tsx)
+  import { useProfileEnrollments } from "@/hooks/useEnrollments";
+
+  export const MyCourses: React.FC = ({ profileId }) => {
+    const { data: enrollments = [], isLoading, isError } = useProfileEnrollments(profileId);
+
+    if (isLoading) return <div>Cargando...</div>;
+    // ...
+  };
   ```
 - **Gotchas / Detalles importantes:**
   - Siempre maneja `isLoading` (preferiblemente con `Skeleton` de shadcn) y `isError` (con fallbacks visuales).
-  - Usa el parámetro `enabled` si la query depende de un dato previo (ej. obtener primero el perfil, luego los cursos).
+  - Usa el parámetro `enabled` en la configuración del `useQuery` si la petición depende de un dato previo (ej. no ejecutar hasta tener el `profileId`).
 
 ### Componentes
 - Separar componentes de UI genéricos (botones, inputs) de los componentes de negocio (formularios específicos, vistas completas).

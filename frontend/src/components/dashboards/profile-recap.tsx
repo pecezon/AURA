@@ -3,47 +3,15 @@ import StatCard from "./stat-card";
 import { BookOpenText, CircleCheckBig, Clock, TrendingUp, Loader2 } from "lucide-react";
 import BehavioralProfile from "./behavioral-profile";
 
-import { useQuery } from "@tanstack/react-query";
-import { api } from "@/lib/api";
-import { getUserId } from "@/lib/supabase";
-import { useEffect, useState } from "react";
-
-const fetchEnrollments = async (profileId: string) => {
-  const response = await api.get(`/api/enrollments/${profileId}`);
-  if (response.status !== 200) throw new Error("Failed to fetch enrollments");
-  return response.data;
-};
-
-const fetchProfile = async () => {
-  const response = await api.get(`/api/profile`);
-  if (response.status !== 200) throw new Error("Failed to fetch profile");
-  return response.data;
-};
+import { useSessionId } from "@/hooks/useSession";
+import { useMyProfile } from "@/hooks/useProfile";
+import { useProfileEnrollments } from "@/hooks/useEnrollments";
 
 export const ProfileRecap: React.FC = () => {
-  const [profileId, setProfileId] = useState<string>("");
+  const { data: profileId } = useSessionId();
 
-  useEffect(() => {
-    const loadProfileId = async () => {
-      const id = await getUserId();
-      setProfileId(id || "");
-    };
-    loadProfileId();
-  }, []);
-
-  const { data: profile, isLoading: isProfileLoading, isError: isProfileError } = useQuery({
-    queryKey: ["profile", profileId],
-    queryFn: fetchProfile,
-    staleTime: 5 * 60 * 1000,
-    enabled: !!profileId,
-  });
-
-  const { data: enrollments = [], isLoading: isEnrollmentsLoading, isError: isEnrollmentsError } = useQuery({
-    queryKey: ["enrollments", profileId],
-    queryFn: () => fetchEnrollments(profileId),
-    staleTime: 0.5 * 60 * 1000,
-    enabled: !!profileId,
-  });
+  const { data: profile, isLoading: isProfileLoading, isError: isProfileError } = useMyProfile({ enabled: !!profileId });
+  const { data: enrollments = [], isLoading: isEnrollmentsLoading, isError: isEnrollmentsError } = useProfileEnrollments(profileId || "");
 
   const assignedCourses = enrollments.length;
   const completedCourses = enrollments.filter(

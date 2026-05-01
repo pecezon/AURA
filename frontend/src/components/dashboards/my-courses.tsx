@@ -1,27 +1,7 @@
 import React from "react";
-import { useQuery } from "@tanstack/react-query";
-import { api } from "@/lib/api";
 import CourseCard from "./course-card";
-import { getUserId } from "@/lib/supabase";
-import { useEffect, useState } from "react";
-
-interface Enrollment {
-  profileId: string;
-  courseId: string;
-  profileName: string;
-  courseTitle: string;
-  courseDescription?: string;
-  courseDuration?: string;
-  courseType?: string;
-  courseRegulations?: string[];
-  progress: number;
-}
-
-const fetchEnrollments = async (profileId: string): Promise<Enrollment[]> => {
-  const response = await api.get(`/api/enrollments/${profileId}`);
-  if (response.status !== 200) throw new Error("Failed to fetch enrollments");
-  return response.data;
-};
+import { useSessionId } from "@/hooks/useSession";
+import { useProfileEnrollments } from "@/hooks/useEnrollments";
 
 const translateCourseType = (type: string) => {
   if (type === "TECHNICAL") return "Técnico";
@@ -30,26 +10,13 @@ const translateCourseType = (type: string) => {
 };
 
 export const MyCourses: React.FC = () => {
-  const [profileId, setProfileId] = useState<string>("");
-
-  useEffect(() => {
-    const loadProfileId = async () => {
-      const id = await getUserId();
-      setProfileId(id || "");
-    };
-    loadProfileId();
-  }, []);
+  const { data: profileId } = useSessionId();
 
   const {
     data: enrollments = [],
     isLoading,
     error,
-  } = useQuery<Enrollment[]>({
-    queryKey: ["enrollments", profileId],
-    queryFn: () => fetchEnrollments(profileId),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    enabled: !!profileId,
-  });
+  } = useProfileEnrollments(profileId || "");
 
   if (isLoading) return <div className="p-4">Loading courses...</div>;
   if (error) return <div className="p-4 text-red-500">Error loading courses</div>;
