@@ -12,7 +12,7 @@ export default function WorkerDashboard() {
   const { data: profileId, isLoading: isSessionLoading } = useSessionId();
   const navigate = useNavigate();
 
-  const { isLoading: isProfileLoading, isError: isProfileError } = useMyProfile();
+  const { isLoading: isProfileLoading, isError: isProfileError } = useMyProfile({ enabled: !!profileId });
   const { isLoading: isEnrollmentsLoading, isError: isEnrollmentsError } = useProfileEnrollments(profileId || "");
 
   if (!isSessionLoading && !profileId) {

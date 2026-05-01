@@ -10,7 +10,7 @@ import { useProfileEnrollments } from "@/hooks/useEnrollments";
 export const ProfileRecap: React.FC = () => {
   const { data: profileId } = useSessionId();
 
-  const { data: profile, isLoading: isProfileLoading, isError: isProfileError } = useMyProfile();
+  const { data: profile, isLoading: isProfileLoading, isError: isProfileError } = useMyProfile({ enabled: !!profileId });
   const { data: enrollments = [], isLoading: isEnrollmentsLoading, isError: isEnrollmentsError } = useProfileEnrollments(profileId || "");
 
   const assignedCourses = enrollments.length;

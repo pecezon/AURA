@@ -1,8 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { profileApi, profileKeys } from '@/api/profileApi';
 
-export const useMyProfile = () =>
-  useQuery({ queryKey: profileKeys.myProfile, queryFn: profileApi.getMyProfile });
+export const useMyProfile = (options?: { enabled?: boolean }) =>
+  useQuery({ 
+    queryKey: profileKeys.myProfile, 
+    queryFn: profileApi.getMyProfile,
+    enabled: options?.enabled 
+  });
 
 export const useProfile = (id: string) =>
   useQuery({ queryKey: profileKeys.detail(id), queryFn: () => profileApi.getProfileById(id), enabled: !!id });
