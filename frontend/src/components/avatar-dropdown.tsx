@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "@tanstack/react-router";
-import { User, LogOut } from "lucide-react";
+import { User, LogOut, LayoutDashboard } from "lucide-react";
 import { useMyProfile } from "@/hooks/useProfile";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -32,6 +32,10 @@ export function AvatarDropdown() {
 
   const handleProfileClick = () => {
     navigate({ to: "/profile" });
+  };
+
+  const handleDashboardClick = () => {
+    navigate({ to: "/dashboard" });
   };
 
   const { data: profile, isLoading } = useMyProfile();
@@ -98,6 +102,11 @@ export function AvatarDropdown() {
         </DropdownMenuLabel>
 
         <DropdownMenuSeparator />
+
+        <DropdownMenuItem onClick={handleDashboardClick} className="gap-2">
+          <LayoutDashboard className="w-4 h-4" />
+          Dashboard
+        </DropdownMenuItem>
 
         <DropdownMenuItem onClick={handleProfileClick} className="gap-2">
           <User className="w-4 h-4" />
