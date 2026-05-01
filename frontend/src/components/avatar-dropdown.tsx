@@ -14,9 +14,11 @@ import { supabase } from "@/lib/supabase";
 import { useNavigate } from "@tanstack/react-router";
 import { User, LogOut } from "lucide-react";
 import { useMyProfile } from "@/hooks/useProfile";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function AvatarDropdown() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -24,6 +26,7 @@ export function AvatarDropdown() {
       console.error("Error signing out:", error);
       return;
     }
+    queryClient.clear();
     navigate({ to: "/" });
   };
 

@@ -8,7 +8,7 @@ import { useMyProfile } from "@/hooks/useProfile";
 import { useProfileEnrollments } from "@/hooks/useEnrollments";
 
 export const ProfileRecap: React.FC = () => {
-  const profileId = useSessionId();
+  const { data: profileId } = useSessionId();
 
   const { data: profile, isLoading: isProfileLoading, isError: isProfileError } = useMyProfile();
   const { data: enrollments = [], isLoading: isEnrollmentsLoading, isError: isEnrollmentsError } = useProfileEnrollments(profileId || "");

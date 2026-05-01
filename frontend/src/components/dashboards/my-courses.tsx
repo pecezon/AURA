@@ -10,7 +10,7 @@ const translateCourseType = (type: string) => {
 };
 
 export const MyCourses: React.FC = () => {
-  const profileId = useSessionId();
+  const { data: profileId } = useSessionId();
 
   const {
     data: enrollments = [],

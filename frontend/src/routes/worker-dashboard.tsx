@@ -9,13 +9,13 @@ import { useSessionId } from "@/hooks/useSession";
 import { useNavigate } from "@tanstack/react-router";
 
 export default function WorkerDashboard() {
-  const profileId = useSessionId();
+  const { data: profileId, isLoading: isSessionLoading } = useSessionId();
   const navigate = useNavigate();
 
   const { isLoading: isProfileLoading, isError: isProfileError } = useMyProfile();
   const { isLoading: isEnrollmentsLoading, isError: isEnrollmentsError } = useProfileEnrollments(profileId || "");
 
-  if (profileId === "") {
+  if (!isSessionLoading && !profileId) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
         <h1 className="text-2xl font-bold text-gray-800">Sesión no encontrada</h1>
@@ -31,7 +31,7 @@ export default function WorkerDashboard() {
   }
 
   const isError = isProfileError || isEnrollmentsError;
-  const isLoading = profileId === null || isProfileLoading || isEnrollmentsLoading;
+  const isLoading = isSessionLoading || isProfileLoading || isEnrollmentsLoading;
 
   if (isError) {
     return (

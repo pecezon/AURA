@@ -2,18 +2,12 @@ import { useQuery } from '@tanstack/react-query';
 import { getUserId } from '@/lib/supabase';
 
 export const useSessionId = () => {
-  const { data: profileId } = useQuery({
+  return useQuery({
     queryKey: ['sessionId'],
     queryFn: async () => {
-      try {
-        const id = await getUserId();
-        return id || "";
-      } catch (error) {
-        return "";
-      }
+      const id = await getUserId();
+      return id;
     },
-    staleTime: Infinity,
+    staleTime: 5 * 60 * 1000,
   });
-
-  return profileId ?? null;
 };
