@@ -141,7 +141,7 @@ export default function CourseDetail() {
                   Cumplimiento Normativo:
                 </span>
                 <div className="flex flex-wrap gap-2">
-                  {course.regulations.map((reg: any) => (
+                  {course.regulations.map((reg: { id: string; name: string }) => (
                     <Badge key={reg.id} variant="outline" className="bg-white border-gray-300 ">
                       {reg.name}
                     </Badge>
