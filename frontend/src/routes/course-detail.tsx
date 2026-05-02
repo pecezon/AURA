@@ -34,6 +34,12 @@ interface Module {
   contents?: { id: string; title: string; type: string }[];
 }
 
+const translateCourseType = (type: string) => {
+  if (type === "TECHNICAL") return "Técnico";
+  if (type === "SECURITY") return "Seguridad";
+  return type;
+};
+
 export default function CourseDetail() {
   const { courseId } = useParams({ strict: false }) as { courseId: string };
 
@@ -108,8 +114,8 @@ export default function CourseDetail() {
             </div>
             
             <div className="flex items-center gap-3 mb-6">
-              <Badge variant={course.type === "Técnico" ? "default" : "secondary"}>
-                {course.type}
+              <Badge variant={course.type === "TECHNICAL" ? "default" : "secondary"}>
+                {translateCourseType(course.type)}
               </Badge>
               {course.duration && (
                 <Badge variant="outline">
