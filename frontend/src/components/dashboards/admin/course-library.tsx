@@ -67,7 +67,7 @@ export const CourseLibrary: React.FC<CourseLibraryProps> = ({
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3 flex-1">
-                  <div className="flex-shrink-0 pt-1">
+                  <div className="shrink-0 pt-1">
                     <BookOpen className="w-5 h-5 text-blue-500" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -85,7 +85,7 @@ export const CourseLibrary: React.FC<CourseLibraryProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <Badge 
                     variant={course.type === "Técnico" ? "default" : "secondary"}
                   >

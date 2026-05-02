@@ -41,7 +41,6 @@ export class SimulationService{
         return {
             id : simulation.id,
             title : simulation.title,
-            content : simulation.content,
             passingScore : simulation.passingScore,
             moduleId : simulation.moduleId
         }
@@ -61,7 +60,6 @@ export class SimulationService{
         return {
             id : simulation.id,
             title : simulation.title,
-            content : simulation.content,
             passingScore : simulation.passingScore,
             moduleId : simulation.moduleId
         }
@@ -82,7 +80,6 @@ export class SimulationService{
         const newSimulation = await prisma.simulation.create({
             data : {
                 title : dto.title,
-                content : dto.content,
                 passingScore : dto.passingScore,
                 moduleId : dto.moduleId
             }
@@ -103,7 +100,6 @@ export class SimulationService{
             where : {id : simulation.id},
             data : {
                 title : dto.title,
-                content : dto.content,
                 passingScore : dto.passingScore
             },
         })

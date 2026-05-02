@@ -1,0 +1,141 @@
+import { useState, useEffect } from "react";
+import { useModuleUpload } from "./use-module-upload";
+import { type EditableModule, type ModuleContent, type ContentType } from "../types/module.types";
+import { MAX_FILE_SIZE } from "../utils/course.utils";
+
+export interface UseModuleEditorReturn {
+  draft: EditableModule;
+  updateDraft: (partial: Partial<EditableModule>) => void;
+  addContent: (type: ContentType) => void;
+  updateContent: (id: string, partial: Partial<ModuleContent>) => void;
+  removeContent: (id: string) => void;
+  moveContent: (fromIndex: number, toIndex: number) => void;
+  handleSave: () => Promise<void>;
+  isSaving: boolean;
+  uploadStatus: "idle" | "uploading" | "success" | "error";
+  uploadError: string | null;
+  saveError: string | null;
+  clearSaveError: () => void;
+}
+
+export function useModuleEditor(
+  module: EditableModule,
+  onSave: (updated: EditableModule) => void,
+  onClose: () => void
+): UseModuleEditorReturn {
+  const [draft, setDraft] = useState<EditableModule>({ ...module, contents: module.contents || [] });
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false); 
+
+  const {
+    uploadFile,
+    status: uploadStatus,
+    error: uploadError,
+    reset: resetUpload,
+  } = useModuleUpload();
+
+  useEffect(() => {
+    setDraft({ ...module, contents: module.contents || [] });
+    setSaveError(null);
+    resetUpload();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [module.id]);
+
+  const updateDraft = (partial: Partial<EditableModule>) => {
+    setDraft((prev) => ({ ...prev, ...partial }));
+  };
+
+  const addContent = (type: ContentType) => {
+    const newContent: ModuleContent = {
+      id: crypto.randomUUID(),
+      title: "",
+      type,
+      content: "",
+      url: "",
+      file: null,
+    };
+    updateDraft({ contents: [...draft.contents, newContent] });
+  };
+
+  const updateContent = (id: string, partial: Partial<ModuleContent>) => {
+    updateDraft({
+      contents: draft.contents.map((c) => (c.id === id ? { ...c, ...partial } : c)),
+    });
+  };
+
+  const removeContent = (id: string) => {
+    updateDraft({
+      contents: draft.contents.filter((c) => c.id !== id),
+    });
+  };
+
+  const moveContent = (fromIndex: number, toIndex: number) => {
+    const newContents = Array.from(draft.contents);
+    const [moved] = newContents.splice(fromIndex, 1);
+    newContents.splice(toIndex, 0, moved);
+    updateDraft({ contents: newContents });
+  };
+
+  const handleSave = async () => {
+    setSaveError(null);
+    setIsSaving(true);
+
+    try {
+      const results = await Promise.all(
+        draft.contents.map(async (content) => {
+          if (content.file) {
+            if (content.file.size > MAX_FILE_SIZE) {
+              return { content, failed: true, reason: "size" };
+            }
+            const publicUrl = await uploadFile(content.file, `${draft.title}-${content.type}`);
+            if (!publicUrl) {
+              return { content, failed: true, reason: "upload" };
+            }
+            return { content: { ...content, url: publicUrl, file: null }, failed: false };
+          }
+          return { content, failed: false };
+        })
+      );
+
+      const failedCount = results.filter((r) => r.failed).length;
+
+      if (failedCount > 0) {
+        const cleanedContents = results.map((r) =>
+          r.failed ? { ...r.content, file: null } : r.content
+        );
+        updateDraft({ contents: cleanedContents });
+        const sizeFailedCount = results.filter((r) => r.failed && r.reason === "size").length;
+        let errorMsg = `${failedCount} archivo${failedCount > 1 ? "s" : ""} no pudo subirse.`;
+        if (sizeFailedCount > 0) errorMsg += ` ${sizeFailedCount} de ellos superaba el límite de 50MB.`;
+        errorMsg += ` Revisa los archivos y vuelve a intentarlo.`;
+        setSaveError(errorMsg);
+        return;
+      }
+
+      // Construimos el objeto final una sola vez para evitar usar el draft
+      // capturado en la closure (que podría estar desactualizado tras el await).
+      const finalContents = results.map((r) => r.content);
+      const saved: EditableModule = { ...draft, contents: finalContents };
+      setDraft(saved);
+      onSave(saved);
+      onClose();
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return {
+    draft,
+    updateDraft,
+    addContent,
+    updateContent,
+    removeContent,
+    moveContent,
+    handleSave,
+    isSaving,     
+    uploadStatus,
+    uploadError,
+    saveError,
+    clearSaveError: () => setSaveError(null),
+  };
+}

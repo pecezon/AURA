@@ -157,7 +157,6 @@ export class ModuleService {
                 simulation : dto.simulation ? {
                     create :  {
                         title : dto.simulation.title,
-                        content : dto.simulation.content,
                         passingScore : dto.simulation.passingScore
                     } 
                     
@@ -186,7 +185,6 @@ export class ModuleService {
                 id: createdModule.simulation.id,
                 title: createdModule.simulation.title,
                 moduleId: createdModule.simulation.moduleId,
-                content: createdModule.simulation.content,
                 passingScore: createdModule.simulation.passingScore
             }
             : null

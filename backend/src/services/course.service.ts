@@ -59,12 +59,11 @@ export class CourseService {
               },
               simulation: m.simulation
                 ? {
-                    create: {
-                      title: m.simulation.title,
-                      content: m.simulation.content,
-                      passingScore: m.simulation.passingScore,
-                    },
-                  }
+                  create: {
+                    title: m.simulation.title,
+                    passingScore: m.simulation.passingScore,
+                  },
+                }
                 : undefined,
             })),
           },
@@ -105,7 +104,7 @@ export class CourseService {
           content: c.content,
           url: c.url,
           order: c.order,
-          })),
+        })),
         quizzes: m.quizzes.map((q) => ({
           id: q.id,
           title: q.title,
@@ -122,11 +121,10 @@ export class CourseService {
         })),
         simulation: m.simulation
           ? {
-              id: m.simulation.id,
-              title: m.simulation.title,
-              content: m.simulation.content,
-              passingScore: m.simulation.passingScore,
-            }
+            id: m.simulation.id,
+            title: m.simulation.title,
+            passingScore: m.simulation.passingScore,
+          }
           : undefined,
       })),
     };
@@ -186,11 +184,10 @@ export class CourseService {
         })),
         simulation: m.simulation
           ? {
-              id: m.simulation.id,
-              title: m.simulation.title,
-              content: m.simulation.content,
-              passingScore: m.simulation.passingScore,
-            }
+            id: m.simulation.id,
+            title: m.simulation.title,
+            passingScore: m.simulation.passingScore,
+          }
           : undefined,
       })),
     }));

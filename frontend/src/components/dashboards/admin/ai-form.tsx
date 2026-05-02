@@ -5,6 +5,7 @@ import { Label } from "../../ui/label";
 import { Textarea } from "../../ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { Sparkles, Info } from "lucide-react";
+import { toSpanish } from "../../../lib/courseTypeConverter";
 
 interface AIFormData {
   topic: string;
@@ -20,7 +21,7 @@ interface AIFormProps {
 export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent }) => {
   const [formData, setFormData] = useState<AIFormData>({
     topic: "",
-    courseType: "Técnico",
+    courseType: "TECHNICAL",
     duration: "4",
     applicableNorms: "",
   });
@@ -32,6 +33,8 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent }) => {
   };
 
   const generateMockContent = (formData: AIFormData) => {
+    const courseTypeLabel = toSpanish(formData.courseType) || formData.courseType;
+    
     const modules = [
       {
         title: "Introducción y Fundamentos",
@@ -70,7 +73,10 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent }) => {
 
     return {
       title: `Curso: ${formData.topic}`,
-      description: `Curso especializado en ${formData.topic}. Tipo: ${formData.courseType}. Duración estimada: ${formData.duration} horas.`,
+      description: `Curso especializado en ${formData.topic}. Tipo: ${courseTypeLabel}. Duración estimada: ${formData.duration} horas.`,
+      duration: `${formData.duration} horas`,
+      courseType: formData.courseType,
+      applicableNorms: formData.applicableNorms,
       modules,
       scenarios,
     };
@@ -82,16 +88,16 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent }) => {
       alert("Por favor completa el tema del curso");
       return;
     }
-    
+
     setIsGenerating(true);
     setTimeout(() => {
       const generatedContent = generateMockContent(formData);
       setIsGenerating(false);
-      
+
       if (onGenerateContent) {
         onGenerateContent(generatedContent);
       }
-      
+
       if ("Notification" in window && Notification.permission === "granted") {
         new Notification("¡Contenido Generado!", {
           body: `El curso "${formData.topic}" ha sido generado exitosamente.`,
@@ -135,10 +141,11 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent }) => {
               onChange={handleInputChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="Técnico">Técnico</option>
-              <option value="Conceptual">Conceptual</option>
-              <option value="Procedural">Procedural</option>
-              <option value="Habilidades">Habilidades</option>
+              <option value="TECHNICAL">Técnico</option>
+              <option value="CONCEPTUAL">Conceptual</option>
+              <option value="PROCEDURAL">Procedural</option>
+              <option value="SKILLS">Habilidades</option>
+              <option value="SECURITY">Seguridad</option>
             </select>
           </div>
 
@@ -173,7 +180,7 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent }) => {
           </div>
 
           <div className="bg-blue-50 border border-blue-200 rounded-md p-3 flex gap-2">
-            <Info className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+            <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
             <p className="text-sm text-blue-700">
               La IA generará una propuesta inicial que podrás revisar y ajustar antes de publicar
             </p>

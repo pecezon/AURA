@@ -73,7 +73,7 @@ const dashboardRoute = createRoute({
       default:
         throw redirect({ to: "/" }); // Redirige a landing si el rol es desconocido (no debería pasar)
     }
-  
+
   },
 });
 
@@ -130,9 +130,10 @@ const adminDashboardRoute = createRoute({
       throw redirect({ to: "/registration-form" });
     }
 
-    // requireRole("ADMIN"), Needs implementation of role-based access control
+    //requireRole("ADMIN"), Needs implementation of role-based access control
   },
   component: AdminDashboard,
+
 });
 
 // Registration Form Route
