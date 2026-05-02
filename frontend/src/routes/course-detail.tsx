@@ -1,5 +1,4 @@
 import { Navbar } from "@/components/navbar";
-import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "@tanstack/react-router";
 import { api } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +15,8 @@ import {
 import { useCourseProgress } from "@/hooks/use-course-progress";
 import { getUserId } from "@/lib/supabase";
 import { useEffect, useState } from "react";
+import { useCourse } from "@/hooks/useCourses";
+import { useModulesByCourse } from "@/hooks/useModules";
 
 interface Course {
   id: string;
@@ -46,29 +47,13 @@ export default function CourseDetail() {
     data: course, 
     isLoading: isCourseLoading,
     isError: isCourseError 
-  } = useQuery<Course>({
-    queryKey: ["course", courseId],
-    queryFn: async () => {
-      const response = await api.get(`/api/courses/${courseId}`);
-      return response.data;
-    },
-    enabled: !!courseId,
-    staleTime: 5 * 60 * 1000,
-  });
+  } = useCourse(courseId);
 
   const { 
     data: modules, 
     isLoading: isModulesLoading,
     isError: isModulesError 
-  } = useQuery<Module[]>({
-    queryKey: ["course-modules", courseId],
-    queryFn: async () => {
-      const response = await api.get(`/api/modules/get-all-modules-by-course/${courseId}`);
-      return response.data;
-    },
-    enabled: !!courseId,
-    staleTime: 5 * 60 * 1000,
-  });
+  } = useModulesByCourse(courseId);
 
   const { completedModules, markModuleAsCompleted, isModuleCompleted, getProgressPercentage, isLoading: isProgressLoading } =
     useCourseProgress(profileId, courseId);

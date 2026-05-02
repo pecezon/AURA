@@ -14,6 +14,7 @@ import AdminDashboard from "./routes/admin-dashboard";
 import ProfilePage from "./routes/profile";
 import Landing from "./routes/landing";
 import RegistrationForm from "./routes/registration-form";
+import CourseDetail from "./routes/course-detail";
 
 import { getUserState } from "./lib/authGuard";
 
@@ -171,7 +172,6 @@ const profileRoute = createRoute({
   component: ProfilePage,
 });
 
-import CourseDetail from "./routes/course-detail";
 
 const courseDetailRoute = createRoute({
   getParentRoute: () => rootRoute,

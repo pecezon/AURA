@@ -135,6 +135,18 @@ export class EnrollmentService {
       throw error;
     }
 
+    // Verify module belongs to course
+    const module = await prisma.module.findUnique({
+      where: { id: moduleId },
+      select: { courseId: true },
+    });
+
+    if (!module || module.courseId !== courseId) {
+      const error: any = new Error("Module not found or does not belong to this course");
+      error.statusCode = 400;
+      throw error;
+    }
+
     // Upsert completed module
     await prisma.completedModule.upsert({
       where: {
