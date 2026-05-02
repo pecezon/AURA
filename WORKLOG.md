@@ -2,6 +2,27 @@
 
 Este documento mantiene un registro cronológico de las sesiones de trabajo, tareas en curso, decisiones importantes y tareas pendientes. Esto asegura que el contexto no se pierda entre sesiones.
 
+## Sesión: 2026-05-01 (Migración de Course Progress a Base de Datos)
+
+**Qué implementamos en esta sesión:**
+- Modificación del `schema.prisma` agregando el modelo `CompletedModule` para almacenar el progreso de cursos a nivel base de datos en lugar de `localStorage`.
+- Implementación de los endpoints `GET /api/enrollments/:profileId/:courseId` y `PATCH /api/enrollments/:profileId/:courseId/complete-module`.
+- Creación de la lógica en `enrollment.service.ts` para recalcular dinámicamente el progreso global de la inscripción (`CourseEnrollment.progress`) basado en el conteo total de módulos del curso frente a los completados.
+- Refactorización de `useCourseProgress` en el frontend utilizando `@tanstack/react-query` (`useQuery` y `useMutation`), asegurando que la UI se actualice optimísticamente y revalide la caché sin necesidad de recargar la página.
+
+**Qué quedó en progreso:**
+- Completar la visualización e interacción del `SimulationEngine.tsx` que corresponde a la Tarea SS101 de la Fase 3.
+
+**Bloqueos:**
+- Ninguno relacionado a la tarea actual. (Existe un error de compilación por resolver externamente en la rama de Simulaciones por parte de otro desarrollador).
+
+**Próximos pasos en orden de prioridad:**
+1. Mergear la branch externa que arregla los tipos de `Simulation` para restablecer el entorno de desarrollo.
+2. Desarrollar el `SimulationEngine.tsx` en el frontend, incorporando hotspots clicables y tracking de eventos.
+3. Iniciar la integración end-to-end con el motor de scoring conductual en el backend.
+
+---
+
 ## Sesión: 2026-04-26 (Course Detail Page UI & Bugfixes)
 
 **Qué implementamos en esta sesión:**

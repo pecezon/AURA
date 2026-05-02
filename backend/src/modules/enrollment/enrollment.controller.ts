@@ -31,3 +31,33 @@ export async function getEnrollmentsByProfileIdController(req: Request, res: Res
     return next(err);
   }
 }
+
+export async function getEnrollmentController(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { profileId, courseId } = req.params as { profileId: string; courseId: string };
+    const enrollment = await enrollmentService.getEnrollment(profileId, courseId);
+    return res.json(enrollment);
+  } catch (err: any) {
+    if (err.statusCode === 404) {
+      return res.status(404).json({ error: err.message });
+    }
+    return next(err);
+  }
+}
+
+import { completeModuleSchema } from "./enrollment.validation";
+
+export async function completeModuleController(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { profileId, courseId } = req.params as { profileId: string; courseId: string };
+    const parsed = completeModuleSchema.parse(req.body);
+    
+    const result = await enrollmentService.completeModule(profileId, courseId, parsed.moduleId);
+    return res.json(result);
+  } catch (err: any) {
+    if (err.statusCode === 404) {
+      return res.status(404).json({ error: err.message });
+    }
+    return next(err);
+  }
+}

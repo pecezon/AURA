@@ -21,6 +21,7 @@ model Profile {
   enrollments        CourseEnrollment[]
   quizAttempts       QuizAttempt[]
   simulationAttempts SimulationAttempt[]
+  completedModules   CompletedModule[]
 }
 
 model Course {
@@ -55,6 +56,7 @@ model Module {
   contents   ModuleContent[]
   quizzes    Quiz[]
   simulation Simulation?
+  completedBy CompletedModule[]
 }
 
 model ModuleContent {
@@ -152,6 +154,16 @@ model CourseEnrollment {
   profile     Profile          @relation(fields: [profileId], references: [id])
 
   @@id([profileId, courseId])
+}
+
+model CompletedModule {
+  profileId   String   @db.Uuid
+  moduleId    String   @db.Uuid
+  completedAt DateTime @default(now())
+  profile     Profile  @relation(fields: [profileId], references: [id])
+  module      Module   @relation(fields: [moduleId], references: [id])
+  
+  @@id([profileId, moduleId])
 }
 
 enum Role {

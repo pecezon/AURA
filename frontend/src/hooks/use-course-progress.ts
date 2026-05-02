@@ -1,31 +1,48 @@
-import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+
+interface EnrollmentData {
+  profileId: string;
+  courseId: string;
+  status: string;
+  progress: number;
+  completedModules: string[];
+}
 
 export function useCourseProgress(profileId: string, courseId: string) {
-  const key = `aura_completed_modules_${profileId}_${courseId}`;
+  const queryClient = useQueryClient();
+  const queryKey = ["enrollment", profileId, courseId];
 
-  const [completedModules, setCompletedModules] = useState<string[]>([]);
+  const { data: enrollment, isLoading } = useQuery<EnrollmentData>({
+    queryKey,
+    queryFn: async () => {
+      const response = await api.get(`/api/enrollments/${profileId}/${courseId}`);
+      return response.data;
+    },
+    enabled: !!profileId && !!courseId,
+    retry: false, // Don't retry if not enrolled (404)
+  });
 
-  // Cargar estado inicial
-  useEffect(() => {
-    if (!profileId || !courseId) return;
-    try {
-      const stored = localStorage.getItem(key);
-      if (stored) {
-        setCompletedModules(JSON.parse(stored));
-      }
-    } catch (e) {
-      console.error("Error reading localStorage", e);
-    }
-  }, [key, profileId, courseId]);
+  const mutation = useMutation({
+    mutationFn: async (moduleId: string) => {
+      const response = await api.patch(`/api/enrollments/${profileId}/${courseId}/complete-module`, {
+        moduleId,
+      });
+      return response.data;
+    },
+    onSuccess: (updatedData) => {
+      queryClient.setQueryData(queryKey, updatedData);
+      queryClient.invalidateQueries({ queryKey: ["enrollment", profileId, courseId] });
+      queryClient.invalidateQueries({ queryKey: ["my-enrollments", profileId] });
+    },
+  });
+
+  const completedModules = enrollment?.completedModules || [];
 
   const markModuleAsCompleted = (moduleId: string) => {
     if (!profileId || !courseId) return;
-    setCompletedModules(prev => {
-      if (prev.includes(moduleId)) return prev; // Ya estaba completado
-      const newCompleted = [...prev, moduleId];
-      localStorage.setItem(key, JSON.stringify(newCompleted));
-      return newCompleted;
-    });
+    if (completedModules.includes(moduleId)) return;
+    mutation.mutate(moduleId);
   };
 
   const isModuleCompleted = (moduleId: string) => {
@@ -33,14 +50,14 @@ export function useCourseProgress(profileId: string, courseId: string) {
   };
 
   const getProgressPercentage = (totalModules: number) => {
-    if (totalModules === 0) return 0;
-    return Math.round((completedModules.length / totalModules) * 100);
+    return enrollment?.progress || 0;
   };
 
   return {
     completedModules,
     markModuleAsCompleted,
     isModuleCompleted,
-    getProgressPercentage
+    getProgressPercentage,
+    isLoading: isLoading || mutation.isPending,
   };
 }

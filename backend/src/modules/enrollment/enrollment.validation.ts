@@ -6,3 +6,9 @@ export const createCourseEnrollmentSchema = z.object({
 });
 
 export type CreateCourseEnrollmentInput = z.infer<typeof createCourseEnrollmentSchema>;
+
+export const completeModuleSchema = z.object({
+  moduleId: z.string().uuid("Invalid Module ID"),
+});
+
+export type CompleteModuleInput = z.infer<typeof completeModuleSchema>;

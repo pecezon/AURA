@@ -78,6 +78,131 @@ export class EnrollmentService {
       progress: e.progress,
     }));
   }
+
+  async getEnrollment(profileId: string, courseId: string) {
+    const enrollment = await prisma.courseEnrollment.findUnique({
+      where: {
+        profileId_courseId: {
+          profileId,
+          courseId,
+        },
+      },
+      include: {
+        course: { include: { regulations: true, modules: true } },
+        profile: {
+          include: {
+            completedModules: {
+              where: {
+                module: {
+                  courseId,
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!enrollment) {
+      const error: any = new Error("Enrollment not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    return {
+      profileId: enrollment.profileId,
+      courseId: enrollment.courseId,
+      status: enrollment.status,
+      progress: enrollment.progress,
+      completedModules: enrollment.profile.completedModules.map((cm) => cm.moduleId),
+    };
+  }
+
+  async completeModule(profileId: string, courseId: string, moduleId: string) {
+    // Verify enrollment
+    const enrollment = await prisma.courseEnrollment.findUnique({
+      where: {
+        profileId_courseId: {
+          profileId,
+          courseId,
+        },
+      },
+    });
+
+    if (!enrollment) {
+      const error: any = new Error("Enrollment not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    // Upsert completed module
+    await prisma.completedModule.upsert({
+      where: {
+        profileId_moduleId: {
+          profileId,
+          moduleId,
+        },
+      },
+      update: {},
+      create: {
+        profileId,
+        moduleId,
+      },
+    });
+
+    // Recalculate progress
+    const totalModules = await prisma.module.count({
+      where: { courseId },
+    });
+
+    const completedCount = await prisma.completedModule.count({
+      where: {
+        profileId,
+        module: { courseId },
+      },
+    });
+
+    const progress = totalModules > 0 ? Math.round((completedCount / totalModules) * 100) : 0;
+    
+    // Determine status
+    let status = enrollment.status;
+    let completedAt = enrollment.completedAt;
+    
+    if (progress === 100) {
+      status = "COMPLETED";
+      completedAt = completedAt || new Date();
+    } else if (progress > 0 && status === "ASSIGNED") {
+      status = "IN_PROGRESS";
+    }
+
+    const updatedEnrollment = await prisma.courseEnrollment.update({
+      where: {
+        profileId_courseId: {
+          profileId,
+          courseId,
+        },
+      },
+      data: {
+        progress,
+        status,
+        completedAt,
+      },
+    });
+
+    // Get all completed modules to return
+    const completedModules = await prisma.completedModule.findMany({
+      where: {
+        profileId,
+        module: { courseId },
+      },
+      select: { moduleId: true },
+    });
+
+    return {
+      ...updatedEnrollment,
+      completedModules: completedModules.map((cm) => cm.moduleId),
+    };
+  }
 }
 
 export const enrollmentService = new EnrollmentService();

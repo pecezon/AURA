@@ -70,10 +70,10 @@ export default function CourseDetail() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const { completedModules, markModuleAsCompleted, isModuleCompleted, getProgressPercentage } =
+  const { completedModules, markModuleAsCompleted, isModuleCompleted, getProgressPercentage, isLoading: isProgressLoading } =
     useCourseProgress(profileId, courseId);
 
-  const isLoading = isCourseLoading || isModulesLoading || !profileId;
+  const isLoading = isCourseLoading || isModulesLoading || !profileId || isProgressLoading;
 
   if (isLoading) {
     return (
