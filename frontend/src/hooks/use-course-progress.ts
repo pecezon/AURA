@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
+import { enrollmentKeys } from "@/api/enrollmentApi";
 
 interface EnrollmentData {
   profileId: string;
@@ -33,7 +34,7 @@ export function useCourseProgress(profileId: string, courseId: string) {
     onSuccess: (updatedData) => {
       queryClient.setQueryData(queryKey, updatedData);
       queryClient.invalidateQueries({ queryKey: ["enrollment", profileId, courseId] });
-      queryClient.invalidateQueries({ queryKey: ["my-enrollments", profileId] });
+      queryClient.invalidateQueries({ queryKey: enrollmentKeys.byProfile(profileId) });
     },
   });
 
