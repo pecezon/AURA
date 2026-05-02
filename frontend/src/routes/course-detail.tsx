@@ -169,7 +169,7 @@ export default function CourseDetail() {
 
             <Accordion type="single" collapsible className="w-full">
               {modules && modules.length > 0 ? (
-                modules.map((module: any, index: number) => {
+                modules.map((module: Module, index: number) => {
                   const completed = isModuleCompleted(module.id);
                   return (
                     <AccordionItem key={module.id} value={module.id} className="border-b border-gray-100 last:border-0 px-2">
