@@ -4,7 +4,7 @@ import { Button } from "../../ui/button";
 import { BookOpen, Loader2 } from "lucide-react";
 import { EditModuleModal } from "./edit-module-modal";
 import { PreviewModuleList } from "./preview-module-list";
-import { type EditableModule, type ContentType } from "./types/module.types";
+import { type EditableModule, type ContentType , type RawModule } from "./types/module.types";
 import { type DropResult } from "@hello-pangea/dnd";
 import { useCreateCourse } from "../../../hooks/useCourses";
 
@@ -31,7 +31,7 @@ interface GeneratedPreviewProps {
 }
 
 /** Converts a raw AI module (old flat format OR new `contents` array) to EditableModule */
-function toEditableModule(mod: any, idx: number): EditableModule {
+function toEditableModule(mod: RawModule, idx: number): EditableModule {
   if (mod.contents) {
     return {
       id: mod.id ?? crypto.randomUUID(),
@@ -61,7 +61,7 @@ function buildPayload(content: GeneratedContent) {
     description: content.description ?? null,
     isPublished: true,
     duration: content.duration || null,
-    courseType: content.courseType || null,
+    type: content.courseType || null,
     modules: (content.modules ?? []).map((mod, mIdx) => ({
       title: mod.title,
       order: mIdx,
@@ -138,7 +138,7 @@ export const GeneratedPreview: React.FC<GeneratedPreviewProps> = ({
 
   const handlePublish = () => {
     if (!content) return;
-    console.log("PAYLOAD", buildPayload(content));
+    console.log(buildPayload(content))
     publishCourse(buildPayload(content), {
       onSuccess: () => {
         alert(`Curso "${content.title}" publicado exitosamente.`);

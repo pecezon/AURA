@@ -4,6 +4,18 @@ export type ContentType = "READING" | "VIDEO" | "IMAGE";
 
 export type EditorTab = "text" | "file" | "url";
 
+
+export type RawModule = { //Made it to prevent use of "any", in the editableModuleFunc on genereted-preview
+  id?: string;
+  title?: string;
+  description?: string;
+  duration?: string;
+  contents?: EditableModule["contents"];
+  contentType?: ContentType;
+  contentText?: string;
+  contentUrl?: string;
+};
+
 export interface ModuleContent {
   id: string;
   title: string;

@@ -79,7 +79,7 @@ export interface CourseCreateDTO {
   description?: string | null;
   imageUrl?: string | null;
   duration?: string | null;
-  type?: "TECHNICAL" | "SECURITY";
+  type?: "TECHNICAL" | "SECURITY" | "CONCEPTUAL"| "PROCEDURAL" | "SKILLS" ;
   regulations?: string[];
   isPublished: boolean;
   createdAt?: number;

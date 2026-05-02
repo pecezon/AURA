@@ -5,18 +5,15 @@ import { type EditableModule, type ModuleContent, type ContentType } from "../ty
 export interface UseModuleEditorReturn {
   draft: EditableModule;
   updateDraft: (partial: Partial<EditableModule>) => void;
-  // Content operations
   addContent: (type: ContentType) => void;
   updateContent: (id: string, partial: Partial<ModuleContent>) => void;
   removeContent: (id: string) => void;
   moveContent: (fromIndex: number, toIndex: number) => void;
-
-  // Save state
   handleSave: () => Promise<void>;
   isSaving: boolean;
   uploadStatus: "idle" | "uploading" | "success" | "error";
   uploadError: string | null;
-  saveError: string | null;       // partial save failures (bad file uploads)
+  saveError: string | null;
   clearSaveError: () => void;
 }
 
@@ -27,6 +24,7 @@ export function useModuleEditor(
 ): UseModuleEditorReturn {
   const [draft, setDraft] = useState<EditableModule>({ ...module, contents: module.contents || [] });
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false); 
 
   const {
     uploadFile,
@@ -79,55 +77,49 @@ export function useModuleEditor(
 
   const handleSave = async () => {
     setSaveError(null);
+    setIsSaving(true);
 
-    const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+    try {
+      const MAX_FILE_SIZE = 50 * 1024 * 1024;
 
-    // Upload any staged files and collect results (null = upload failed for that content)
-    const results = await Promise.all(
-      draft.contents.map(async (content) => {
-        if (content.file) {
-          if (content.file.size > MAX_FILE_SIZE) {
-             return { content, failed: true, reason: 'size' };
+      const results = await Promise.all(
+        draft.contents.map(async (content) => {
+          if (content.file) {
+            if (content.file.size > MAX_FILE_SIZE) {
+              return { content, failed: true, reason: "size" };
+            }
+            const publicUrl = await uploadFile(content.file, `${draft.title}-${content.type}`);
+            if (!publicUrl) {
+              return { content, failed: true, reason: "upload" };
+            }
+            return { content: { ...content, url: publicUrl, file: null }, failed: false };
           }
-          const publicUrl = await uploadFile(content.file, `${draft.title}-${content.type}`);
-          if (!publicUrl) {
-            // Signal failure — we'll strip this content's file and report it
-            return { content, failed: true, reason: 'upload' };
-          }
-          return { content: { ...content, url: publicUrl, file: null }, failed: false };
-        }
-        return { content, failed: false };
-      })
-
-    );
-
-    const failedCount = results.filter((r) => r.failed).length;
-
-    if (failedCount > 0) {
-      // Remove staged files from failed items so the user can retry or delete them
-      const cleanedContents = results.map((r) =>
-        r.failed ? { ...r.content, file: null } : r.content
+          return { content, failed: false };
+        })
       );
-      updateDraft({ contents: cleanedContents });
-      const sizeFailedCount = results.filter(r => r.failed && r.reason === 'size').length;
-      let errorMsg = `${failedCount} archivo${failedCount > 1 ? "s" : ""} no pudo subirse.`;
-      if (sizeFailedCount > 0) {
-        errorMsg += ` ${sizeFailedCount} de ellos superaba el límite de 50MB.`;
+
+      const failedCount = results.filter((r) => r.failed).length;
+
+      if (failedCount > 0) {
+        const cleanedContents = results.map((r) =>
+          r.failed ? { ...r.content, file: null } : r.content
+        );
+        updateDraft({ contents: cleanedContents });
+        const sizeFailedCount = results.filter((r) => r.failed && r.reason === "size").length;
+        let errorMsg = `${failedCount} archivo${failedCount > 1 ? "s" : ""} no pudo subirse.`;
+        if (sizeFailedCount > 0) errorMsg += ` ${sizeFailedCount} de ellos superaba el límite de 50MB.`;
+        errorMsg += ` Revisa los archivos y vuelve a intentarlo.`;
+        setSaveError(errorMsg);
+        return; 
       }
-      errorMsg += ` Revisa los archivos y vuelve a intentarlo.`;
-      
-      setSaveError(errorMsg);
-      return; // Keep modal open
+
+      const finalContents = results.map((r) => r.content);
+      updateDraft({ contents: finalContents });
+      onSave({ ...draft, contents: finalContents });
+      onClose();
+    } finally {
+      setIsSaving(false);
     }
-
-    const finalContents = results.map((r) => r.content);
-
-    // Sync draft with resolved upload URLs before handing off to parent
-    updateDraft({ contents: finalContents });
-
-    onSave({ ...draft, contents: finalContents });
-    console.log("draft: ", draft);
-    onClose();
   };
 
   return {
@@ -138,7 +130,7 @@ export function useModuleEditor(
     removeContent,
     moveContent,
     handleSave,
-    isSaving: uploadStatus === "uploading",
+    isSaving,     
     uploadStatus,
     uploadError,
     saveError,
