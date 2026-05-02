@@ -49,6 +49,11 @@ export async function getEnrollmentController(req: Request, res: Response, next:
 export async function completeModuleController(req: Request, res: Response, next: NextFunction) {
   try {
     const { profileId, courseId } = req.params as { profileId: string; courseId: string };
+
+    const userProfile = (req as any).profile;
+    if (profileId !== userProfile.id && userProfile.role !== "ADMIN" && userProfile.role !== "OWNER") {
+      return res.status(403).json({ error: "Forbidden: You can only modify your own enrollments" });
+    }
     const parsed = completeModuleSchema.parse(req.body);
     
     const result = await enrollmentService.completeModule(profileId, courseId, parsed.moduleId);
