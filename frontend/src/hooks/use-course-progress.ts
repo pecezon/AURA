@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "@/lib/api";
-import { enrollmentKeys } from "@/api/enrollmentApi";
+import { enrollmentApi, enrollmentKeys } from "@/api/enrollmentApi";
 
 interface EnrollmentData {
   profileId: string;
@@ -12,28 +11,20 @@ interface EnrollmentData {
 
 export function useCourseProgress(profileId: string, courseId: string) {
   const queryClient = useQueryClient();
-  const queryKey = ["enrollment", profileId, courseId];
+  const queryKey = enrollmentKeys.detail(profileId, courseId);
 
   const { data: enrollment, isLoading } = useQuery<EnrollmentData>({
     queryKey,
-    queryFn: async () => {
-      const response = await api.get(`/api/enrollments/${profileId}/${courseId}`);
-      return response.data;
-    },
+    queryFn: () => enrollmentApi.getEnrollment(profileId, courseId),
     enabled: !!profileId && !!courseId,
     retry: false, // Don't retry if not enrolled (404)
   });
 
   const mutation = useMutation({
-    mutationFn: async (moduleId: string) => {
-      const response = await api.patch(`/api/enrollments/${profileId}/${courseId}/complete-module`, {
-        moduleId,
-      });
-      return response.data;
-    },
+    mutationFn: (moduleId: string) => enrollmentApi.completeModule(profileId, courseId, moduleId),
     onSuccess: (updatedData) => {
       queryClient.setQueryData(queryKey, updatedData);
-      queryClient.invalidateQueries({ queryKey: ["enrollment", profileId, courseId] });
+      queryClient.invalidateQueries({ queryKey });
       queryClient.invalidateQueries({ queryKey: enrollmentKeys.byProfile(profileId) });
     },
   });
