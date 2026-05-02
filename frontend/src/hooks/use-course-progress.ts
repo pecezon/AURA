@@ -42,7 +42,8 @@ export function useCourseProgress(profileId: string, courseId: string) {
   };
 
   const getProgressPercentage = (totalModules: number) => {
-    return enrollment?.progress || 0;
+    if (totalModules <= 0) return 0;
+    return Math.min((completedModules.length / totalModules) * 100, 100);
   };
 
   return {
