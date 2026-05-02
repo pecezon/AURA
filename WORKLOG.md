@@ -2,6 +2,72 @@
 
 Este documento mantiene un registro cronológico de las sesiones de trabajo, tareas en curso, decisiones importantes y tareas pendientes. Esto asegura que el contexto no se pierda entre sesiones.
 
+
+## Sesión: 2026-05-02 (Code Review & Fixes de Course Progress)
+
+**Qué implementamos en esta sesión:**
+- Ejecución de `/review-code` enfocado en los cambios recientes de la migración de `Course Progress` a la base de datos.
+- Resolución de bug de estado en el backend (`enrollment.service.ts`): Se arregló la regresión donde la reducción de progreso en un curso previamente completado no revertía el estado a `IN_PROGRESS`.
+- Simplificación del hook `use-course-progress.ts` eliminando cálculos de porcentaje redundantes en frontend, dependiendo directamente de la propiedad `progress` real devuelta por el backend.
+- Optimización de red removiendo dobles invalidaciones de caché en TanStack Query.
+- Mejora de UX y estabilidad en `course-detail.tsx`: Se implementó la guarda `isEnrolled` para evitar errores silenciosos en la UI y prevenir mutaciones huérfanas.
+- Limpieza general de tipos e imports no utilizados que generaban errores de linter.
+- Estabilización del servidor dev Vite en local instalando dependencias faltantes (`@hello-pangea/dnd`).
+
+**Qué quedó en progreso:**
+- Completar la visualización e interacción del `SimulationEngine.tsx` que corresponde a la Tarea SS101 de la Fase 3.
+
+**Bloqueos:**
+- Ninguno técnico crítico (sigue pendiente el parche de tipos en la rama de simulaciones).
+
+**Próximos pasos en orden de prioridad:**
+1. Mergear la branch externa que arregla los tipos de `Simulation` para restablecer el entorno de desarrollo.
+2. Desarrollar el `SimulationEngine.tsx` en el frontend, incorporando hotspots clicables y tracking de eventos.
+3. Iniciar la integración end-to-end con el motor de scoring conductual en el backend.
+
+---
+
+## Sesión: 2026-05-01 (Migración de Course Progress a Base de Datos)
+
+**Qué implementamos en esta sesión:**
+- Modificación del `schema.prisma` agregando el modelo `CompletedModule` para almacenar el progreso de cursos a nivel base de datos en lugar de `localStorage`.
+- Implementación de los endpoints `GET /api/enrollments/:profileId/:courseId` y `PATCH /api/enrollments/:profileId/:courseId/complete-module`.
+- Creación de la lógica en `enrollment.service.ts` para recalcular dinámicamente el progreso global de la inscripción (`CourseEnrollment.progress`) basado en el conteo total de módulos del curso frente a los completados.
+- Refactorización de `useCourseProgress` en el frontend utilizando `@tanstack/react-query` (`useQuery` y `useMutation`), asegurando que la UI se actualice optimísticamente y revalide la caché sin necesidad de recargar la página.
+
+**Qué quedó en progreso:**
+- Completar la visualización e interacción del `SimulationEngine.tsx` que corresponde a la Tarea SS101 de la Fase 3.
+
+**Bloqueos:**
+- Ninguno relacionado a la tarea actual. (Existe un error de compilación por resolver externamente en la rama de Simulaciones por parte de otro desarrollador).
+
+**Próximos pasos en orden de prioridad:**
+1. Mergear la branch externa que arregla los tipos de `Simulation` para restablecer el entorno de desarrollo.
+2. Desarrollar el `SimulationEngine.tsx` en el frontend, incorporando hotspots clicables y tracking de eventos.
+3. Iniciar la integración end-to-end con el motor de scoring conductual en el backend.
+
+---
+
+## Sesión: 2026-04-26 (Course Detail Page UI & Bugfixes)
+
+**Qué implementamos en esta sesión:**
+- Desarrollo de la vista `CourseDetail` (`frontend/src/routes/course-detail.tsx`) para mostrar información de cursos, progreso dinámico, duración y cumplimiento normativo.
+- Integración de `Navbar` y alertas visuales (ej. componente `Award`) para felicitar al usuario al llegar al 100% de progreso.
+- Implementación de lógica local vía `localStorage` con el hook `use-course-progress.ts` para persistir la finalización de módulos.
+- Manejo de estados vacíos en el acordeón de módulos ("Este curso aún no tiene módulos registrados").
+- Corrección de enrutamiento: Se envolvió el botón de "Iniciar Curso" de `CourseCard` (`course-card.tsx`) en un `<Link>` directo hacia `/course/$courseId` para asegurar la redirección desde el dashboard.
+
+
+**Qué quedó en progreso:**
+- La integración completa de la simulación SS101 en el nuevo módulo de cursos detallados.
+
+**Bloqueos:**
+- Vite colapsó debido a advertencias estrictas del plugin de auto-enrutamiento de TanStack. 
+
+**Próximos pasos en orden de prioridad:**
+1. Iniciar la Task SS101: Desarrollar el componente interactivo `SimulationEngine.tsx` y los "hotspots".
+2. Modificar el Schema de Prisma para soportar configuraciones JSON requeridas en la simulación.
+3. Terminar la capa de servicios (`scoring.service.ts`) para el Risk Score conductual en el backend.
 ## Sesión: 2026-05-01 — Code Review, Refactorización de `generated-preview` y Fix de UX
 
 **Qué implementamos en esta sesión:**

@@ -14,6 +14,7 @@ import AdminDashboard from "./routes/admin-dashboard";
 import ProfilePage from "./routes/profile";
 import Landing from "./routes/landing";
 import RegistrationForm from "./routes/registration-form";
+import CourseDetail from "./routes/course-detail";
 
 import { getUserState } from "./lib/authGuard";
 
@@ -172,6 +173,24 @@ const profileRoute = createRoute({
   component: ProfilePage,
 });
 
+
+const courseDetailRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/course/$courseId",
+  beforeLoad: async () => {
+    const user = await getUserState();
+
+    if (!user.isAuthenticated) {
+      throw redirect({ to: "/login" });
+    }
+
+    if (!user.isProfileComplete) {
+      throw redirect({ to: "/registration-form" });
+    }
+  },
+  component: CourseDetail,
+});
+
 const routeTree = rootRoute.addChildren([
   loginRoute,
   dashboardRoute,
@@ -181,6 +200,7 @@ const routeTree = rootRoute.addChildren([
   landingRoute,
   registrationFormRoute,
   profileRoute,
+  courseDetailRoute,
 ]);
 
 export const router = createRouter({ routeTree });

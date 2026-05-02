@@ -2,9 +2,11 @@ import React from "react";
 import { Badge } from "../ui/badge";
 import { Clock, BadgeCheck, Play } from "lucide-react";
 import { StatProgressBar } from "./stat-progress-bar";
-import { Button } from "../ui/button";
+import { Button, buttonVariants } from "../ui/button";
+import { Link } from "@tanstack/react-router";
 
 interface CourseCardProps {
+  courseId: string;
   title: string;
   description: string;
   regulations?: Array<string>;
@@ -14,6 +16,7 @@ interface CourseCardProps {
 }
 
 export const CourseCard: React.FC<CourseCardProps> = ({
+  courseId,
   title,
   description,
   regulations,
@@ -35,6 +38,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
             {description}
           </p>
         </div>
+        
         <div className="flex gap-1 flex-wrap">
           <Badge variant={type === "Técnico" ? "default" : "secondary"}>
             {type}
@@ -61,7 +65,11 @@ export const CourseCard: React.FC<CourseCardProps> = ({
           percentage={true}
         />
         <div className="flex w-full gap-4 justify-between flex-wrap">
-          <Button className="w-full md:flex-1 cursor-pointer">
+          <Link 
+            to="/course/$courseId" 
+            params={{ courseId }} 
+            className={buttonVariants({ variant: "default", className: "w-full md:flex-1 cursor-pointer" })}
+          >
             {(() => {
               switch (progress) {
                 case 100:
@@ -72,7 +80,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
                   return "Continuar Curso";
               }
             })()}
-          </Button>
+          </Link>
           <Button variant="outline" className="w-full md:w-auto cursor-pointer">
             <Play className="w-4 h-4" />
             Iniciar Simulación

@@ -18,10 +18,10 @@ model Profile {
   role               Role                @default(EMPLOYEE)
   isProfileComplete  Boolean             @default(false)
   createdAt          DateTime            @default(now())
-  CompletedModule    CompletedModule[]
   enrollments        CourseEnrollment[]
   quizAttempts       QuizAttempt[]
   simulationAttempts SimulationAttempt[]
+  completedModules   CompletedModule[]
 }
 
 model Course {
@@ -47,16 +47,16 @@ model Regulation {
 }
 
 model Module {
-  id              String            @id @default(uuid()) @db.Uuid
-  title           String
-  order           Int
-  courseId        String            @db.Uuid
-  createdAt       DateTime          @default(now())
-  CompletedModule CompletedModule[]
-  course          Course            @relation(fields: [courseId], references: [id])
-  contents        ModuleContent[]
-  quizzes         Quiz[]
-  simulation      Simulation?
+  id         String          @id @default(uuid()) @db.Uuid
+  title      String
+  order      Int
+  courseId   String          @db.Uuid
+  createdAt  DateTime        @default(now())
+  course     Course          @relation(fields: [courseId], references: [id])
+  contents   ModuleContent[]
+  quizzes    Quiz[]
+  simulation Simulation?
+  completedBy CompletedModule[]
 }
 
 model ModuleContent {
@@ -160,9 +160,9 @@ model CompletedModule {
   profileId   String   @db.Uuid
   moduleId    String   @db.Uuid
   completedAt DateTime @default(now())
-  Module      Module   @relation(fields: [moduleId], references: [id])
-  Profile     Profile  @relation(fields: [profileId], references: [id])
-
+  profile     Profile  @relation(fields: [profileId], references: [id])
+  module      Module   @relation(fields: [moduleId], references: [id])
+  
   @@id([profileId, moduleId])
 }
 

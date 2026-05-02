@@ -19,14 +19,15 @@ export const MyCourses: React.FC = () => {
   } = useProfileEnrollments(profileId || "");
 
   if (isLoading) return <div className="p-4">Loading courses...</div>;
-  if (error) return <div className="p-4">Error loading courses</div>;
+  if (error) return <div className="p-4 text-red-500">Error loading courses</div>;
 
   return (
     <div className="w-full flex flex-col pb-4 justify-center gap-4 md:gap-6 px-4 md:px-16">
       <h2 className="text-xl font-bold md:text-2xl">My Courses</h2>
-      {enrollments.map((enrollment: any) => (
+      {enrollments.map((enrollment) => (
         <CourseCard
           key={enrollment.courseId}
+          courseId={enrollment.courseId}
           title={enrollment.courseTitle}
           description={enrollment.courseDescription ?? "No description"}
           regulations={enrollment.courseRegulations ?? []}
