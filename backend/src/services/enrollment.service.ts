@@ -88,7 +88,6 @@ export class EnrollmentService {
         },
       },
       include: {
-        course: { include: { regulations: true, modules: true } },
         profile: {
           include: {
             completedModules: {
