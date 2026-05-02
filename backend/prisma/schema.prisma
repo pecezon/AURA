@@ -175,6 +175,9 @@ enum Role {
 enum CourseType {
   TECHNICAL
   SECURITY
+  CONCEPTUAL
+  PROCEDURAL
+  SKILLS
 }
 
 enum ContentType {

@@ -5,7 +5,7 @@ export const createCourseSchema = z.object({
   description: z.string().optional().nullable(),
   imageUrl: z.string().url().optional().nullable(),
   duration: z.string().optional().nullable(),
-  type: z.enum(["TECHNICAL", "SECURITY"]).optional(),
+  type: z.enum(["TECHNICAL", "SECURITY","CONCEPTUAL","PROCEDURAL","SKILLS"]).optional(),
   regulations: z.array(z.string().uuid("Invalid regulation ID")).optional(),
   isPublished: z.boolean(),
   createdAt: z.number().optional(),

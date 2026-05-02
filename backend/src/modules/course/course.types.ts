@@ -65,14 +65,12 @@ export interface QuizResponse {
 
 export interface SimulationCreateDTO {
   title: string;
-  content: string;
   passingScore: number;
 }
 
 export interface SimulationResponse {
   id: string;
   title: string;
-  content: string;
   passingScore: number;
 }
 
@@ -81,7 +79,7 @@ export interface CourseCreateDTO {
   description?: string | null;
   imageUrl?: string | null;
   duration?: string | null;
-  type?: "TECHNICAL" | "SECURITY";
+  type?: "TECHNICAL" | "SECURITY" | "CONCEPTUAL"| "PROCEDURAL" | "SKILLS" ;
   regulations?: string[];
   isPublished: boolean;
   createdAt?: number;

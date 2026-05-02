@@ -43,6 +43,119 @@ Este documento mantiene un registro cronológico de las sesiones de trabajo, tar
 1. Iniciar la Task SS101: Desarrollar el componente interactivo `SimulationEngine.tsx` y los "hotspots".
 2. Modificar el Schema de Prisma para soportar configuraciones JSON requeridas en la simulación.
 3. Terminar la capa de servicios (`scoring.service.ts`) para el Risk Score conductual en el backend.
+## Sesión: 2026-05-01 — Code Review, Refactorización de `generated-preview` y Fix de UX
+
+**Qué implementamos en esta sesión:**
+
+- **`/review-code` con mentalidad senior (basado en CLAUDE.md):** Revisión completa del pipeline admin (5 ejes: bugs, cumplimiento, over-engineering, manejo de errores, riesgos en producción). Se identificaron 3 bugs críticos, 4 violaciones de convenciones y 3 riesgos de producción.
+
+- **Fix #1 — Stale closure en `handleSave` (`use-module-editor.ts`):**
+  - `onSave({ ...draft, contents: finalContents })` leía el `draft` de la closure capturada al inicio del `async`, que podía estar desactualizado tras el `await Promise.all`.
+  - Solución: `const saved = { ...draft, contents: finalContents }; setDraft(saved); onSave(saved);` — un solo objeto compartido.
+
+- **Fix #2 — `console.log` eliminado del flujo de publicación (`generated-preview.tsx`).**
+
+- **Fix #3 — `alert()` reemplazado por banners UX + validación de payload:**
+  - `onSuccess` y `onError` usaban `alert()` bloqueante y sin estilo del proyecto.
+  - Reemplazados por `publishError` y `publishSuccess` en el hook, con banners integrados en `PreviewActions`.
+  - Validación añadida: si el curso no tiene módulos, se muestra error sin enviar el POST.
+
+- **Refactorización de `generated-preview.tsx` (248 → ~120 líneas):**
+  - El archivo mezclaba tipos, funciones puras, lógica de estado y JSX.
+  - Extraído en 6 archivos con responsabilidad única:
+    - `types/course.types.ts` — `Scenario`, `GeneratedContent`, `CourseCreateDTO`
+    - `utils/course.utils.ts` — `toEditableModule()`, `buildPayload()`, `MAX_FILE_SIZE`
+    - `hooks/use-generated-preview.ts` — toda la lógica de estado y handlers
+    - `preview-scenarios.tsx` — sección de escenarios de simulación
+    - `preview-actions.tsx` — botones + banner de error/éxito
+    - `generated-preview.tsx` — orquestador delgado (~120 líneas)
+
+- **Fix de doble `toEditableModule`:** El mismo módulo se convertía dos veces (L90 + L155 del archivo original), generando UUIDs distintos en cada llamada. Se normalizan los módulos una sola vez en el hook y se reutilizan en todos los handlers.
+
+- **Fix de tipo `any` en `courseApi.ts`:** `createCourse(data: any)` tipado a `createCourse(data: CourseCreateDTO)`.
+
+- **Fix de banner de éxito de publicación (`/fix-bug`):**
+  - Al publicar con éxito, `setGeneratedContent?.(undefined)` desmontaba el componente antes de que el banner pudiera renderizarse.
+  - Solución: `publishSuccess` state en el hook. `onSuccess` activa el flag en vez de limpiar inmediatamente. El usuario ve el banner verde "¡Curso publicado exitosamente!" y al cerrarlo **entonces** se limpia el contenido.
+
+**Qué quedó en progreso:**
+- `window.confirm` para eliminar módulos y descartar contenido (pendiente reemplazar con `ConfirmDialog` de shadcn).
+- Archivos subidos a Supabase quedan huérfanos si el admin descarta el curso (sin cleanup).
+- `ModuleContentItem` sigue sobre el límite de 200 líneas (246); el bloque `FileDropZone` puede extraerse si crece más.
+
+**Bloqueos:**
+- Ninguno. El TypeScript check (`npx tsc --noEmit`) pasa sin errores tras todos los cambios.
+
+**Próximos pasos en orden de prioridad:**
+1. Reemplazar `window.confirm` con un `<ConfirmDialog>` reutilizable (shadcn Dialog).
+2. Implementar limpieza de archivos huérfanos en Supabase al descartar un curso.
+3. Retomar la Task **Simulación SS101** (schema Prisma → scoring service → SimulationEngine frontend).
+
+---
+## Sesión: 2026-04-25 — Finalización de Publicación de Cursos y Editor de Módulos
+
+**Qué implementamos en esta sesión:**
+- **Gestión manual de Módulos:** Funcionalidad de agregar y eliminar módulos generados por IA en `generated-preview.tsx` con alertas de confirmación.
+- **Uploads a Supabase optimizados:** En `use-module-upload.ts`, aplanamos la ruta de subida (`timestamp-nombre.ext`) para evitar subdirectorios complejos y se inyectó `contentType: file.type` para soportar videos y lectura inline de PDFs.
+- **Integración API de Publicación:** Conexión del botón "Publicar Curso". Creación de `buildPayload` para mapear el estado local (`EditableModule`) al `CourseCreateDTO` del backend (manteniendo los índices/order).
+- **Límite y validación de archivos:** Implementación de un límite estricto de 50MB en el `use-module-editor.ts`, con manejo parcial de errores para indicar explícitamente cuando fallan los archivos pesados.
+- **Limpieza de Deuda Técnica (Backend/DB):** Alineación del `CourseCreateDTO` y `course.service.ts` con el `schema.prisma` real (que descartó `content` de las simulaciones y usa JSON). Se solventaron todos los errores de tipado de TypeScript.
+- **Fix de Encodings:** Corrección de textos corruptos (como `MÃ³dulo`) que habían sido dañados accidentalmente.
+
+**Qué quedó en progreso:**
+- La UI para gestión de Normativas (todavía solo en backend).
+- El motor interactivo de simulaciones en el frontend (`SimulationEngine.tsx`).
+
+**Bloqueos:**
+- Ninguno técnico crítico, aunque la restricción de `@tanstack/router-plugin` que rompe el `build` de producción aún no se ha deshabilitado.
+
+**Próximos pasos en orden de prioridad:**
+1. Deshabilitar `tanstackRouter` en `vite.config.ts` para desbloquear `npm run build`.
+2. Iniciar el desarrollo del **SimulationEngine** para las tareas SS101 (renderizar Hotspots e ingestar clics).
+3. Construir la UI del dashboard Admin para la administración de `Regulations`.
+
+---
+## Sesión: 2026-04-24 — Refactorización del Editor de Módulos (Multi-Contenido)
+
+**Qué implementamos en esta sesión:**
+
+- **Nuevo modelo de datos de Módulos:** Se refactorizó `EditableModule` en `types/module.types.ts` para que cada módulo soporte **múltiples contenidos** (`contents: ModuleContent[]`). `ModuleContent` ahora incluye: `id`, `title`, `type`, `text`, `url` y `file`.
+
+- **Instalación de `@hello-pangea/dnd`:** Se integró la librería para Drag & Drop fluido en reordenamiento.
+
+- **Nuevo hook `useModuleEditor` (reescrito):**
+  - Maneja un array de contenidos con las operaciones `addContent`, `updateContent`, `removeContent`, `moveContent`.
+  - `handleSave` usa `Promise.all` para subir múltiples archivos en paralelo y detecta fallos por valor retornado (no por stale closure).
+  - Añadido `saveError: string | null` y `clearSaveError` para informar fallos de subida sin cerrar el modal.
+
+- **Nuevos componentes modulares:**
+  - `ModuleContentItem.tsx` (246 líneas): Tarjeta individual de contenido con grip de arrastre, input de título, placeholder contextual (VIDEO/IMAGE → "Descripción"), y exclusividad URL/archivo con indicadores 🔒.
+  - `ModuleContentList.tsx` (61 líneas): Zona `Droppable` que mapea items y contiene los botones "Añadir X".
+
+- **`EditModuleModal.tsx` refactorizado (120 líneas):** Eliminado el sistema de tabs monolítico. Ahora delega la lista de contenidos a `ModuleContentList`. Muestra banner descartable de `saveError`.
+
+- **`GeneratedPreview.tsx` actualizado:**
+  - Drag & Drop para reordenar módulos completos mediante `DragDropContext` + `Draggable`.
+  - Badges de contenido actualizados: muestra un badge por cada `ModuleContent` con su tipo e ícono, en verde si tiene datos.
+  - Función `toEditableModule` con retrocompatibilidad para el formato de IA antiguo (campo plano `contentType`).
+
+- **Bugs corregidos (3 ciclos de `/review-code`):**
+  1. Stale closure en `uploadStatus` dentro de `handleSave` — reemplazado por sentinel `null`.
+  2. Imports `React` faltantes en `ModuleContentList`, `EditModuleModal` y `ModuleContentItem`.
+  3. `activeTab` local no reseteaba al cambiar el tipo de contenido — se añadió `setActiveTab("text")` en el onChange del select.
+  4. Dead code en mensajes de lock de tabs — condición corregida para que sean siempre visibles cuando aplica.
+
+**Qué quedó en progreso:**
+- `ModuleContentItem` tiene 246 líneas (6 sobre el límite de 200). El bloque "Tab: Archivo" puede extraerse a `<FileDropZone>` si el componente sigue creciendo.
+- El WORKLOG no había sido actualizado hasta ahora con el trabajo de esta sesión.
+
+**Bloqueos:**
+- El plugin `@tanstack/router-plugin` en `vite.config.ts` sigue activo y rompe `npm run build` porque el proyecto usa routing manual (no file-based). No bloquea `dev`, pero impide builds de producción.
+
+**Próximos pasos en orden de prioridad:**
+1. Deshabilitar `tanstackRouter` en `vite.config.ts` para desbloquear `npm run build`.
+2. Iniciar **Simulación SS101** (tarea principal del SPEC, 7 subtareas definidas): schema Prisma → scoring service → SimulationEngine frontend.
+3. Crear interfaz admin para gestionar Normativas (pendiente desde sesión 2026-04-21).
 ## Sesión: 2026-05-01 (Refactorización Frontend y Manejo de Sesión)
 
 **Qué implementamos en esta sesión:**
@@ -87,6 +200,7 @@ Este documento mantiene un registro cronológico de las sesiones de trabajo, tar
 
 ---
 ## Sesión: 2026-04-22 (Planeación de Simulaciones y Risk Score)
+
 
 **Qué implementamos en esta sesión:**
 - Recepción y análisis del "Design Document" del proyecto AURA, enfocado en simulaciones interactivas y el motor de evaluación conductual (Risk Score).
