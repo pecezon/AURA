@@ -1,6 +1,5 @@
 import { Navbar } from "@/components/navbar";
 import { Link, useParams } from "@tanstack/react-router";
-import { api } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 import { StatProgressBar } from "@/components/dashboards/stat-progress-bar"; 
 import { Skeleton } from "@/components/ui/skeleton";
@@ -18,14 +17,7 @@ import { useEffect, useState } from "react";
 import { useCourse } from "@/hooks/useCourses";
 import { useModulesByCourse } from "@/hooks/useModules";
 
-interface Course {
-  id: string;
-  title: string;
-  description: string;
-  type: string;
-  duration?: string;
-  regulations?: { id: string; name: string }[];
-}
+
 
 interface Module {
   id: string;
@@ -61,7 +53,7 @@ export default function CourseDetail() {
     isError: isModulesError 
   } = useModulesByCourse(courseId);
 
-  const { completedModules, markModuleAsCompleted, isModuleCompleted, getProgressPercentage, isLoading: isProgressLoading } =
+  const { progress, markModuleAsCompleted, isModuleCompleted, isLoading: isProgressLoading, isEnrolled } =
     useCourseProgress(profileId, courseId);
 
   const isLoading = isCourseLoading || isModulesLoading || !profileId || isProgressLoading;
@@ -84,8 +76,11 @@ export default function CourseDetail() {
     return <div className="p-6 text-center text-red-500">Curso no encontrado</div>;
   }
 
-  const totalModules = modules?.length || 0;
-  const progressPercentage = getProgressPercentage(totalModules);
+  if (!isEnrolled) {
+    return <div className="p-6 text-center text-orange-500">No estás inscrito en este curso.</div>;
+  }
+
+  const progressPercentage = progress;
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-100 gap-6 md:gap-8">

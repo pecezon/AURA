@@ -24,7 +24,6 @@ export function useCourseProgress(profileId: string, courseId: string) {
     mutationFn: (moduleId: string) => enrollmentApi.completeModule(profileId, courseId, moduleId),
     onSuccess: (updatedData) => {
       queryClient.setQueryData(queryKey, updatedData);
-      queryClient.invalidateQueries({ queryKey });
       queryClient.invalidateQueries({ queryKey: enrollmentKeys.byProfile(profileId) });
     },
   });
@@ -41,16 +40,12 @@ export function useCourseProgress(profileId: string, courseId: string) {
     return completedModules.includes(moduleId);
   };
 
-  const getProgressPercentage = (totalModules: number) => {
-    if (totalModules <= 0) return 0;
-    return Math.min((completedModules.length / totalModules) * 100, 100);
-  };
-
   return {
+    isEnrolled: !!enrollment,
+    progress: enrollment?.progress || 0,
     completedModules,
     markModuleAsCompleted,
     isModuleCompleted,
-    getProgressPercentage,
     isLoading: isLoading || mutation.isPending,
   };
 }

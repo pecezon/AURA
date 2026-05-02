@@ -183,8 +183,9 @@ export class EnrollmentService {
       if (progress === 100) {
         status = "COMPLETED";
         completedAt = completedAt || new Date();
-      } else if (progress > 0 && status === "ASSIGNED") {
-        status = "IN_PROGRESS";
+      } else {
+        status = progress > 0 ? "IN_PROGRESS" : "ASSIGNED";
+        completedAt = null;
       }
 
       const updatedEnrollment = await tx.courseEnrollment.update({
