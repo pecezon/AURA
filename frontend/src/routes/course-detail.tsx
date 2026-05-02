@@ -200,7 +200,7 @@ export default function CourseDetail() {
                         <div className="text-sm text-gray-600 mb-4">
                           {module.contents && module.contents.length > 0 ? (
                             <ul className="list-disc pl-4 space-y-1">
-                              {module.contents.map((c: any) => (
+                              {module.contents.map((c: NonNullable<Module["contents"]>[number]) => (
                                 <li key={c.id}>{c.title || `Contenido de tipo ${c.type}`}</li>
                               ))}
                             </ul>
