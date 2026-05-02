@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { createCourseEnrollmentSchema } from "./enrollment.validation";
+import { createCourseEnrollmentSchema, completeModuleSchema } from "./enrollment.validation";
 import { enrollmentService } from "../../services/enrollment.service";
 
 export async function enrollInCourseController(req: Request, res: Response, next: NextFunction) {
@@ -45,7 +45,6 @@ export async function getEnrollmentController(req: Request, res: Response, next:
   }
 }
 
-import { completeModuleSchema } from "./enrollment.validation";
 
 export async function completeModuleController(req: Request, res: Response, next: NextFunction) {
   try {
