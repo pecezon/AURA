@@ -93,9 +93,6 @@ export default function CourseDetail() {
     return <div className="p-6 text-center text-red-500">Curso no encontrado</div>;
   }
 
-  console.log("Fetched Course:", course);
-  console.log("Fetched Modules:", modules);
-
   const totalModules = modules?.length || 0;
   const progressPercentage = getProgressPercentage(totalModules);
 
