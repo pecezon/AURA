@@ -1,4 +1,5 @@
 import { api } from '@/lib/api';
+import { type CourseCreateDTO } from '@/components/dashboards/admin/types/course.types';
 
 export const courseKeys = {
   all: ['courses'] as const,
@@ -10,5 +11,5 @@ export const courseApi = {
   getAll: () => api.get('/api/courses/get-all-courses').then(r => r.data),
   getById: (id: string) => api.get(`/api/courses/${id}`).then(r => r.data),
   searchCourses: (query: string) => api.get('/api/courses/search', { params: { query } }).then(r => r.data),
-  createCourse: (data: any) => api.post('/api/courses/create-course', data).then(r => r.data),
+  createCourse: (data: CourseCreateDTO) => api.post('/api/courses/create-course', data).then(r => r.data),
 };

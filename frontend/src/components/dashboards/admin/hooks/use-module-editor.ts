@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useModuleUpload } from "./use-module-upload";
 import { type EditableModule, type ModuleContent, type ContentType } from "../types/module.types";
+import { MAX_FILE_SIZE } from "../utils/course.utils";
 
 export interface UseModuleEditorReturn {
   draft: EditableModule;
@@ -80,8 +81,6 @@ export function useModuleEditor(
     setIsSaving(true);
 
     try {
-      const MAX_FILE_SIZE = 50 * 1024 * 1024;
-
       const results = await Promise.all(
         draft.contents.map(async (content) => {
           if (content.file) {
@@ -110,12 +109,15 @@ export function useModuleEditor(
         if (sizeFailedCount > 0) errorMsg += ` ${sizeFailedCount} de ellos superaba el límite de 50MB.`;
         errorMsg += ` Revisa los archivos y vuelve a intentarlo.`;
         setSaveError(errorMsg);
-        return; 
+        return;
       }
 
+      // Construimos el objeto final una sola vez para evitar usar el draft
+      // capturado en la closure (que podría estar desactualizado tras el await).
       const finalContents = results.map((r) => r.content);
-      updateDraft({ contents: finalContents });
-      onSave({ ...draft, contents: finalContents });
+      const saved: EditableModule = { ...draft, contents: finalContents };
+      setDraft(saved);
+      onSave(saved);
       onClose();
     } finally {
       setIsSaving(false);

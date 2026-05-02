@@ -120,7 +120,6 @@ const adminDashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/dashboard/admin",
   beforeLoad: async () => {
-    /*
     const user = await getUserState();
 
     if (!user.isAuthenticated) {
@@ -130,9 +129,8 @@ const adminDashboardRoute = createRoute({
     if (!user.isProfileComplete) {
       throw redirect({ to: "/registration-form" });
     }
-      */
 
-    // requireRole("ADMIN"), Needs implementation of role-based access control
+    //requireRole("ADMIN"), Needs implementation of role-based access control
   },
   component: AdminDashboard,
 

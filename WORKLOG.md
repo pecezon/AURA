@@ -2,6 +2,55 @@
 
 Este documento mantiene un registro cronológico de las sesiones de trabajo, tareas en curso, decisiones importantes y tareas pendientes. Esto asegura que el contexto no se pierda entre sesiones.
 
+## Sesión: 2026-05-01 — Code Review, Refactorización de `generated-preview` y Fix de UX
+
+**Qué implementamos en esta sesión:**
+
+- **`/review-code` con mentalidad senior (basado en CLAUDE.md):** Revisión completa del pipeline admin (5 ejes: bugs, cumplimiento, over-engineering, manejo de errores, riesgos en producción). Se identificaron 3 bugs críticos, 4 violaciones de convenciones y 3 riesgos de producción.
+
+- **Fix #1 — Stale closure en `handleSave` (`use-module-editor.ts`):**
+  - `onSave({ ...draft, contents: finalContents })` leía el `draft` de la closure capturada al inicio del `async`, que podía estar desactualizado tras el `await Promise.all`.
+  - Solución: `const saved = { ...draft, contents: finalContents }; setDraft(saved); onSave(saved);` — un solo objeto compartido.
+
+- **Fix #2 — `console.log` eliminado del flujo de publicación (`generated-preview.tsx`).**
+
+- **Fix #3 — `alert()` reemplazado por banners UX + validación de payload:**
+  - `onSuccess` y `onError` usaban `alert()` bloqueante y sin estilo del proyecto.
+  - Reemplazados por `publishError` y `publishSuccess` en el hook, con banners integrados en `PreviewActions`.
+  - Validación añadida: si el curso no tiene módulos, se muestra error sin enviar el POST.
+
+- **Refactorización de `generated-preview.tsx` (248 → ~120 líneas):**
+  - El archivo mezclaba tipos, funciones puras, lógica de estado y JSX.
+  - Extraído en 6 archivos con responsabilidad única:
+    - `types/course.types.ts` — `Scenario`, `GeneratedContent`, `CourseCreateDTO`
+    - `utils/course.utils.ts` — `toEditableModule()`, `buildPayload()`, `MAX_FILE_SIZE`
+    - `hooks/use-generated-preview.ts` — toda la lógica de estado y handlers
+    - `preview-scenarios.tsx` — sección de escenarios de simulación
+    - `preview-actions.tsx` — botones + banner de error/éxito
+    - `generated-preview.tsx` — orquestador delgado (~120 líneas)
+
+- **Fix de doble `toEditableModule`:** El mismo módulo se convertía dos veces (L90 + L155 del archivo original), generando UUIDs distintos en cada llamada. Se normalizan los módulos una sola vez en el hook y se reutilizan en todos los handlers.
+
+- **Fix de tipo `any` en `courseApi.ts`:** `createCourse(data: any)` tipado a `createCourse(data: CourseCreateDTO)`.
+
+- **Fix de banner de éxito de publicación (`/fix-bug`):**
+  - Al publicar con éxito, `setGeneratedContent?.(undefined)` desmontaba el componente antes de que el banner pudiera renderizarse.
+  - Solución: `publishSuccess` state en el hook. `onSuccess` activa el flag en vez de limpiar inmediatamente. El usuario ve el banner verde "¡Curso publicado exitosamente!" y al cerrarlo **entonces** se limpia el contenido.
+
+**Qué quedó en progreso:**
+- `window.confirm` para eliminar módulos y descartar contenido (pendiente reemplazar con `ConfirmDialog` de shadcn).
+- Archivos subidos a Supabase quedan huérfanos si el admin descarta el curso (sin cleanup).
+- `ModuleContentItem` sigue sobre el límite de 200 líneas (246); el bloque `FileDropZone` puede extraerse si crece más.
+
+**Bloqueos:**
+- Ninguno. El TypeScript check (`npx tsc --noEmit`) pasa sin errores tras todos los cambios.
+
+**Próximos pasos en orden de prioridad:**
+1. Reemplazar `window.confirm` con un `<ConfirmDialog>` reutilizable (shadcn Dialog).
+2. Implementar limpieza de archivos huérfanos en Supabase al descartar un curso.
+3. Retomar la Task **Simulación SS101** (schema Prisma → scoring service → SimulationEngine frontend).
+
+---
 ## Sesión: 2026-04-25 — Finalización de Publicación de Cursos y Editor de Módulos
 
 **Qué implementamos en esta sesión:**

@@ -5,6 +5,7 @@ import { Label } from "../../ui/label";
 import { Textarea } from "../../ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { Sparkles, Info } from "lucide-react";
+import { toSpanish } from "../../../lib/courseTypeConverter";
 
 interface AIFormData {
   topic: string;
@@ -20,7 +21,7 @@ interface AIFormProps {
 export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent }) => {
   const [formData, setFormData] = useState<AIFormData>({
     topic: "",
-    courseType: "Técnico",
+    courseType: "TECHNICAL",
     duration: "4",
     applicableNorms: "",
   });
@@ -32,6 +33,8 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent }) => {
   };
 
   const generateMockContent = (formData: AIFormData) => {
+    const courseTypeLabel = toSpanish(formData.courseType) || formData.courseType;
+    
     const modules = [
       {
         title: "Introducción y Fundamentos",
@@ -70,7 +73,7 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent }) => {
 
     return {
       title: `Curso: ${formData.topic}`,
-      description: `Curso especializado en ${formData.topic}. Tipo: ${formData.courseType}. Duración estimada: ${formData.duration} horas.`,
+      description: `Curso especializado en ${formData.topic}. Tipo: ${courseTypeLabel}. Duración estimada: ${formData.duration} horas.`,
       duration: `${formData.duration} horas`,
       courseType: formData.courseType,
       applicableNorms: formData.applicableNorms,
@@ -177,7 +180,7 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent }) => {
           </div>
 
           <div className="bg-blue-50 border border-blue-200 rounded-md p-3 flex gap-2">
-            <Info className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+            <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
             <p className="text-sm text-blue-700">
               La IA generará una propuesta inicial que podrás revisar y ajustar antes de publicar
             </p>
