@@ -16,6 +16,7 @@ import { getUserId } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { useCourse } from "@/hooks/useCourses";
 import { useModulesByCourse } from "@/hooks/useModules";
+import { useSessionId } from "@/hooks/useSession";
 
 
 
@@ -35,11 +36,8 @@ const translateCourseType = (type: string) => {
 export default function CourseDetail() {
   const { courseId } = useParams({ strict: false }) as { courseId: string };
 
-  const [profileId, setProfileId] = useState<string>("");
-
-  useEffect(() => {
-    getUserId().then((id) => setProfileId(id || ""));
-  }, []);
+  const { data: sessionId } = useSessionId();
+  const profileId = sessionId || "";
 
   const { 
     data: course, 

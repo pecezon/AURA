@@ -3,6 +3,31 @@
 Este documento mantiene un registro cronológico de las sesiones de trabajo, tareas en curso, decisiones importantes y tareas pendientes. Esto asegura que el contexto no se pierda entre sesiones.
 
 
+## Sesión: 2026-05-04 (Migración de Roles, DB Sync y Routing Fixes)
+
+**Qué implementamos en esta sesión:**
+- Refactorización completa del Enum `Role` en Prisma (`EMPLOYEE` -> `WORKER`, `OWNER` -> `SUPERVISOR`). Se ejecutó SQL crudo (`rename_roles.sql`) en Supabase para renombrar los valores sin pérdida de datos antes de hacer el `prisma db push`.
+- Resolución de conflictos generados por ramas concurrentes: Se sincronizaron modelos y columnas nuevas (`Simulation.configuration`, `Simulation.events`, `CompletedModule`) provenientes del trabajo de una compañera de equipo.
+- Instalación de dependencias faltantes (`@types/pg`, `@hello-pangea/dnd`) y corrección de errores de TypeScript en el backend.
+- Prevención de fallos en producción: Se deshabilitó el plugin `tanstackRouter` inyectado erróneamente en `vite.config.ts`, el cual chocaba con el enrutamiento manual (`Code-Based Routing`) de AURA, colapsando el servidor Vite.
+- Solución de un bug crítico de redirección infinita (Landing <-> Login <-> Dashboard): Se actualizó el bloque `switch` en `router.tsx` que seguía evaluando los strings antiguos ("EMPLOYEE") y forzaba el `default: redirect({to: "/"})`.
+- Refactorización de componentes (ej. `profile.tsx`, `course-detail.tsx`, `navbar.tsx`) para asegurar el paso de la nueva nomenclatura de roles como prop.
+- Poblado automático de base de datos (Seeding): Se inyectaron módulos base (teóricos y prácticos) a todos los cursos antiguos que tenían 0 módulos, asegurando que la UI de detalle de curso no se muestre vacía.
+- Limpieza total del workspace: Eliminación de código temporal, scripts de prueba y mock data huérfana.
+
+**Qué quedó en progreso:**
+- Continuar el desarrollo del Frontend de la Simulación (`SimulationEngine.tsx`), que ahora tiene la base de datos totalmente preparada y sincronizada.
+
+**Bloqueos:**
+- Ninguno técnico crítico. Todos los problemas de "Database Drift" y colisiones de Vite fueron mitigados con éxito en esta sesión.
+
+**Próximos pasos en orden de prioridad:**
+1. Retomar la Fase 3 del MVP: Desarrollar la lógica del `SimulationEngine.tsx` que interpretará la columna JSON `configuration` y guardará los `events`.
+2. Integrar el servicio backend (`scoring.service.ts`) para evaluar y otorgar calificaciones conductuales.
+3. Consolidar el Dashboard de Administrador (`Crear Contenido`) con las nuevas estructuras de módulos y contenido multimedia.
+
+---
+
 ## Sesión: 2026-05-02 (Code Review & Fixes de Course Progress)
 
 **Qué implementamos en esta sesión:**
