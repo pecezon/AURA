@@ -4,6 +4,8 @@ export const updateProfileSchema = z.object({
   firstName: z.string().optional(),
   lastName: z.string().optional(),
   area: z.string().optional(),
+  birthDate: z.string().nullable().optional(),
+  employeeId: z.string().optional(),
 });
 
 export const profileIdParamsSchema = z.object({

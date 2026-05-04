@@ -142,7 +142,7 @@ export const SupervisorTeamRecap: React.FC = () => {
 
   const mappedData = React.useMemo<TeamMember[]>(() => {
     if (!profiles) return fallbackData;
-    const employeeProfiles = profiles.filter((p: any) => p.role === "WORKER" || p.role === "EMPLOYEE");
+    const employeeProfiles = profiles.filter((p: any) => p.role === "WORKER");
     return employeeProfiles.map((p: any) => ({
       name: `${p.firstName} ${p.lastName}`,
       email: p.email,

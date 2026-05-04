@@ -51,7 +51,7 @@ export const SupervisorProfileRecap: React.FC = () => {
   const { data: profiles } = useAllProfiles();
   const { data: courses } = useCourses();
 
-  const employeeProfiles = profiles?.filter((p: any) => p.role === "WORKER" || p.role === "EMPLOYEE");
+  const employeeProfiles = profiles?.filter((p: any) => p.role === "WORKER");
 
   const totalWorkers = employeeProfiles?.length || mockUserData.workers.length;
   const availableCourses = courses?.length || mockUserData.availableCourses;

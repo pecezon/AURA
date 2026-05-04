@@ -54,7 +54,7 @@ export default function WorkerDashboard() {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center min-h-screen bg-gray-100 gap-6 md:gap-8">
-        <Navbar role="EMPLOYEE" />
+        <Navbar role="WORKER" />
         <div className="w-full px-4 py-2 md:px-16 md:py-4 flex flex-col gap-4">
           <Skeleton className="h-10 w-3/4 max-w-md bg-gray-300" />
           <Skeleton className="h-6 w-2/4 max-w-sm bg-gray-300" />
@@ -79,7 +79,7 @@ export default function WorkerDashboard() {
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-100 gap-6 md:gap-8">
-      <Navbar role="EMPLOYEE" />
+      <Navbar role="WORKER" />
       <ProfileRecap />
       <MyCourses />
     </div>

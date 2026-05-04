@@ -93,6 +93,8 @@ function purifyPayload(form: ProfileForm) {
     firstName: form.firstName.trim(),
     lastName: form.lastName.trim(),
     area: form.area.trim(),
+    birthDate: form.birthDate ? new Date(form.birthDate).toISOString() : null,
+    employeeId: form.employeeId.trim(),
   };
 }
 
@@ -156,8 +158,8 @@ export function EditProfileModal({
     let hasErrors = false;
 
     (Object.keys(form) as (keyof ProfileForm)[]).forEach((field) => {
-      if (error) {
       const error = validators[field](form[field]);
+      if (error) {
         allErrors[field] = error;
         hasErrors = true;
       }

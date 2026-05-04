@@ -103,19 +103,19 @@ export function AvatarDropdown() {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem onClick={handleDashboardClick} className="gap-2">
+        <DropdownMenuItem onClick={handleDashboardClick} className="gap-2 cursor-pointer">
           <LayoutDashboard className="w-4 h-4" />
           Dashboard
         </DropdownMenuItem>
 
-        <DropdownMenuItem onClick={handleProfileClick} className="gap-2">
+        <DropdownMenuItem onClick={handleProfileClick} className="gap-2 cursor-pointer">
           <User className="w-4 h-4" />
           Mi Perfil
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem className="text-red-500 gap-2" onClick={handleLogout}>
+        <DropdownMenuItem className="text-red-500 gap-2 cursor-pointer" onClick={handleLogout}>
           <LogOut className="w-4 h-4" />
           Cerrar Sesión
         </DropdownMenuItem>

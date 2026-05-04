@@ -65,9 +65,9 @@ const dashboardRoute = createRoute({
     }
 
     switch (user.role) {
-      case "EMPLOYEE":
+      case "WORKER":
         throw redirect({ to: "/dashboard/worker" });
-      case "OWNER":
+      case "SUPERVISOR":
         throw redirect({ to: "/dashboard/supervisor" });
       case "ADMIN":
         throw redirect({ to: "/dashboard/admin" });

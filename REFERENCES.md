@@ -69,7 +69,8 @@ Seguimos una arquitectura de N capas:
   };
   ```
 - **Gotchas / Detalles importantes:**
-  - Siempre maneja `isLoading` (preferiblemente con `Skeleton` de shadcn) y `isError` (con fallbacks visuales).
+  - **Manejo de Estados de Carga:** Cuando se manejen estados de carga (`isLoading`) de páginas o componentes en el frontend, **se debe hacer uso del componente `Skeleton` de shadcn por default**, simulando la estructura visual del resultado final. Evita usar spinners estáticos a menos que se especifique explícitamente lo contrario.
+  - Siempre maneja `isError` con fallbacks visuales adecuados (Alertas, mensajes amigables).
   - Usa el parámetro `enabled` en la configuración del `useQuery` si la petición depende de un dato previo (ej. no ejecutar hasta tener el `profileId`).
 
 ### Componentes

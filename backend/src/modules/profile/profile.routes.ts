@@ -14,7 +14,7 @@ router.get(
   requireCompleteProfile,
   (req, _, next) => {
      // Ensure users can only access their own dashboard data
-     req.params.id = req.user.id;
+     req.params.id = (req as any).user.id;
      next();
    },
   getProfileByIdController
@@ -36,7 +36,7 @@ router.post("/complete-profile", async (req, res) => {
   }
 
   const updated = await prisma.profile.update({
-    where: { id: req.user.id },
+    where: { id: (req as any).user.id },
     data: {
       firstName,
       lastName,

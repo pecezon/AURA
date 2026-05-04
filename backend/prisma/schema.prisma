@@ -15,7 +15,7 @@ model Profile {
   birthDate          DateTime?
   employeeId         String?
   area               String?
-  role               Role                @default(EMPLOYEE)
+  role               Role                @default(WORKER)
   isProfileComplete  Boolean             @default(false)
   createdAt          DateTime            @default(now())
   enrollments        CourseEnrollment[]
@@ -47,15 +47,15 @@ model Regulation {
 }
 
 model Module {
-  id         String          @id @default(uuid()) @db.Uuid
-  title      String
-  order      Int
-  courseId   String          @db.Uuid
-  createdAt  DateTime        @default(now())
-  course     Course          @relation(fields: [courseId], references: [id])
-  contents   ModuleContent[]
-  quizzes    Quiz[]
-  simulation Simulation?
+  id          String            @id @default(uuid()) @db.Uuid
+  title       String
+  order       Int
+  courseId    String            @db.Uuid
+  createdAt   DateTime          @default(now())
+  course      Course            @relation(fields: [courseId], references: [id])
+  contents    ModuleContent[]
+  quizzes     Quiz[]
+  simulation  Simulation?
   completedBy CompletedModule[]
 }
 
@@ -162,14 +162,14 @@ model CompletedModule {
   completedAt DateTime @default(now())
   profile     Profile  @relation(fields: [profileId], references: [id])
   module      Module   @relation(fields: [moduleId], references: [id])
-  
+
   @@id([profileId, moduleId])
 }
 
 enum Role {
-  EMPLOYEE
+  WORKER
+  SUPERVISOR
   ADMIN
-  OWNER
 }
 
 enum CourseType {
