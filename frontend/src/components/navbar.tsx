@@ -5,7 +5,7 @@ import { LayoutDashboard, BookOpen, Sparkles } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 
 interface NavbarProps {
-  role?: "ADMIN" | "EMPLOYEE" | "SUPERVISOR" ;
+  role?: "ADMIN" | "WORKER" | "SUPERVISOR" ;
   isLoading?: boolean;
 }
 
@@ -20,7 +20,7 @@ const SHARED_ITEMS: NavItem[] = [
 ];
 
 const ROLE_NAV_ITEMS: Record<NonNullable<NavbarProps["role"]>, NavItem[]> = {
-  EMPLOYEE: [{ label: "Mis Cursos", to: "/courses", icon: <BookOpen /> }],
+  WORKER: [{ label: "Mis Cursos", to: "/courses", icon: <BookOpen /> }],
   SUPERVISOR: [], // to be filled
   ADMIN: [{ label: "Crear Contenido", to: "/", icon: <Sparkles /> }],
 
@@ -38,7 +38,8 @@ export const Navbar: React.FC<NavbarProps> = ({ role, isLoading = false}) => {
         <img
           src="/images/aura_logo.svg"
           alt="Aura Logo"
-          className="h-8 md:h-10 lg:h-12 xl:h-14"
+          className="h-8 md:h-10 lg:h-12 xl:h-14 cursor-pointer"
+          onClick={() => navigate({ to: "/dashboard" })}
         />
         <div className="hidden md:flex items-center gap-2">
           {isLoading ? (

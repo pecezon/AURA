@@ -65,9 +65,9 @@ const dashboardRoute = createRoute({
     }
 
     switch (user.role) {
-      case "EMPLOYEE":
+      case "WORKER":
         throw redirect({ to: "/dashboard/worker" });
-      case "OWNER":
+      case "SUPERVISOR":
         throw redirect({ to: "/dashboard/supervisor" });
       case "ADMIN":
         throw redirect({ to: "/dashboard/admin" });
@@ -93,7 +93,9 @@ const workerDashboardRoute = createRoute({
       throw redirect({ to: "/registration-form" });
     }
 
-    // requireRole("WORKER"), Needs implementation of role-based access control
+    if (user.role !== "WORKER") {
+      throw redirect({ to: "/dashboard" });
+    }
   },
   component: WorkerDashboard,
 });
@@ -112,7 +114,9 @@ const supervisorDashboardRoute = createRoute({
       throw redirect({ to: "/registration-form" });
     }
 
-    // requireRole("SUPERVISOR"), Needs implementation of role-based access control
+    if (user.role !== "SUPERVISOR") {
+      throw redirect({ to: "/dashboard" });
+    }
   },
   component: SupervisorDashboard,
 });
@@ -131,7 +135,9 @@ const adminDashboardRoute = createRoute({
       throw redirect({ to: "/registration-form" });
     }
 
-    //requireRole("ADMIN"), Needs implementation of role-based access control
+    if (user.role !== "ADMIN") {
+      throw redirect({ to: "/dashboard" });
+    }
   },
   component: AdminDashboard,
 

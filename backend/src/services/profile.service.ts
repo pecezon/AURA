@@ -10,7 +10,7 @@ export async function ensureProfile(user: any) {
       data: {
         id: user.id,
         email: user.email,
-        role: "EMPLOYEE",
+        role: "WORKER",
       },
     });
   }
@@ -18,7 +18,7 @@ export async function ensureProfile(user: any) {
   return profile;
 }
 
-export async function updateProfile(profileId: string, data: Partial<{ firstName: string; lastName: string; area: string }>) {
+export async function updateProfile(profileId: string, data: Partial<{ firstName: string; lastName: string; area: string; birthDate: string | null; employeeId: string }>) {
   const updated = await prisma.profile.update({
     where: { id: profileId },
     data,
@@ -37,6 +37,7 @@ export async function getAllProfiles() {
       area: true,
       role: true,
       isProfileComplete: true,
+      birthDate: true,
       createdAt: true,
     },
   });
@@ -49,6 +50,7 @@ export async function getAllProfiles() {
     area: profile.area,
     role: profile.role,
     isProfileComplete: profile.isProfileComplete,
+    birthDate: profile.birthDate ? profile.birthDate.toISOString() : null,
     createdAt: profile.createdAt.toISOString(),
   }));
 }
@@ -70,6 +72,7 @@ export async function searchProfiles(name: string) {
       area: true,
       role: true,
       isProfileComplete: true,
+      birthDate: true,
       createdAt: true,
     },
   });
@@ -82,6 +85,7 @@ export async function searchProfiles(name: string) {
     area: profile.area,
     role: profile.role,
     isProfileComplete: profile.isProfileComplete,
+    birthDate: profile.birthDate ? profile.birthDate.toISOString() : null,
     createdAt: profile.createdAt.toISOString(),
   }));
 }
@@ -98,6 +102,7 @@ export async function getProfileById(id: string) {
       area: true,
       role: true,
       isProfileComplete: true,
+      birthDate: true,
       createdAt: true,
     },
   });
@@ -111,6 +116,7 @@ export async function getProfileById(id: string) {
     area: profile.area,
     role: profile.role,
     isProfileComplete: profile.isProfileComplete,
+    birthDate: profile.birthDate ? profile.birthDate.toISOString() : null,
     createdAt: profile.createdAt.toISOString(),
   };
 }
