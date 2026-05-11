@@ -153,10 +153,12 @@ export default function CourseDetail() {
                     <p className="text-sm text-green-700">Ahora puedes realizar la simulación práctica</p>
                   </div>
                 </div>
-                <Button className="cursor-pointer">
-                  <Play className="w-4 h-4" />
-                  Iniciar Simulación
-                </Button>
+                <Link to="/simulation/$simulationId" params={{ simulationId: courseId }} className="w-full md:w-auto">
+                  <Button className="cursor-pointer w-full">
+                    <Play className="w-4 h-4" />
+                    Iniciar Simulación
+                  </Button>
+                </Link>
               </div>
             )}
           </div>
