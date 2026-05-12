@@ -81,10 +81,18 @@ export const CourseCard: React.FC<CourseCardProps> = ({
               }
             })()}
           </Link>
-          <Button variant="outline" className="w-full md:w-auto cursor-pointer">
-            <Play className="w-4 h-4" />
-            Iniciar Simulación
-          </Button>
+          {progress === 100 && (
+            <Button asChild variant="outline" className="w-full cursor-pointer">
+              <Link
+                to="/simulation/$simulationId"
+                params={{ simulationId: courseId }}
+                className="w-full md:w-auto"
+              >
+                <Play className="w-4 h-4" />
+                Iniciar Simulación
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
     </div>
