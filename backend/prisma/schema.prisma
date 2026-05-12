@@ -167,8 +167,8 @@ model CompletedModule {
 }
 
 enum Role {
-  WORKER
-  SUPERVISOR
+  WORKER     @map("EMPLOYEE")
+  SUPERVISOR @map("OWNER")
   ADMIN
 }
 
