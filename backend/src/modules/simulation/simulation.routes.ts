@@ -5,8 +5,8 @@ import { createNewSimulation, getSimulationById, getSimulationByModuleId, getSim
 const router = Router()
 
 router.get("/simulation-by-module/:moduleId", getSimulationByModuleId)
-router.get("/:simulationId", getSimulationById)
 router.get("/simulation-by-title", getSimulationByTitle)
+router.get("/:simulationId", getSimulationById)
 router.post("/simulation-create", createNewSimulation)
 router.put("/update-simulation/:simulationId", updateSimulation)
 
