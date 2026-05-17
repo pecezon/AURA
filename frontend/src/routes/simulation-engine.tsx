@@ -167,25 +167,48 @@ export default function SimulationEngine() {
                 });
               }
 
+              // Determinar estilos e íconos dinámicamente según el estado de la simulación
+              let pinBgClass = "";
+              let pinContent: React.ReactNode = null;
+
+              if (isFinished) {
+                if (isSubmitting) {
+                  // Estado de carga/procesando: amarillo con ícono de alerta (sin revelar correctos/incorrectos)
+                  pinBgClass = "bg-yellow-500 text-yellow-950 ring-2 ring-yellow-300 animate-pulse scale-110";
+                  pinContent = <AlertTriangle className="w-3.5 h-3.5 animate-bounce" />;
+                } else {
+                  // Simulación finalizada y evaluada
+                  if (isCorrect) {
+                    pinBgClass = "bg-emerald-500 text-white ring-2 ring-emerald-300 scale-110";
+                    pinContent = <CheckCircle className="w-4 h-4" />;
+                  } else {
+                    pinBgClass = "bg-classic-crimson-500 text-white ring-2 ring-classic-crimson-300 opacity-70";
+                    pinContent = <XCircle className="w-4 h-4" />;
+                  }
+                }
+              } else {
+                // Colocando pines de manera interactiva
+                pinBgClass = "bg-amber-400 text-amber-950 hover:scale-110 cursor-pointer ring-2 ring-amber-200";
+                pinContent = i + 1;
+              }
+
               return (
                 <div 
                   key={pin.id}
                   className={clsx(
                     "absolute w-6 h-6 -ml-3 -mt-3 rounded-full flex items-center justify-center font-bold text-xs shadow-lg transition-all duration-300 transform",
-                    isFinished 
-                      ? (isCorrect ? "bg-emerald-500 text-white ring-2 ring-emerald-300 scale-110" : "bg-classic-crimson-500 text-white ring-2 ring-classic-crimson-300 opacity-70") 
-                      : "bg-amber-400 text-amber-950 hover:scale-110 cursor-pointer ring-2 ring-amber-200"
+                    pinBgClass
                   )}
                   style={{ left: `${pin.x}%`, top: `${pin.y}%` }}
                   onClick={(e) => handleRemovePin(e, pin.id)}
                 >
-                  {isFinished ? (isCorrect ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />) : (i + 1)}
+                  {pinContent}
                 </div>
               );
             })}
 
-            {/* Render Missing Hotspots if finished */}
-            {isFinished && hotspots.map((h: any) => (
+            {/* Render Missing Hotspots if finished and fully evaluated */}
+            {isFinished && !isSubmitting && hotspots.map((h: any) => (
               <div 
                 key={`hotspot-${h.id}`}
                 className="absolute border-2 border-dashed border-emerald-400 rounded-full animate-pulse pointer-events-none"
