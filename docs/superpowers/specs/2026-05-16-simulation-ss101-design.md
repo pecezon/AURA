@@ -5,7 +5,7 @@ Diseño técnico para la primera simulación interactiva del curso SS101 (Identi
 
 ## Frontend (UI y Tracking)
 - **Layout Visual**: Panel Dividido (Split View). La imagen interactiva ocupa el 70% del ancho, mientras que un panel lateral estático ocupa el 30% restante con instrucciones, temporizador y el botón de enviar. Usaremos Tailwind CSS.
-- **Interacción (Free Pins)**: Los usuarios colocarán "marcadores libres" neutrales sobre la imagen. Tienen la libertad de mover o eliminar estos marcadores antes de enviar.
+- **Interacción (Free Pins)**: Los usuarios colocarán "marcadores libres" neutrales sobre la imagen. Tienen la libertad de eliminar estos marcadores antes de enviar.
 - **Tracking de Eventos**: Un Custom Hook `useSimulationTracker` registrará un log de todas las acciones del usuario, permitiendo capturar el nivel de "indecisión":
   - `{ type: "PLACE_PIN", id: "p1", x: 45, y: 50, timestamp: 1234567 }`
   - `{ type: "REMOVE_PIN", id: "p1", timestamp: 1234580 }`
