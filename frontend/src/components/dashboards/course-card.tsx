@@ -4,6 +4,7 @@ import { Clock, BadgeCheck, Play } from "lucide-react";
 import { StatProgressBar } from "./stat-progress-bar";
 import { Button, buttonVariants } from "../ui/button";
 import { Link } from "@tanstack/react-router";
+import { useModulesByCourse } from "@/hooks/useModules";
 
 interface CourseCardProps {
   courseId: string;
@@ -24,6 +25,10 @@ export const CourseCard: React.FC<CourseCardProps> = ({
   duration,
   progress,
 }) => {
+  const { data: modules } = useModulesByCourse(courseId);
+  const simulationModule = modules?.find((m: any) => m.simulation);
+  const actualSimulationId = simulationModule?.simulation?.id;
+
   return (
     <div className="flex flex-col gap-4 p-4 md:p-6 border border-gray-300 bg-white rounded-lg overflow-hidden w-full hover:shadow-lg transition-shadow duration-300 min-h-[200px]">
       {/* Header */}
@@ -81,11 +86,11 @@ export const CourseCard: React.FC<CourseCardProps> = ({
               }
             })()}
           </Link>
-          {progress === 100 && (
+          {(progress === 100 && actualSimulationId) && (
             <Button asChild variant="outline" className="w-full cursor-pointer">
               <Link
                 to="/simulation/$simulationId"
-                params={{ simulationId: courseId }}
+                params={{ simulationId: actualSimulationId }}
                 className="w-full md:w-auto"
               >
                 <Play className="w-4 h-4" />
