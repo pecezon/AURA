@@ -1,5 +1,7 @@
 import { prisma } from "../config/prisma";
 import { SimulationAttemptCreateDTO, SimulationAttemptResponseDTO, SimulationAttemptProgress } from "../modules/simulationAttempt/simuAttempt.types";
+import { ScoringService } from "./scoring.service";
+import { OpenAIService } from "./openai.service";
 
 export class NotFoundError extends Error {
   statusCode: number
@@ -110,21 +112,44 @@ export class SimulationAttemptService{
             throw new NotFoundError("The simulation with ID : " + exist.simulationId + " doesn't exist")   
         }
 
-        const passed = dto.score >= simulation.passingScore 
+        let riskScore = exist.riskScore || 0;
+        let feedback = "No analysis";
+        let scoreToSave = dto.score ?? exist.score;
+        let finalPassed = scoreToSave >= simulation.passingScore;
+
+        if (dto.events && dto.timeTakenSeconds !== undefined) {
+            const openAiService = new OpenAIService();
+            const scoringService = new ScoringService(openAiService);
+            
+            const config = simulation.configuration as any;
+            const hotspots = config?.hotspots || [];
+            const timeLimit = config?.timeLimit || 120; // default 120s
+
+            const result = await scoringService.calculateScore(
+                hotspots, 
+                dto.events, 
+                timeLimit, 
+                dto.timeTakenSeconds
+            );
+
+            riskScore = result.riskScore;
+            feedback = result.feedback;
+            
+            scoreToSave = hotspots.length > 0 ? (result.foundHotspots.length / hotspots.length) * 100 : 100;
+            finalPassed = scoreToSave >= simulation.passingScore;
+        }
 
         const submitedAttempt = await prisma.simulationAttempt.update({
             where : {
                 id : attemptId
             },
             data : {
-                score : dto.score,
-                passed
+                score : scoreToSave,
+                passed: finalPassed,
+                events: dto.events || [],
+                riskScore: riskScore
             }
         })
-
-        if(!submitedAttempt.passed){
-            throw new NotCompletedError("The current score : " + dto.score + " is not enough to pass this simulation")
-        }
 
         return {
             id : submitedAttempt.id,
@@ -132,7 +157,9 @@ export class SimulationAttemptService{
             profileId : submitedAttempt.profileId,
             score : submitedAttempt.score,
             passed : submitedAttempt.passed,
-            createdAt : submitedAttempt.createdAt.toISOString()
+            createdAt : submitedAttempt.createdAt.toISOString(),
+            riskScore: riskScore,
+            feedback: feedback
         }
     }
 }

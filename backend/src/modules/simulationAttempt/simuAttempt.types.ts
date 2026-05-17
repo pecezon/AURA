@@ -1,5 +1,7 @@
 export interface SimulationAttemptProgress{
-    score : number
+    score? : number;
+    events?: any[];
+    timeTakenSeconds?: number;
 }
 
 export interface SimulationAttemptCreateDTO{
@@ -13,5 +15,7 @@ export interface SimulationAttemptResponseDTO{
     score: number,
     passed: boolean,
     createdAt : string,
-    profileId : string
+    profileId : string,
+    riskScore?: number,
+    feedback?: string
 }

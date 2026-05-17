@@ -3,6 +3,7 @@ import { api } from '@/lib/api';
 export const simulationKeys = {
   all: ['simulations'] as const,
   byModule: (moduleId: string) => ['simulations', 'module', moduleId] as const,
+  byId: (id: string) => ['simulations', 'id', id] as const,
   byTitle: (title: string) => ['simulations', 'title', title] as const,
 };
 
@@ -14,6 +15,7 @@ export const simulationAttemptKeys = {
 export const simulationApi = {
   // Simulation
   getSimulationByModuleId: (moduleId: string) => api.get(`/api/simulations/simulation-by-module/${moduleId}`).then(r => r.data),
+  getSimulationById: (id: string) => api.get(`/api/simulations/${id}`).then(r => r.data),
   getSimulationByTitle: (title: string) => api.get('/api/simulations/simulation-by-title', { params: { title } }).then(r => r.data),
   createSimulation: (data: any) => api.post('/api/simulations/simulation-create', data).then(r => r.data),
   updateSimulation: (id: string, data: any) => api.put(`/api/simulations/update-simulation/${id}`, data).then(r => r.data),

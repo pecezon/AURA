@@ -77,6 +77,9 @@ Seguimos una arquitectura de N capas:
 - Separar componentes de UI genéricos (botones, inputs) de los componentes de negocio (formularios específicos, vistas completas).
 - Preferir funciones puras y evitar efectos secundarios (`useEffect`) si se pueden derivar del estado.
 
+### Reglas de UI/UX (Iconografía)
+- **CERO EMOJIS:** NUNCA utilizar emojis en el texto o componentes de UI de la plataforma. Es redundante y poco profesional. Utilizar estrictamente los iconos vectoriales del proyecto (ej. Lucide React, Heroicons).
+
 ---
 *Nota: Agrega aquí fragmentos de código de referencia a medida que la arquitectura del proyecto se defina mejor.*
 

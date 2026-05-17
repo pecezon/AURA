@@ -8,7 +8,8 @@ export interface SimulationResponseDTO{
     id : string,
     title : string,
     passingScore : number,
-    moduleId : string
+    moduleId : string,
+    configuration?: any
 }
 
 export interface SimulationByTitle{
