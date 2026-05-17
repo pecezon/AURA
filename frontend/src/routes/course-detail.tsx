@@ -12,8 +12,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useCourseProgress } from "@/hooks/use-course-progress";
-import { getUserId } from "@/lib/supabase";
-import { useEffect, useState } from "react";
+
 import { useCourse } from "@/hooks/useCourses";
 import { useModulesByCourse } from "@/hooks/useModules";
 import { useSessionId } from "@/hooks/useSession";
@@ -79,6 +78,9 @@ export default function CourseDetail() {
   }
 
   const progressPercentage = progress;
+  
+  const simulationModule = modules?.find((m: any) => m.simulation);
+  const actualSimulationId = simulationModule?.simulation?.id;
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-100 gap-6 md:gap-8">
@@ -153,10 +155,10 @@ export default function CourseDetail() {
                     <p className="text-sm text-green-700">Ahora puedes realizar la simulación práctica</p>
                   </div>
                 </div>
-                <Button asChild className="cursor-pointer w-full md:w-auto">
-                  <Link to="/simulation/$simulationId" params={{ simulationId: courseId }}>
+                <Button asChild className="cursor-pointer w-full md:w-auto" disabled={!actualSimulationId}>
+                  <Link to="/simulation/$simulationId" params={{ simulationId: actualSimulationId || "none" }}>
                     <Play className="w-4 h-4" />
-                    Iniciar Simulación
+                    {actualSimulationId ? "Iniciar Simulación" : "Simulación no disponible"}
                   </Link>
                 </Button>
               </div>
