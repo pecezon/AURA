@@ -136,7 +136,9 @@ export class SimulationAttemptService{
             feedback = result.feedback;
             
             scoreToSave = hotspots.length > 0 ? (result.foundHotspots.length / hotspots.length) * 100 : 100;
-            finalPassed = scoreToSave >= simulation.passingScore;
+            
+            // The pass/fail status is determined by the riskScore, which includes behavioral penalties (time overrun & indecision)
+            finalPassed = riskScore >= simulation.passingScore;
         }
 
         const submitedAttempt = await prisma.simulationAttempt.update({
