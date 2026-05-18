@@ -21,61 +21,35 @@ interface CourseData {
   regulations?: Array<string>;
 }
 
-const mockCourseData: CourseData[] = [
-  {
-    courseName: "Curso de Seguridad",
-    tag: "Seguridad",
-    assignedWorkers: 10,
-    inProgressWorkers: 5,
-    completedWorkers: 3,
-    overdueWorkers: 2,
-    regulations: ["NOM-029-STPS-2011", "NFPA 52"],
-  },
-  {
-    courseName: "Curso de Primeros Auxilios",
-    tag: "Técnico",
-    assignedWorkers: 15,
-    inProgressWorkers: 10,
-    completedWorkers: 4,
-    overdueWorkers: 1,
-    regulations: ["NOM-029-STPS-2011", "NFPA 350"],
-  },
-  {
-    courseName: "Curso de Manejo de Maquinaria",
-    tag: "Seguridad",
-    assignedWorkers: 20,
-    inProgressWorkers: 12,
-    completedWorkers: 6,
-    overdueWorkers: 2,
-    regulations: ["NOM-029-STPS-2011", "OSHA 1910.120"],
-  },
-  {
-    courseName: "Curso de Ergonomía",
-    tag: "Seguridad",
-    assignedWorkers: 8,
-    inProgressWorkers: 4,
-    completedWorkers: 3,
-    overdueWorkers: 1,
-    regulations: ["NOM-029-STPS-2011", "NFPA 52"],
-  },
-];
+import { useEnrollments } from "@/hooks/useEnrollments";
 
 export const SupervisorCoursesSection: React.FC = () => {
   const [showAll, setShowAll] = useState(false);
   const { data: apiCourses } = useCourses();
 
+  const { data: enrollments } = useEnrollments();
+
   const mappedCourses: CourseData[] = React.useMemo(() => {
-    if (!apiCourses) return mockCourseData;
-    return apiCourses.map((c: any) => ({
-      courseName: c.title || "Curso Sin Título",
-      tag: c.type || "General",
-      assignedWorkers: c.enrolledWorkers || 10,
-      inProgressWorkers: Math.floor((c.enrolledWorkers || 10) / 2),
-      completedWorkers: Math.floor((c.enrolledWorkers || 10) / 4),
-      overdueWorkers: 0,
-      regulations: [],
-    }));
-  }, [apiCourses]);
+    if (!apiCourses || !enrollments) return [];
+    return apiCourses.map((c: any) => {
+      const courseEnrollments = enrollments.filter((e: any) => e.courseId === c.id);
+      
+      const completedWorkers = courseEnrollments.filter((e: any) => e.status === "COMPLETED").length;
+      const inProgressWorkers = courseEnrollments.filter((e: any) => e.status === "IN_PROGRESS").length;
+      const pendingWorkers = courseEnrollments.filter((e: any) => e.status === "ASSIGNED").length;
+      const totalAssigned = courseEnrollments.length;
+
+      return {
+        courseName: c.title || "Curso Sin Título",
+        tag: c.type === "technical" ? "Técnico" : c.type === "safety" ? "Seguridad" : "General",
+        assignedWorkers: totalAssigned,
+        inProgressWorkers: inProgressWorkers,
+        completedWorkers: completedWorkers,
+        overdueWorkers: pendingWorkers, // we map ASSIGNED to remaining/overdue in the chart
+        regulations: c.regulations?.map((r: any) => r.name || r.id) || [],
+      };
+    });
+  }, [apiCourses, enrollments]);
 
   const coursesToShow = showAll ? mappedCourses : mappedCourses.slice(0, 3);
   const hasMoreCourses = mappedCourses.length > 3;
@@ -125,9 +99,11 @@ export const SupervisorCoursesSection: React.FC = () => {
             title={course.courseName}
             type={course.tag}
             regulations={course.regulations}
-            progress={Math.round(
-              (course.completedWorkers / course.assignedWorkers) * 100,
-            )}
+            progress={
+              course.assignedWorkers > 0 
+                ? Math.round((course.completedWorkers / course.assignedWorkers) * 100) 
+                : 0
+            }
           />
         ))}
       </div>
