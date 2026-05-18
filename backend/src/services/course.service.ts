@@ -62,6 +62,43 @@ export class CourseService {
                   create: {
                     title: m.simulation.title,
                     passingScore: m.simulation.passingScore,
+                    configuration: {
+                      scenario: "Terminal de Gasoductos Sempra",
+                      imageUrl: "placeholder-sempra-terminal",
+                      timeLimitSeconds: 120,
+                      hotspots: [
+                        {
+                          id: "risk-1",
+                          type: "GAS_LEAK",
+                          name: "Fuga de Gas en Válvula Principal",
+                          x: 45.5,
+                          y: 60.2,
+                          radius: 5,
+                          penaltyPoints: 30,
+                          justification: "Fuga de Gas en Válvula Principal detectada. Se requiere cierre inmediato y control de ignición."
+                        },
+                        {
+                          id: "risk-2",
+                          type: "NO_PPE",
+                          name: "Personal sin equipo de protección (Casco/Lentes)",
+                          x: 75.0,
+                          y: 30.5,
+                          radius: 6,
+                          penaltyPoints: 20,
+                          justification: "Trabajador en área operativa sin casco ni protección ocular básica."
+                        },
+                        {
+                          id: "risk-3",
+                          type: "OBSTRUCTION",
+                          name: "Maquinaria pesada obstruyendo ruta de evacuación",
+                          x: 20.0,
+                          y: 80.0,
+                          radius: 8,
+                          penaltyPoints: 15,
+                          justification: "Ruta de evacuación obstruida por maquinaria pesada fuera de operación."
+                        }
+                      ]
+                    }
                   },
                 }
                 : undefined,
@@ -80,6 +117,19 @@ export class CourseService {
         },
       })
     );
+
+    // Auto-enroll all admins in the newly created course
+    const admins = await prisma.profile.findMany({ where: { role: "ADMIN" } });
+    if (admins.length > 0) {
+      await prisma.courseEnrollment.createMany({
+        data: admins.map(admin => ({
+          courseId: created.id,
+          profileId: admin.id,
+        })),
+        skipDuplicates: true
+      });
+    }
+
     // hellish mapping to convert Date to string and fit the CourseResponse type
     return {
       id: created.id,
