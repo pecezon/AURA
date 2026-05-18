@@ -76,10 +76,10 @@ export const ModuleContentItem: React.FC<Props> = ({ content, index, onUpdate, o
     const isActive = activeTab === tab;
     const isDisabled = (tab === "file" && fileTabDisabled) || (tab === "url" && urlTabDisabled);
     if (isDisabled)
-      return "flex-1 py-2 text-sm font-medium text-gray-300 cursor-not-allowed bg-gray-50";
+      return "flex-1 py-2 text-sm font-medium text-gray-300 cursor-not-allowed bg-gray-50 flex items-center justify-center";
     if (isActive)
-      return "flex-1 py-2 text-sm font-medium bg-white border-b-2 border-blue-600 text-blue-700";
-    return "flex-1 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 cursor-pointer";
+      return "flex-1 py-2 text-sm font-medium bg-white border-b-2 border-blue-600 text-blue-700 flex items-center justify-center";
+    return "flex-1 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 cursor-pointer flex items-center justify-center";
   };
 
   return (

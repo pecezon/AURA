@@ -41,7 +41,7 @@ export const ModuleContentList: React.FC<Props> = ({ contents, onAdd, onUpdate, 
         </Droppable>
       </DragDropContext>
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <Button variant="outline" size="sm" onClick={() => onAdd("READING")} className="text-xs">
           <Plus className="w-3 h-3 mr-1" /> Añadir Texto
         </Button>
@@ -50,6 +50,9 @@ export const ModuleContentList: React.FC<Props> = ({ contents, onAdd, onUpdate, 
         </Button>
         <Button variant="outline" size="sm" onClick={() => onAdd("VIDEO")} className="text-xs">
           <Plus className="w-3 h-3 mr-1" /> Añadir Video
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => onAdd("QUIZ")} className="text-xs">
+          <Plus className="w-3 h-3 mr-1" /> Añadir Pregunta
         </Button>
       </div>
     </div>
