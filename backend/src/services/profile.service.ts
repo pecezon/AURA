@@ -1,3 +1,4 @@
+import { Role } from "../../generated/prisma";
 import { prisma } from "../config/prisma";
 
 export async function ensureProfile(user: any) {
@@ -10,7 +11,7 @@ export async function ensureProfile(user: any) {
       data: {
         id: user.id,
         email: user.email,
-        role: "WORKER",
+        role: Role.EMPLOYEE,
       },
     });
   }

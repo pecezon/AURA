@@ -33,7 +33,7 @@ interface ProfileData {
   birthDate: string;
   employeeId: string;
   area: string;
-  role: "WORKER" | "ADMIN" | "SUPERVISOR";
+  role: "EMPLOYEE" | "ADMIN" | "SUPERVISOR";
   isProfileComplete: boolean;
   createdAt: string;
 }
@@ -81,7 +81,7 @@ export default function ProfilePage() {
         return "destructive";
       case "SUPERVISOR":
         return "default";
-      case "WORKER":
+      case "EMPLOYEE":
         return "outline";
       default:
         return "secondary";
@@ -146,7 +146,7 @@ export default function ProfilePage() {
   if (error || !profile) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navbar role="WORKER" />
+        <Navbar role="EMPLOYEE" />
         <main className="container mx-auto px-4 py-8">
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
@@ -196,7 +196,7 @@ export default function ProfilePage() {
                   <p className="text-gray-500">{profile.email}</p>
                   <div className="flex gap-2 mt-3 flex-wrap justify-center md:justify-start">
                     <Badge variant={getRoleBadgeVariant(profile.role)} className="text-sm">
-                      {profile.role === "WORKER"
+                      {profile.role === "EMPLOYEE"
                         ? "Trabajador"
                         : profile.role === "ADMIN"
                           ? "Administrador"

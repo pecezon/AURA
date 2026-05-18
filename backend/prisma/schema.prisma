@@ -15,7 +15,7 @@ model Profile {
   birthDate          DateTime?
   employeeId         String?
   area               String?
-  role               Role                @default(WORKER)
+  role               Role                @default(EMPLOYEE)
   isProfileComplete  Boolean             @default(false)
   createdAt          DateTime            @default(now())
   enrollments        CourseEnrollment[]
@@ -167,8 +167,8 @@ model CompletedModule {
 }
 
 enum Role {
-  WORKER     @map("EMPLOYEE")
-  SUPERVISOR @map("OWNER")
+  EMPLOYEE     @map("WORKER")
+  SUPERVISOR 
   ADMIN
 }
 
