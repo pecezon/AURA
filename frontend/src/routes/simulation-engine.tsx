@@ -128,7 +128,7 @@ export default function SimulationEngine() {
   if (typeof config === 'string') {
     try {
       config = JSON.parse(config);
-    } catch(e) {
+    } catch {
       config = {};
     }
   }
