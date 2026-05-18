@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "../../ui/button";
-import { Pencil, Trash2, CheckCircle2, FileText, Film, Image, GripVertical } from "lucide-react";
+import { Pencil, Trash2, CheckCircle2, FileText, Film, Image, GripVertical, Clock, HelpCircle } from "lucide-react";
 import { type EditableModule, type ContentType } from "./types/module.types";
 import { Draggable } from "@hello-pangea/dnd";
 
@@ -8,12 +8,14 @@ const CONTENT_TYPE_ICON: Record<ContentType, React.ReactNode> = {
   READING: <FileText className="w-3.5 h-3.5" />,
   IMAGE: <Image className="w-3.5 h-3.5" />,
   VIDEO: <Film className="w-3.5 h-3.5" />,
+  QUIZ: <HelpCircle className="w-3.5 h-3.5" />,
 };
 
 const CONTENT_TYPE_LABEL: Record<ContentType, string> = {
   READING: "Lectura",
   IMAGE: "Imagen",
   VIDEO: "Video",
+  QUIZ: "Quiz",
 };
 
 interface ModuleCardProps {
@@ -59,23 +61,38 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({ module, index, onEdit, o
           </div>
 
           <div className="flex items-center gap-3 flex-wrap">
-            <span className="flex items-center gap-1 text-xs text-gray-500">
-              🕐 {module.duration || "—"}
+            <span className="flex items-center gap-1.5 text-xs text-gray-500">
+              <Clock className="w-3.5 h-3.5 text-gray-400" />
+              {module.duration || "—"}
             </span>
             {module.contents.length > 0 ? (
-              module.contents.map((c) => (
-                <span
-                  key={c.id}
-                  className={`flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border ${c.url || c.content || c.file
-                      ? "bg-green-50 text-green-700 border-green-200"
-                      : "bg-gray-50 text-gray-600 border-gray-200"
-                    }`}
-                >
-                  {CONTENT_TYPE_ICON[c.type]}
-                  {CONTENT_TYPE_LABEL[c.type]}
-                  {(c.url || c.content || c.file) && <CheckCircle2 className="w-3 h-3 ml-0.5" />}
-                </span>
-              ))
+              module.contents.map((c) => {
+                const isCompleted = (() => {
+                  if (c.type === "QUIZ") {
+                    try {
+                      const parsed = JSON.parse(c.content);
+                      return !!(parsed.question && parsed.question.trim().length > 0);
+                    } catch {
+                      return false;
+                    }
+                  }
+                  return !!(c.url || c.content || c.file);
+                })();
+
+                return (
+                  <span
+                    key={c.id}
+                    className={`flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border ${isCompleted
+                        ? "bg-green-50 text-green-700 border-green-200"
+                        : "bg-gray-50 text-gray-600 border-gray-200"
+                      }`}
+                  >
+                    {CONTENT_TYPE_ICON[c.type]}
+                    {CONTENT_TYPE_LABEL[c.type]}
+                    {isCompleted && <CheckCircle2 className="w-3 h-3 ml-0.5" />}
+                  </span>
+                );
+              })
             ) : (
               <span className="text-xs px-2 py-0.5 rounded-full bg-yellow-50 text-yellow-700 border border-yellow-200">
                 Vacío

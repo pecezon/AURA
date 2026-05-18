@@ -14,3 +14,21 @@ api.interceptors.request.use(async (config) => {
 
   return config;
 });
+
+api.interceptors.response.use((response) => {
+  if (response.data) {
+    const normalize = (obj: any) => {
+      if (!obj || typeof obj !== "object") return;
+      if (obj.role === "WORKER") {
+        obj.role = "EMPLOYEE";
+      }
+      for (const key in obj) {
+        if (typeof obj[key] === "object") {
+          normalize(obj[key]);
+        }
+      }
+    };
+    normalize(response.data);
+  }
+  return response;
+});

@@ -11,12 +11,21 @@ export const MAX_FILE_SIZE = 50 * 1024 * 1024;
  */
 export function toEditableModule(mod: RawModule, idx: number): EditableModule {
   if (mod.contents) {
+    const contentsWithIds = mod.contents.map((c) => ({
+      ...c,
+      id: c.id ?? crypto.randomUUID(),
+      title: c.title ?? "",
+      content: c.content ?? "",
+      url: c.url ?? "",
+      file: c.file ?? null,
+    }));
     return {
       id: mod.id ?? crypto.randomUUID(),
       title: mod.title ?? `Módulo ${idx + 1}`,
       description: mod.description ?? "",
       duration: mod.duration ?? "",
-      contents: mod.contents,
+      contents: contentsWithIds,
+      simulation: mod.simulation || undefined,
     };
   }
   const type = (mod.contentType as ContentType) ?? "READING";
@@ -64,16 +73,53 @@ export function buildPayload(content: GeneratedContent): CourseCreateDTO {
     isPublished: true,
     duration: content.duration || null,
     type: ensureEnglish(content.courseType || "TECHNICAL"),
-    modules: modules.map((mod, mIdx) => ({
-      title: mod.title,
-      order: mIdx,
-      contents: mod.contents.map((c, cIdx) => ({
-        type: c.type,
-        title: c.title || null,
-        content: c.content || null,
-        url: c.url || null,
-        order: cIdx,
-      })),
-    })),
+    regulations: content.applicableNorms || [],
+    modules: modules.map((mod, mIdx) => {
+      const contentsOnly = mod.contents.filter((c) => c.type !== "QUIZ");
+      const quizContents = mod.contents.filter((c) => c.type === "QUIZ");
+
+      const quizzes = quizContents.map((c) => {
+        let questionText = "Pregunta de Evaluación";
+        let reactives: { text: string; isCorrect: boolean }[] = [];
+        try {
+          if (c.content) {
+            const parsed = JSON.parse(c.content);
+            questionText = parsed.question || questionText;
+            const options = parsed.options || [];
+            const correctAnswer = typeof parsed.correctAnswer === "number" ? parsed.correctAnswer : 0;
+            reactives = options.map((opt: string, oIdx: number) => ({
+              text: opt,
+              isCorrect: oIdx === correctAnswer,
+            }));
+          }
+        } catch (e) {
+          console.error("Error parsing quiz content:", e);
+        }
+        return {
+          title: c.title || "Evaluación Rápida",
+          isGeneratedByAI: false,
+          questions: [
+            {
+              text: questionText,
+              reactives,
+            },
+          ],
+        };
+      });
+
+      return {
+        title: mod.title,
+        order: mIdx,
+        contents: contentsOnly.map((c, cIdx) => ({
+          type: c.type as "READING" | "VIDEO" | "IMAGE",
+          title: c.title || null,
+          content: c.content || null,
+          url: c.url || null,
+          order: cIdx,
+        })),
+        quizzes: quizzes.length > 0 ? quizzes : undefined,
+        simulation: mod.simulation || undefined,
+      };
+    }),
   };
 }

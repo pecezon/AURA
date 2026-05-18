@@ -54,7 +54,6 @@ export const createCourseSchema = z.object({
         simulation: z
           .object({
             title: z.string().min(1, "Simulation title required"),
-            content: z.string().min(1, "Simulation content required"),
             passingScore: z.number().int(),
           })
           .optional(),

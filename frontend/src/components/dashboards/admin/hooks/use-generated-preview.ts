@@ -17,9 +17,13 @@ export interface UseGeneratedPreviewReturn {
   setEditingIndex: (idx: number | null) => void;
   handleDragEnd: (result: DropResult) => void;
   handleAddModule: () => void;
-  handleDeleteModule: (idx: number) => void;
+  deleteIndex: number | null;
+  setDeleteIndex: (idx: number | null) => void;
+  showDiscardConfirm: boolean;
+  setShowDiscardConfirm: (show: boolean) => void;
+  confirmDeleteModule: () => void;
+  confirmDiscard: () => void;
   handleModuleSave: (updated: EditableModule) => void;
-  handleDiscard: () => void;
   handlePublish: () => void;
 }
 
@@ -30,6 +34,8 @@ export function useGeneratedPreview(
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [publishError, setPublishError] = useState<string | null>(null);
   const [publishSuccess, setPublishSuccess] = useState(false);
+  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
   const { mutate: publishCourse, isPending: isPublishing } = useCreateCourse();
 
   // Normalizamos todos los módulos una sola vez (soporta formato plano antiguo del AI).
@@ -62,13 +68,14 @@ export function useGeneratedPreview(
     );
   };
 
-  const handleDeleteModule = (idx: number) => {
-    const title = modules[idx]?.title ?? "este módulo";
-    if (!window.confirm(`¿Eliminar el módulo "${title}"?\nEsta acción no se puede deshacer.`)) return;
+  const confirmDeleteModule = () => {
+    if (deleteIndex === null) return;
     setGeneratedContent?.((prev) => {
       if (!prev?.modules) return prev;
-      return { ...prev, modules: prev.modules.filter((_, i) => i !== idx) };
+      const updated = prev.modules.filter((_, i) => i !== deleteIndex);
+      return { ...prev, modules: updated };
     });
+    setDeleteIndex(null);
   };
 
   const handleModuleSave = (updated: EditableModule) => {
@@ -81,10 +88,9 @@ export function useGeneratedPreview(
     setEditingIndex(null);
   };
 
-  const handleDiscard = () => {
-    if (window.confirm("¿Descartar el contenido generado? Esta acción no se puede deshacer.")) {
-      setGeneratedContent?.(undefined);
-    }
+  const confirmDiscard = () => {
+    setGeneratedContent?.(undefined);
+    setShowDiscardConfirm(false);
   };
 
   const handlePublish = () => {
@@ -132,9 +138,13 @@ export function useGeneratedPreview(
     setEditingIndex,
     handleDragEnd,
     handleAddModule,
-    handleDeleteModule,
+    deleteIndex,
+    setDeleteIndex,
+    showDiscardConfirm,
+    setShowDiscardConfirm,
+    confirmDeleteModule,
+    confirmDiscard,
     handleModuleSave,
-    handleDiscard,
     handlePublish,
   };
 }
