@@ -142,7 +142,7 @@ export class CourseService {
       isPublished: created.isPublished,
       createdAt: created.createdAt.toISOString(),
       updatedAt: created.updatedAt.toISOString(),
-      enrolledWorkers: 0,
+      enrolledWorkers: 1,
       modules: created.modules.map((m) => ({
         id: m.id,
         title: m.title,
