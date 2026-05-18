@@ -78,7 +78,7 @@ export default function AdminDashboard() {
         {activeTab === "library" && (
           <div className="flex flex-col gap-4">
             <CourseLibrary />
-            <Assignments />
+           
           </div>
         )}
       </main>

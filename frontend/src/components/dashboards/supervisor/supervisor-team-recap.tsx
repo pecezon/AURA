@@ -8,6 +8,18 @@ import {
 } from "../../ui/card";
 
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../../ui/dialog";
+import { Button } from "../../ui/button";
+import { Plus } from "lucide-react";
+import { Assignments } from "@/components/dashboards/admin/assignments";
+
+import {
   flexRender,
   getCoreRowModel,
   useReactTable,
@@ -145,11 +157,31 @@ export const SupervisorTeamRecap: React.FC = () => {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Perfiles de Riesgo del Equipo</CardTitle>
-        <CardDescription>
-          Evaluación conductual basada en simulaciones completadas
-        </CardDescription>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+        <div className="flex flex-col gap-1">
+          <CardTitle>Perfiles de Riesgo del Equipo</CardTitle>
+          <CardDescription>
+            Evaluación conductual basada en simulaciones completadas
+          </CardDescription>
+        </div>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button size="icon" variant="outline" title="Asignar trabajador a curso">
+              <Plus className="h-4 w-4" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl min-h-[80vh] overflow-visible">
+            <DialogHeader>
+              <DialogTitle>Asignar Trabajador a Curso</DialogTitle>
+              <DialogDescription>
+                Selecciona los trabajadores y los cursos que deseas asignar.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="mt-4">
+              <Assignments />
+            </div>
+          </DialogContent>
+        </Dialog>
       </CardHeader>
       <CardContent className="text-sm text-muted-foreground">
         <Table>

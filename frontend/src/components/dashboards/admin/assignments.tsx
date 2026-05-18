@@ -200,45 +200,45 @@ export const Assignments: React.FC<AssignmentsProps> = () => {
                 onChange={(e) => setWorkerSearch(e.target.value)}
                 className="pl-9"
               />
-            </div>
 
-            {/* Worker Results */}
-            {workerSearch && (
-              <div className="space-y-2 max-h-64 overflow-y-auto border rounded-lg p-2">
-                {filteredWorkers.length > 0 ? (
-                  filteredWorkers.map((worker) => (
-                    <div
-                      key={worker.id}
-                      onClick={() => {
-                        setSelectedWorker(worker.id);
-                        setWorkerSearch("");
-                      }}
-                      className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                        selectedWorker === worker.id
-                          ? "bg-blue-100 border-blue-300 border"
-                          : "bg-slate-50 hover:bg-slate-100 border border-transparent"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-sm">{worker.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {worker.department}
-                          </p>
+              {/* Worker Results */}
+              {workerSearch && (
+                <div className="absolute top-full left-0 mt-1 w-full z-[100] space-y-2 max-h-64 overflow-y-auto bg-white shadow-xl border rounded-lg p-2">
+                  {filteredWorkers.length > 0 ? (
+                    filteredWorkers.map((worker) => (
+                      <div
+                        key={worker.id}
+                        onClick={() => {
+                          setSelectedWorker(worker.id);
+                          setWorkerSearch("");
+                        }}
+                        className={`p-3 rounded-lg cursor-pointer transition-colors ${
+                          selectedWorker === worker.id
+                            ? "bg-blue-100 border-blue-300 border"
+                            : "bg-slate-50 hover:bg-slate-100 border border-transparent"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium text-sm">{worker.name}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {worker.department}
+                            </p>
+                          </div>
+                          {selectedWorker === worker.id && (
+                            <CheckCircle2 className="size-5 text-blue-600" />
+                          )}
                         </div>
-                        {selectedWorker === worker.id && (
-                          <CheckCircle2 className="size-5 text-blue-600" />
-                        )}
                       </div>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-sm text-muted-foreground text-center py-4">
-                    No se encontraron trabajadores
-                  </p>
-                )}
-              </div>
-            )}
+                    ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground text-center py-4">
+                      No se encontraron trabajadores
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
 
             {/* Selected Worker Display */}
             {selectedWorker && (
@@ -297,65 +297,89 @@ export const Assignments: React.FC<AssignmentsProps> = () => {
                 placeholder="Buscar por título, tipo o descripción..."
                 value={courseSearch}
                 onChange={(e) => setCourseSearch(e.target.value)}
+                onFocus={() => {
+                  if (!courseSearch) setCourseSearch(" "); // trigger show
+                }}
                 className="pl-9"
               />
-            </div>
 
-            {/* Course Results */}
-            <div className="space-y-3 p-4 bg-slate-50 rounded-lg max-h-96 overflow-y-auto">
-              {filteredCourses.length > 0 ? (
-                filteredCourses.map((course) => (
-                  <div
-                    key={course.id}
-                    className="flex items-start gap-3 p-3 bg-white rounded-lg border"
-                  >
-                    <Checkbox
-                      id={course.id}
-                      checked={selectedCourses.includes(course.id)}
-                      onCheckedChange={() => handleCourseToggle(course.id)}
-                    />
-                    <div className="grid gap-1.5 leading-none flex-1">
-                      <label
-                        htmlFor={course.id}
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                      >
-                        {course.title}
-                      </label>
-                      <p className="text-xs text-muted-foreground">
-                        {course.description}
-                      </p>
-                      <div className="flex gap-2 mt-1">
-                        <Badge
-                          variant={
-                            course.type === "technical"
-                              ? "default"
-                              : "secondary"
-                          }
-                          className="text-xs"
-                        >
-                          {course.type === "technical"
-                            ? "Técnico"
-                            : "Seguridad"}
-                        </Badge>
-                        <Badge variant="outline" className="text-xs">
-                          {course.duration}
-                        </Badge>
-                      </div>
-                    </div>
+              {/* Course Results Overlay */}
+              {courseSearch && (
+                <div className="absolute top-full left-0 mt-1 w-full z-[100] space-y-3 p-4 bg-white shadow-xl border rounded-lg max-h-96 overflow-y-auto">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-xs font-medium text-muted-foreground">Resultados de cursos</span>
+                    <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => setCourseSearch("")}>Cerrar</Button>
                   </div>
-                ))
-              ) : (
-                <p className="text-sm text-muted-foreground text-center py-4">
-                  No se encontraron cursos
-                </p>
+                  {filteredCourses.length > 0 ? (
+                    filteredCourses.map((course) => (
+                      <div
+                        key={course.id}
+                        className="flex items-start gap-3 p-3 bg-white rounded-lg border hover:bg-slate-50 transition-colors"
+                      >
+                        <Checkbox
+                          id={`course-${course.id}`}
+                          checked={selectedCourses.includes(course.id)}
+                          onCheckedChange={() => handleCourseToggle(course.id)}
+                        />
+                        <div className="grid gap-1.5 leading-none flex-1">
+                          <label
+                            htmlFor={`course-${course.id}`}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                          >
+                            {course.title}
+                          </label>
+                          <p className="text-xs text-muted-foreground">
+                            {course.description}
+                          </p>
+                          <div className="flex gap-2 mt-1">
+                            <Badge
+                              variant={
+                                course.type === "technical"
+                                  ? "default"
+                                  : "secondary"
+                              }
+                              className="text-xs"
+                            >
+                              {course.type === "technical"
+                                ? "Técnico"
+                                : "Seguridad"}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">
+                              {course.duration}
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground text-center py-4">
+                      No se encontraron cursos
+                    </p>
+                  )}
+                </div>
               )}
             </div>
 
-            {/* Selected Courses Count */}
+            {/* Selected Courses Display */}
             {selectedCourses.length > 0 && (
-              <p className="text-sm text-muted-foreground">
-                {selectedCourses.length} curso(s) seleccionado(s)
-              </p>
+              <div className="flex flex-col gap-2 mt-2">
+                <p className="text-sm font-medium">Cursos seleccionados ({selectedCourses.length}):</p>
+                <div className="flex flex-wrap gap-2">
+                  {selectedCourses.map((id) => {
+                    const course = mockCourses.find((c) => c.id === id);
+                    if (!course) return null;
+                    return (
+                      <Badge key={id} variant="secondary" className="flex items-center gap-1.5 py-1 px-2">
+                        <span className="max-w-[200px] truncate">{course.title}</span>
+                        <X
+                          className="size-3.5 cursor-pointer hover:text-red-500 transition-colors"
+                          onClick={() => handleCourseToggle(id)}
+                        />
+                      </Badge>
+                    );
+                  })}
+                </div>
+              </div>
             )}
           </div>
 
