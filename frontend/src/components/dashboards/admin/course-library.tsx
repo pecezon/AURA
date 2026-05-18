@@ -22,8 +22,9 @@ export const CourseLibrary: React.FC<CourseLibraryProps> = ({
 }) => {
   const { data: dbCourses, isLoading, error } = useCourses();
 
-  // Prefer fetched courses over placeholders unless prop is explicitly provided and there's no data
-  const coursesToRender = initialCourses || dbCourses || [];
+  // Prefer fetched courses over placeholders unless prop is explicitly provided and has elements
+  const hasInitial = !!(initialCourses && initialCourses.length > 0);
+  const coursesToRender = hasInitial ? initialCourses : (dbCourses ?? []);
 
   return (
     <Card className="w-full">
@@ -37,12 +38,12 @@ export const CourseLibrary: React.FC<CourseLibraryProps> = ({
         </p>
       </CardHeader>
       <CardContent>
-        {isLoading && !initialCourses ? (
+        {isLoading && !hasInitial ? (
           <div className="flex items-center justify-center py-8 gap-2 text-gray-500">
             <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
             <span>Cargando biblioteca de cursos...</span>
           </div>
-        ) : error && !initialCourses ? (
+        ) : error && !hasInitial ? (
           <div className="text-center py-8 text-red-500">
             Error al cargar los cursos. Por favor, intenta de nuevo.
           </div>
