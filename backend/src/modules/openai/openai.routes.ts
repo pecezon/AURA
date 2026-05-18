@@ -4,7 +4,7 @@ import { requireAdmin } from "../../middleware/auth.middleware";
 
 const router = Router();
 
-// Only admin users should be able to generate courses using AI
+// Admin and supervisor users can generate courses using AI
 router.post("/generate-course", requireAdmin, generateCourseController);
 
 export default router;
