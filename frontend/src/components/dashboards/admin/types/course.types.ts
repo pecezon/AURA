@@ -32,6 +32,10 @@ export interface CourseModuleDTO {
   title: string;
   order: number;
   contents: CourseContentDTO[];
+  simulation?: {
+    title: string;
+    passingScore: number;
+  };
 }
 
 export interface CourseCreateDTO {
@@ -40,5 +44,6 @@ export interface CourseCreateDTO {
   isPublished: boolean;
   duration: string | null;
   type: string | null;
+  regulations?: string[];
   modules: CourseModuleDTO[];
 }

@@ -25,6 +25,7 @@ export function toEditableModule(mod: RawModule, idx: number): EditableModule {
       description: mod.description ?? "",
       duration: mod.duration ?? "",
       contents: contentsWithIds,
+      simulation: mod.simulation || undefined,
     };
   }
   const type = (mod.contentType as ContentType) ?? "READING";
@@ -72,6 +73,7 @@ export function buildPayload(content: GeneratedContent): CourseCreateDTO {
     isPublished: true,
     duration: content.duration || null,
     type: ensureEnglish(content.courseType || "TECHNICAL"),
+    regulations: content.applicableNorms || [],
     modules: modules.map((mod, mIdx) => {
       const contentsOnly = mod.contents.filter((c) => c.type !== "QUIZ");
       const quizContents = mod.contents.filter((c) => c.type === "QUIZ");
@@ -116,6 +118,7 @@ export function buildPayload(content: GeneratedContent): CourseCreateDTO {
           order: cIdx,
         })),
         quizzes: quizzes.length > 0 ? quizzes : undefined,
+        simulation: mod.simulation || undefined,
       };
     }),
   };

@@ -61,9 +61,12 @@ export default function AdminDashboard() {
         {/* Create Content Tab */}
         {activeTab === "create" && (
           <>
-            {/* AI Form and Preview Section */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <AIForm onGenerateContent={handleGenerateContent} />
+              <AIForm 
+                onGenerateContent={handleGenerateContent} 
+                content={generatedContent}
+                setGeneratedContent={setGeneratedContent}
+              />
               <GeneratedPreview content={generatedContent} setGeneratedContent={setGeneratedContent} isLoading={isLoading} />
             </div>
 

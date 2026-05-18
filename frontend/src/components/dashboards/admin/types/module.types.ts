@@ -14,6 +14,10 @@ export type RawModule = { //Made it to prevent use of "any", in the editableModu
   contentType?: ContentType;
   contentText?: string;
   contentUrl?: string;
+  simulation?: {
+    title: string;
+    passingScore: number;
+  };
 };
 
 export interface ModuleContent {
@@ -31,6 +35,10 @@ export interface EditableModule {
   description: string;
   duration: string;
   contents: ModuleContent[];
+  simulation?: {
+    title: string;
+    passingScore: number;
+  };
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────

@@ -134,7 +134,10 @@ export default function SimulationEngine() {
       config = {};
     }
   }
-  const imageUrl = config?.imageUrl || 'https://placehold.co/1000x600/png?text=Simulacion+SS101';
+  let imageUrl = config?.imageUrl || '/simulation-ss101.png';
+  if (imageUrl === 'placeholder-sempra-terminal') {
+    imageUrl = '/simulation-ss101.png';
+  }
   const hotspots = config?.hotspots || [];
 
   let foundHotspots: any[] = [];
