@@ -3,6 +3,7 @@ import { useParams, Link } from "@tanstack/react-router";
 import { ArrowLeft, AlertTriangle, Timer, CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useSessionId } from "@/hooks/useSession";
 import { 
   useSimulationById, 
@@ -85,8 +86,40 @@ export default function SimulationEngine() {
 
   if (isLoadingSim || !simulation) {
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-indigo-950 text-white">
-        <p className="animate-pulse">Cargando simulación...</p>
+      <div className="flex flex-col h-screen bg-slate-indigo-950 text-slate-50 font-sans overflow-hidden">
+        {/* Header Skeleton */}
+        <div className="flex-none flex items-center justify-between px-6 py-4 border-b border-slate-indigo-800/60 bg-slate-indigo-950/80 backdrop-blur-md">
+          <Skeleton className="h-9 w-20 bg-slate-indigo-900/60" />
+          <Skeleton className="h-7 w-48 bg-slate-indigo-900/60 rounded-full" />
+          <Skeleton className="h-9 w-24 bg-slate-indigo-900/60 rounded-md" />
+        </div>
+
+        {/* Split View Content Skeleton */}
+        <div className="flex-1 flex overflow-hidden">
+          {/* Left: Image Area Skeleton (70%) */}
+          <div className="w-[70%] bg-black/40 flex items-center justify-center p-4">
+            <Skeleton className="w-[90%] h-[75vh] bg-slate-indigo-900/20 rounded-xl" />
+          </div>
+
+          {/* Right: Info Panel Skeleton (30%) */}
+          <div className="w-[30%] bg-slate-indigo-900/40 border-l border-slate-indigo-800/60 p-6 flex flex-col justify-between">
+            <div className="space-y-6">
+              <div>
+                <Skeleton className="h-6 w-48 bg-slate-indigo-900/60 mb-2" />
+                <Skeleton className="h-4 w-full bg-slate-indigo-900/40" />
+                <Skeleton className="h-4 w-3/4 bg-slate-indigo-900/40 mt-1" />
+              </div>
+
+              <div className="bg-slate-indigo-950/40 rounded-xl p-4 border border-slate-indigo-800/40 h-64 space-y-4">
+                <Skeleton className="h-4 w-28 bg-slate-indigo-900/60" />
+                <Skeleton className="h-10 w-full bg-slate-indigo-900/30 rounded-lg" />
+                <Skeleton className="h-10 w-full bg-slate-indigo-900/30 rounded-lg" />
+              </div>
+            </div>
+
+            <Skeleton className="h-11 w-full bg-slate-indigo-900/60 rounded-lg" />
+          </div>
+        </div>
       </div>
     );
   }
