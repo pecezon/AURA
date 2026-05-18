@@ -6,6 +6,17 @@ import { Button, buttonVariants } from "../ui/button";
 import { Link } from "@tanstack/react-router";
 import { useModulesByCourse } from "@/hooks/useModules";
 
+interface Simulation {
+  id: string;
+  passingScore: number;
+}
+
+interface ModuleWithSimulation {
+  id: string;
+  title: string;
+  simulation?: Simulation | null;
+}
+
 interface CourseCardProps {
   courseId: string;
   title: string;
@@ -26,7 +37,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
   progress,
 }) => {
   const { data: modules } = useModulesByCourse(courseId);
-  const simulationModule = modules?.find((m: any) => m.simulation);
+  const simulationModule = (modules as ModuleWithSimulation[] | undefined)?.find((m) => m.simulation);
   const actualSimulationId = simulationModule?.simulation?.id;
 
   return (
