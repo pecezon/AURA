@@ -1,6 +1,8 @@
+import { SimulationEvent } from "../../services/scoring.service";
+
 export interface SimulationAttemptProgress{
     score? : number;
-    events?: any[];
+    events?: SimulationEvent[];
     timeTakenSeconds?: number;
 }
 
