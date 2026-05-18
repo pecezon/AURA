@@ -74,6 +74,8 @@ export default function SimulationEngine() {
       });
       setResults(res);
     } catch (err) {
+      setIsFinished(false);
+      setResults(null);
       console.error("Error submitting attempt", err);
     }
   };
