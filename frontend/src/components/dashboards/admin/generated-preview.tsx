@@ -7,15 +7,8 @@ import { PreviewActions } from "./preview-actions";
 import { PreviewScenarios } from "./preview-scenarios";
 import { useGeneratedPreview } from "./hooks/use-generated-preview";
 import { type GeneratedContent } from "./types/course.types";
-import { type EditableModule } from "./types/module.types";
 import { useRegulations } from "@/hooks/useRegulations";
 import { Button } from "../../ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuCheckboxItem,
-} from "../../ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
