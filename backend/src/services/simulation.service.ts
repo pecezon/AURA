@@ -42,7 +42,28 @@ export class SimulationService{
             id : simulation.id,
             title : simulation.title,
             passingScore : simulation.passingScore,
-            moduleId : simulation.moduleId
+            moduleId : simulation.moduleId,
+            configuration: simulation.configuration
+        }
+    }
+
+    async getSimulationById(simulationId : string) : Promise<SimulationResponseDTO>{
+        const simulation = await prisma.simulation.findUnique({
+            where : {
+                id : simulationId
+            }
+        })
+
+        if(!simulation){
+            throw new NotFoundError("No simulation found with this ID")
+        }
+
+        return {
+            id : simulation.id,
+            title : simulation.title,
+            passingScore : simulation.passingScore,
+            moduleId : simulation.moduleId,
+            configuration: simulation.configuration
         }
     }
 

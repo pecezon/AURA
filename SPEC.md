@@ -33,10 +33,11 @@ Este documento sirve como la única fuente de verdad para los requerimientos, la
 - [x] Integración frontend-backend.
 
 ### Fase 3: Simulación e IA
-- [ ] Desarrollo de simulación 1. *(Nota: Modelos backend creados, pendiente desarrollo e UI de la simulación)*
-- [ ] Captura estructurada de eventos (Tiempos de reacción, decisiones).
-- [ ] Implementación del motor de scoring conductual (Risk Score).
+- [x] Desarrollo de simulación 1 (Estación de Compresión SS101).
+- [x] Captura estructurada de eventos (Tiempos de reacción, adición/remoción de pines y timestamps).
+- [x] Implementación del motor de scoring conductual (Risk Score asistido por IA).
 - [ ] Generación de perfil individual.
+- [ ] Tarea Próxima Sesión: Hacer que el análisis conductual de la IA también tome en cuenta los errores específicos cometidos durante la simulación (pines incorrectos u omisiones específicas).
 
 ### Fase 4: Dashboard y Generación de Contenido
 - [ ] Dashboard para supervisor. *(Nota: Archivo creado, falta lógica y métricas reales)*
@@ -81,23 +82,24 @@ Contar con una simulación funcional end-to-end (frontend + backend) que:
 - Calcule y devuelva un Risk Score
 
 **✅ Criterios de aceptación**
-- [ ] El usuario puede ver una imagen con al menos 3–5 riesgos
-- [ ] Puede seleccionar hotspots sobre la imagen
-- [ ] Se registra el tiempo de cada interacción
-- [ ] Se almacenan eventos en formato JSON
-- [ ] Se envía la simulación al backend y se recibe un Risk Score
-- [ ] Se muestra feedback básico al usuario (score + errores)
+- [x] El usuario puede ver una imagen con al menos 3–5 riesgos (Estación de Compresión).
+- [x] Puede seleccionar hotspots sobre la imagen mediante marcadores clicables.
+- [x] Se registra el tiempo de cada interacción (adición/remoción de pines).
+- [x] Se almacenan eventos estructurados en formato JSON.
+- [x] Se envía la simulación al backend y se recibe un Risk Score.
+- [x] Se muestra retroalimentación interactiva y justificada (éxitos + omisiones, score visual y análisis conductual por IA).
 
 **🔧 Subtareas**
-- **🎨 1. Diseño de la simulación:** Definir escenario (ej. área industrial con riesgos visibles), identificar mínimo 3–5 riesgos (ej. cable expuesto, derrame, falta de EPP), definir posiciones de hotspots (coordenadas), crear estructura JSON de configuration.
-- **🗄️ 2. Configuración en base de datos:** Crear registro en tabla Simulation, guardar JSON con imagen, hotspots, respuestas correctas, tiempo límite, definir passingScore.
-- **⚙️ 3. Backend – Scoring:** Implementar lógica en scoring.service.ts, evaluar riesgos identificados correctamente, omisiones (-20), tiempo excedido (-2 por segundo), indecisión (-5), retornar score y riskScore.
-- **💻 4. Frontend – Simulation Engine:** Renderizar imagen del escenario, dibujar hotspots clicables, implementar selección/deselección, integrar barra de tiempo (framer-motion).
-- **📡 5. Tracking de eventos:** Implementar useSimulationTracker, registrar timestamp de cada clic, cambios de selección, tiempo total, generar JSON de events.
-- **🔗 6. Integración frontend-backend:** Usar useMutation (TanStack Query), enviar events al backend, recibir riskScore.
-- **📊 7. Resultados y feedback:** Mostrar score final, riesgos no detectados, penalizaciones aplicadas, UI básica (no fancy aún).
+- [x] **🎨 1. Diseño de la simulación:** Definición de escenario fotorrealista generado por IA e inyección en BD.
+- [x] **🗄️ 2. Configuración en base de datos:** Inyección del JSON con la configuración base de hotspots, imageUrl y justificaciones.
+- [x] **⚙️ 3. Backend – Scoring:** Lógica euclidiana y penalizaciones por tiempo/indecisión en scoring.service.ts + integración con OpenAI.
+- [x] **💻 4. Frontend – Simulation Engine:** Split-view visual responsivo en simulation-engine.tsx con hotspots interactivos.
+- [x] **📡 5. Tracking de eventos:** Registro y encapsulado preciso en JSON de todos los clicks y timestamps.
+- [x] **🔗 6. Integración frontend-backend:** Mutaciones robustas con TanStack Query y manejo de errores 404 al vincular IDs del curso.
+- [x] **📊 7. Resultados y feedback:** Pantalla de análisis detallado por IA con Loader2 y visualizadores dinámicos.
 
 ## Futuras Mejoras (Lluvia de Ideas)
 - Badges por completar sets de habilidades.
 - Certificados automáticos (PDFKit).
 - Importación/Exportación de reportes (csv-parser).
+- IA Conductual Avanzada: Tomar en cuenta los errores específicos cometidos durante la simulación (pines incorrectos u omisiones específicas).

@@ -1,5 +1,9 @@
+import { SimulationEvent } from "../../services/scoring.service";
+
 export interface SimulationAttemptProgress{
-    score : number
+    score? : number;
+    events?: SimulationEvent[];
+    timeTakenSeconds?: number;
 }
 
 export interface SimulationAttemptCreateDTO{
@@ -13,5 +17,7 @@ export interface SimulationAttemptResponseDTO{
     score: number,
     passed: boolean,
     createdAt : string,
-    profileId : string
+    profileId : string,
+    riskScore?: number,
+    feedback?: string
 }

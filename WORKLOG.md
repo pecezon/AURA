@@ -3,6 +3,30 @@
 Este documento mantiene un registro cronológico de las sesiones de trabajo, tareas en curso, decisiones importantes y tareas pendientes. Esto asegura que el contexto no se pierda entre sesiones.
 
 
+## Sesión: 2026-05-16 — Parte II (Desarrollo Completo del Motor de Simulación SS101 y Feedback de IA)
+
+**Qué implementamos en esta sesión:**
+- **Motor de Scoring e IA Backend**: Implementación de `scoring.service.ts` con distancias euclidianas y penalizaciones de comportamiento + `openai.service.ts` utilizando `gpt-4o-mini` para retroalimentación cualitativa.
+- **Frontend Interactivo Responsivo**: Construcción de `simulation-engine.tsx` con un split-view premium, timers dinámicos, tracking preciso de eventos (pines interactivos) e inyección de imagen generada por IA.
+- **UI/UX Pro Max Pulido**: 
+  - Cuadro de justificación técnica por cada acierto y omisión usando iconos SVG (`Lucide React`), erradicando emojis por completo para cumplir con `REFERENCES.md`.
+  - Estados de carga animados (`Loader2` y `animate-pulse`) durante el análisis.
+  - Pines interactivos de advertencia amarillos (`bg-yellow-500` con `AlertTriangle` rebotando) durante el cálculo de puntuación para evitar spoilers visuales.
+- **Bugfixes Críticos**: Solución de error 404 de API al resolver el enrutamiento incorrecto que pasaba el `courseId` en lugar del `simulationId` tanto en `course-detail.tsx` como en las tarjetas `CourseCard.tsx` del dashboard.
+- **Historial Limpio**: Remoción de archivos y scripts de depuración huérfanos (`seed_sim`, `fix_sim`, `test_submit`), y reestructuración completa de los commits del pull request en 8 commits semánticos y organizados.
+
+**Qué quedó en progreso / Próxima Sesión:**
+- **IA Conductual Avanzada**: Extender el prompt de OpenAI en `openai.service.ts` para que tome en cuenta directamente los errores y omisiones concretas cometidas por el usuario (y no solo las métricas globales e indecisión).
+
+**Bloqueos:**
+- Ninguno. La simulación es completamente estable y funcional de extremo a extremo.
+
+**Próximos pasos en orden de prioridad:**
+- [ ] 1. Modificar el prompt en `backend/src/services/openai.service.ts` para que el análisis cualitativo evalúe los errores específicos y omisiones del intento.
+- [ ] 2. Avanzar con la Fase 4: Creación del Dashboard para Supervisor con métricas reales.
+
+---
+
 ## Sesión: 2026-05-16 (Instalación de AI Skills: Superpowers & UI/UX Pro Max)
 
 **Qué implementamos en esta sesión:**

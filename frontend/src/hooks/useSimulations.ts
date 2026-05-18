@@ -6,6 +6,9 @@ import { simulationApi, simulationKeys, simulationAttemptKeys } from '@/api/simu
 export const useSimulationByModule = (moduleId: string) =>
   useQuery({ queryKey: simulationKeys.byModule(moduleId), queryFn: () => simulationApi.getSimulationByModuleId(moduleId), enabled: !!moduleId });
 
+export const useSimulationById = (id: string) =>
+  useQuery({ queryKey: simulationKeys.byId(id), queryFn: () => simulationApi.getSimulationById(id), enabled: !!id });
+
 export const useSimulationByTitle = (title: string) =>
   useQuery({ queryKey: simulationKeys.byTitle(title), queryFn: () => simulationApi.getSimulationByTitle(title), enabled: !!title });
 
@@ -51,7 +54,6 @@ export const useCreateSimulationAttempt = () => {
 };
 
 export const useSaveSimulationProgress = () => {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ attemptId, data }: { attemptId: string; data: any }) => simulationApi.saveProgress(attemptId, data),
     // optionally invalidate or update cache optimistically

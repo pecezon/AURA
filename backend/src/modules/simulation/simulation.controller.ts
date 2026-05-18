@@ -13,6 +13,16 @@ export async function getSimulationByModuleId(req : Request, res : Response, nex
     }
 }
 
+export async function getSimulationById(req : Request, res : Response, next : NextFunction){
+    try{
+        const {simulationId} = req.params as {simulationId : string}
+        const simulation = await simulationService.getSimulationById(simulationId)
+        return res.status(200).json(simulation)
+    } catch (error){
+        next(error)
+    }
+}
+
 export async function getSimulationByTitle(req : Request, res : Response, next : NextFunction){
     try{
         const simulation = await simulationService.getSimulationByTitle(req.body)

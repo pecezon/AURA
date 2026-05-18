@@ -14,7 +14,7 @@ export const useCreateModule = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: moduleApi.createModule,
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       // Invalidate course modules cache if possible
       queryClient.invalidateQueries({ queryKey: moduleKeys.all });
     },
