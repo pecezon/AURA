@@ -136,7 +136,6 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
         if ("Notification" in window && Notification.permission === "granted") {
           new Notification("¡Contenido Generado!", {
             body: `El curso "${formData.topic}" ha sido generado exitosamente por la IA.`,
-            icon: "✨",
           });
         }
       },
