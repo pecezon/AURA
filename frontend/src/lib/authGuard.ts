@@ -47,7 +47,7 @@ export async function getUserState() {
     return {
       isAuthenticated: true,
       isProfileComplete: true,
-      role: profile.role
+      role: profile.role === "WORKER" ? "EMPLOYEE" : profile.role
     };
   }
 

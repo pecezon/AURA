@@ -148,7 +148,7 @@ export class SimulationAttemptService{
             data : {
                 score : scoreToSave,
                 passed: finalPassed,
-                events: dto.events || [],
+                events: (dto.events as any) || [],
                 riskScore: riskScore
             }
         })

@@ -1,8 +1,8 @@
 // ─── Content Types ────────────────────────────────────────────────────────────
 
-export type ContentType = "READING" | "VIDEO" | "IMAGE";
+export type ContentType = "READING" | "VIDEO" | "IMAGE" | "QUIZ";
 
-export type EditorTab = "text" | "file" | "url";
+export type EditorTab = "text" | "file" | "url" | "quiz";
 
 
 export type RawModule = { //Made it to prevent use of "any", in the editableModuleFunc on genereted-preview
@@ -39,10 +39,12 @@ export const ACCEPTED_EXTENSIONS: Record<ContentType, string> = {
   READING: ".txt,.md,.pdf",
   IMAGE: ".jpg,.jpeg,.png,.webp,.gif",
   VIDEO: ".mp4,.mov,.webm",
+  QUIZ: "",
 };
 
 export const CONTENT_TYPE_LABELS: Record<ContentType, string> = {
   READING: "Texto / Lectura / PDF",
   IMAGE: "Imagen",
   VIDEO: "Video",
+  QUIZ: "Evaluación (Quiz)",
 };

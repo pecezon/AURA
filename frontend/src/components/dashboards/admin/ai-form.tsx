@@ -6,12 +6,15 @@ import { Textarea } from "../../ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { Sparkles, Info } from "lucide-react";
 import { toSpanish } from "../../../lib/courseTypeConverter";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useRegulations } from "@/hooks/useRegulations";
+import { useGenerateCourse } from "@/hooks/useGenerateCourse";
 
 interface AIFormData {
   topic: string;
   courseType: string;
   duration: string;
-  applicableNorms: string;
+  applicableNorms: string[];
 }
 
 interface AIFormProps {
@@ -19,67 +22,20 @@ interface AIFormProps {
 }
 
 export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent }) => {
+  const { data: regulations, isLoading: isLoadingRegs } = useRegulations();
   const [formData, setFormData] = useState<AIFormData>({
     topic: "",
     courseType: "TECHNICAL",
     duration: "4",
-    applicableNorms: "",
+    applicableNorms: [],
   });
-  const [isGenerating, setIsGenerating] = useState(false);
+
+  const generateCourseMutation = useGenerateCourse();
+  const isGenerating = generateCourseMutation.isPending;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const generateMockContent = (formData: AIFormData) => {
-    const courseTypeLabel = toSpanish(formData.courseType) || formData.courseType;
-    
-    const modules = [
-      {
-        title: "Introducción y Fundamentos",
-        description: `Introducción a ${formData.topic}. Conceptos básicos y principios fundamentales que todo trabajador debe conocer antes de operar en este entorno.`,
-        duration: "45 min",
-      },
-      {
-        title: "Procedimientos Operativos Estándar",
-        description: `Procedimientos paso a paso para ${formData.topic}. Incluye secuencias críticas, puntos de verificación y mejores prácticas de la industria.`,
-        duration: "1 hora",
-      },
-      {
-        title: "Equipos de Seguridad y Protección",
-        description: `EPP requerido y equipos de seguridad necesarios para ${formData.topic}. Uso correcto, mantenimiento y verificación pre-operacional.`,
-        duration: "45 min",
-      },
-      {
-        title: "Gestión de Emergencias",
-        description: `Protocolos de respuesta ante emergencias relacionadas con ${formData.topic}. Evacuación, comunicación y procedimientos de rescate.`,
-        duration: "1 hora",
-      },
-    ];
-
-    const scenarios = [
-      {
-        question: "¿Cuál es tu primera acción?",
-        description: `Durante una operación rutinaria de ${formData.topic}, detectas una anomalía en los parámetros operativos.`,
-        type: "decision-based",
-      },
-      {
-        question: "¿Cómo intervenir?",
-        description: "Un compañero no sigue el procedimiento estándar de " + formData.topic + ".",
-        type: "scenario-based",
-      },
-    ];
-
-    return {
-      title: `Curso: ${formData.topic}`,
-      description: `Curso especializado en ${formData.topic}. Tipo: ${courseTypeLabel}. Duración estimada: ${formData.duration} horas.`,
-      duration: `${formData.duration} horas`,
-      courseType: formData.courseType,
-      applicableNorms: formData.applicableNorms,
-      modules,
-      scenarios,
-    };
   };
 
   const handleGenerateCourse = async (e: React.FormEvent) => {
@@ -89,22 +45,40 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent }) => {
       return;
     }
 
-    setIsGenerating(true);
-    setTimeout(() => {
-      const generatedContent = generateMockContent(formData);
-      setIsGenerating(false);
+    generateCourseMutation.mutate(formData, {
+      onSuccess: (data) => {
+        if (onGenerateContent) {
+          // If the AI didn't generate scenarios, supply standard fallback ones
+          const enhancedData = {
+            ...data,
+            scenarios: data.scenarios || [
+              {
+                question: "¿Cuál es tu primera acción?",
+                description: `Durante una operación rutinaria de ${formData.topic}, detectas una anomalía en los parámetros operativos.`,
+                type: "decision-based",
+              },
+              {
+                question: "¿Cómo intervenir?",
+                description: "Un compañero no sigue el procedimiento estándar de " + formData.topic + ".",
+                type: "scenario-based",
+              },
+            ]
+          };
+          onGenerateContent(enhancedData);
+        }
 
-      if (onGenerateContent) {
-        onGenerateContent(generatedContent);
+        if ("Notification" in window && Notification.permission === "granted") {
+          new Notification("¡Contenido Generado!", {
+            body: `El curso "${formData.topic}" ha sido generado exitosamente por la IA.`,
+            icon: "✨",
+          });
+        }
+      },
+      onError: (err: any) => {
+        console.error("AI Generation failed:", err);
+        alert("Ocurrió un error al generar el curso con IA. Por favor intenta de nuevo.");
       }
-
-      if ("Notification" in window && Notification.permission === "granted") {
-        new Notification("¡Contenido Generado!", {
-          body: `El curso "${formData.topic}" ha sido generado exitosamente.`,
-          icon: "✨",
-        });
-      }
-    }, 2000);
+    });
   };
 
   return (
@@ -169,14 +143,41 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent }) => {
 
           <div className="space-y-2">
             <Label htmlFor="applicableNorms">Normativas Aplicables</Label>
-            <Textarea
-              id="applicableNorms"
-              name="applicableNorms"
-              value={formData.applicableNorms}
-              onChange={handleInputChange}
-              placeholder="Ej. NOM-029-STPS-2011, NFPA 70E"
-              rows={3}
-            />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full justify-between font-normal">
+                  {formData.applicableNorms.length > 0 
+                    ? `${formData.applicableNorms.length} normativa(s) seleccionada(s)`
+                    : "Seleccionar normativas..."}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)]">
+                <DropdownMenuLabel>Normativas Oficiales</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {isLoadingRegs ? (
+                  <div className="p-2 text-sm text-gray-500">Cargando...</div>
+                ) : regulations?.length === 0 ? (
+                  <div className="p-2 text-sm text-gray-500">No hay normativas registradas</div>
+                ) : (
+                  regulations?.map((reg: any) => (
+                    <DropdownMenuCheckboxItem
+                      key={reg.id}
+                      checked={formData.applicableNorms.includes(reg.id)}
+                      onCheckedChange={(checked) => {
+                        setFormData(prev => ({
+                          ...prev,
+                          applicableNorms: checked 
+                            ? [...prev.applicableNorms, reg.id]
+                            : prev.applicableNorms.filter(id => id !== reg.id)
+                        }))
+                      }}
+                    >
+                      {reg.name} {reg.description ? `- ${reg.description}` : ""}
+                    </DropdownMenuCheckboxItem>
+                  ))
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           <div className="bg-blue-50 border border-blue-200 rounded-md p-3 flex gap-2">

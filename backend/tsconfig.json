@@ -7,5 +7,5 @@
     "strict": true,
     "esModuleInterop": true
   },
-  "exclude": ["prisma.config.ts", "node_modules", "dist"]
+  "exclude": ["prisma.config.ts", "node_modules", "dist", "prisma"]
 }

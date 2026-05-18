@@ -92,6 +92,7 @@ export class CourseService {
       isPublished: created.isPublished,
       createdAt: created.createdAt.toISOString(),
       updatedAt: created.updatedAt.toISOString(),
+      enrolledWorkers: 0,
       modules: created.modules.map((m) => ({
         id: m.id,
         title: m.title,
@@ -134,6 +135,7 @@ export class CourseService {
     const courses = await prisma.course.findMany({
       include: {
         regulations: true,
+        enrollments: true,
         modules: {
           include: {
             contents: true,
@@ -155,6 +157,7 @@ export class CourseService {
       isPublished: course.isPublished,
       createdAt: course.createdAt.toISOString(),
       updatedAt: course.updatedAt.toISOString(),
+      enrolledWorkers: course.enrollments.length,
       modules: course.modules.map((m) => ({
         id: m.id,
         title: m.title,

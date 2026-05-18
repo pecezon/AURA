@@ -102,6 +102,7 @@ export interface CourseResponse {
   isPublished: boolean;
   createdAt: string;
   updatedAt: string;
+  enrolledWorkers?: number;
   modules: (ModuleResponse & {
     contents: ModuleContentResponse[];
     quizzes: QuizResponse[];
