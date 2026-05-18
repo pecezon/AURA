@@ -11,7 +11,7 @@ export async function ensureProfile(user: any) {
       data: {
         id: user.id,
         email: user.email,
-        role: Role.WORKER,
+        role: Role.EMPLOYEE,
       },
     });
   }
