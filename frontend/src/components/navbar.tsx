@@ -5,7 +5,7 @@ import { LayoutDashboard, BookOpen, Sparkles } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 
 interface NavbarProps {
-  role?: "ADMIN" | "WORKER" | "SUPERVISOR" ;
+  role?: "ADMIN" | "EMPLOYEE" | "SUPERVISOR" ;
   isLoading?: boolean;
 }
 
@@ -20,7 +20,7 @@ const SHARED_ITEMS: NavItem[] = [
 ];
 
 const ROLE_NAV_ITEMS: Record<NonNullable<NavbarProps["role"]>, NavItem[]> = {
-  WORKER: [{ label: "Mis Cursos", to: "/courses", icon: <BookOpen /> }],
+  EMPLOYEE: [{ label: "Mis Cursos", to: "/courses", icon: <BookOpen /> }],
   SUPERVISOR: [], // to be filled
   ADMIN: [{ label: "Crear Contenido", to: "/", icon: <Sparkles /> }],
 
