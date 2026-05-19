@@ -3,6 +3,56 @@
 Este documento mantiene un registro cronológico de las sesiones de trabajo, tareas en curso, decisiones importantes y tareas pendientes. Esto asegura que el contexto no se pierda entre sesiones.
 
 
+## Sesión: 2026-05-19 — (Fix de Roles y Autorización de Worker)
+
+**Qué implementamos en esta sesión:**
+- **Sincronización y Regeneración del Cliente de Prisma**:
+  - Corregimos un desajuste crítico entre el esquema (`schema.prisma`) que mapeaba `EMPLOYEE` a `"WORKER"` en base de datos y el cliente de Prisma generado (`backend/generated/prisma`) que seguía compilado con la enumeración antigua (`WORKER` sin mapear).
+  - Ejecutamos con éxito `npx prisma generate` en el backend para forzar la correcta autoconversión en la capa ORM.
+- **Normalización Defensiva en AuthGuard**:
+  - Parcheamos el guardia de rutas global del frontend `getUserState` (`frontend/src/lib/authGuard.ts`) para que normalice de manera robusta y transparente `"WORKER"` a `"EMPLOYEE"` al usar `fetch()`, logrando consistencia con el interceptor de Axios y eliminando redirecciones indeseadas a landing al acceder al dashboard de trabajador.
+- **Ajuste de Margen y Espaciado en UI de Edición de Módulos**:
+  - Ampliamos el espacio visual (`gap`) entre el `Textarea` de contenido y las notificaciones de bloqueo de pestañas (`fileTabDisabled` y `urlTabDisabled`) en [module-content-item.tsx](file:///Users/diegopez/Documents/AURA/frontend/src/components/dashboards/admin/module-content-item.tsx) agregando `mt-4`.
+- **Validación de Compilación**:
+  - Ejecutamos pruebas estáticas de TypeScript (`tsc --noEmit`) tanto en frontend como en backend, resultando en **0 errores de compilación**.
+
+**Qué quedó en progreso:**
+- **Diseño Híbrido de Archivos**: Listo el diseño UX del botón "Reemplazar Archivo" y los visualizadores premium de multimedia en el dashboard del administrador.
+
+**Bloqueos:**
+- Ninguno.
+
+**Próximos pasos en orden de prioridad:**
+1. Proceder con el desarrollo de la interfaz de carga híbrida de archivos y dropzone en `module-content-item.tsx` aplicando el flujo guardado en lote.
+
+---
+
+## Sesión: 2026-05-18 — (Alineación de Tiempos de Simulación, Pestañas Persistentes y Toasts Autolimpiables)
+
+**Qué implementamos en esta sesión:**
+- **Alineación de Parámetros de Tiempo en Simulaciones (`timeLimitSeconds`)**:
+  - Modificamos `submitAttempt` de [simuAttempt.service.ts](file:///Users/diegopez/Documents/AURA/backend/src/services/simuAttempt.service.ts) para soportar de manera robusta y compatible tanto la clave unificada `timeLimitSeconds` como `timeLimit` para el cálculo y la penalización de tiempo.
+  - Sincronizamos el cargador de cursos base en [course.service.ts](file:///Users/diegopez/Documents/AURA/backend/src/services/course.service.ts) para usar consistentemente `timeLimitSeconds: 120` al crear/iniciar simulaciones.
+- **Pestañas Persistentes en Dashboard de Administrador**:
+  - Eliminamos la renderización condicional (desmontaje) en [admin-dashboard.tsx](file:///Users/diegopez/Documents/AURA/frontend/src/routes/admin-dashboard.tsx), reemplazándola con clases CSS de visibilidad de Tailwind (`hidden` / `space-y-6`).
+  - Ahora, los componentes `AIForm` y `GeneratedPreview` retienen todo su estado local (borradores, inputs llenos, estados de carga y previsualizaciones activas) al navegar de una pestaña a otra.
+- **Notificaciones Premium con Auto-limpieza (`react-hot-toast`)**:
+  - Integramos el hook global `toast.success` desde la librería nativa del proyecto `react-hot-toast` en la función de éxito de publicación de [use-generated-preview.ts](file:///Users/diegopez/Documents/AURA/frontend/src/components/dashboards/admin/hooks/use-generated-preview.ts).
+  - Limpiamos el borrador y los inputs de `AIForm` inmediatamente en la mutación exitosa sin requerir clics manuales del usuario en botones de cierre.
+- **Compilación Estática Exitosa**: Corrimos `npx tsc --noEmit` en ambos directorios (frontend y backend) obteniendo **0 errores de TypeScript**.
+- **Control de Commits de Git**: Los cambios se guardaron de manera segura y local (sin hacer add ni commits), respetando las directivas del usuario.
+
+**Qué quedó en progreso:**
+- Ninguno. Todas las tareas de unificación de tiempo, preservación de estado e interacciones premium de publicación están terminadas con éxito.
+
+**Bloqueos:**
+- Ninguno.
+
+**Próximos pasos en orden de prioridad:**
+- [ ] 1. Avanzar con la Fase 4 del MVP: Creación y desarrollo del Dashboard para Supervisor con métricas y reportes analíticos reales.
+
+---
+
 ## Sesión: 2026-05-16 — Parte II (Desarrollo Completo del Motor de Simulación SS101 y Feedback de IA)
 
 **Qué implementamos en esta sesión:**
