@@ -15,7 +15,9 @@ import { Badge } from "@/components/ui/badge";
 import { Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { mockUsers, mockCourses, mockProgress } from "@/lib/mockData";
+import { useCourses } from "@/hooks/useCourses";
+import { useProfileEnrollments, useEnrollInCourse } from "@/hooks/useEnrollments";
+import { api } from "@/lib/api";
 
 interface AssignmentsProps {}
 
@@ -39,26 +41,50 @@ export const Assignments: React.FC<AssignmentsProps> = () => {
 
   // Assignment state
   const [selectedWorker, setSelectedWorker] = useState<string>("");
+  const [selectedWorkerData, setSelectedWorkerData] = useState<any>(null);
   const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
   const [workerSearch, setWorkerSearch] = useState("");
   const [courseSearch, setCourseSearch] = useState("");
 
-  // Get workers only
-  const workers = mockUsers.filter((user) => user.role === "worker");
+  const [workerSearchResults, setWorkerSearchResults] = useState<any[]>([]);
+  const [isSearchingWorkers, setIsSearchingWorkers] = useState(false);
 
-  // Filter workers based on search
-  const filteredWorkers = workers.filter(
-    (worker) =>
-      worker.name.toLowerCase().includes(workerSearch.toLowerCase()) ||
-      worker.department.toLowerCase().includes(workerSearch.toLowerCase()),
-  );
+  useEffect(() => {
+    const handler = setTimeout(async () => {
+      if (workerSearch.trim().length >= 3) {
+        setIsSearchingWorkers(true);
+        try {
+          const res = await api.get(`/api/profile/search?search=${encodeURIComponent(workerSearch)}&limit=20&page=1`);
+          setWorkerSearchResults(res.data.data.filter((p: any) => p.role === 'EMPLOYEE' || p.role === 'WORKER'));
+        } catch (error) {
+          console.error("Error searching workers:", error);
+          toast.error("Error al buscar trabajadores");
+        } finally {
+          setIsSearchingWorkers(false);
+        }
+      } else {
+        setWorkerSearchResults([]);
+      }
+    }, 300);
 
-  // Filter courses based on search
-  const filteredCourses = mockCourses.filter(
-    (course) =>
-      course.title.toLowerCase().includes(courseSearch.toLowerCase()) ||
-      course.description.toLowerCase().includes(courseSearch.toLowerCase()) ||
-      course.type.toLowerCase().includes(courseSearch.toLowerCase()),
+    return () => clearTimeout(handler);
+  }, [workerSearch]);
+
+
+
+  const { data: allCourses = [] } = useCourses();
+  const { data: selectedWorkerEnrollments = [] } = useProfileEnrollments(selectedWorker || "");
+  const { mutateAsync: enrollInCourse } = useEnrollInCourse();
+
+  const assignedCourseIds = new Set(selectedWorkerEnrollments.map((e: any) => e.courseId));
+
+  // Filter courses based on search and exclude already assigned courses
+  const filteredCourses = allCourses.filter(
+    (course: any) =>
+      !assignedCourseIds.has(course.id) &&
+      (course.title.toLowerCase().includes(courseSearch.toLowerCase()) ||
+      course.description?.toLowerCase().includes(courseSearch.toLowerCase()) ||
+      course.type?.toLowerCase().includes(courseSearch.toLowerCase()))
   );
 
   const handleCourseToggle = (courseId: string) => {
@@ -69,19 +95,7 @@ export const Assignments: React.FC<AssignmentsProps> = () => {
     );
   };
 
- const getWorkerUncompletedCourses = (workerId: string) => {
-    const workerProgress = mockProgress
-      .filter(p => p.userId === workerId && p.progress < 100)
-      .sort((a, b) => b.lastAccess.getTime() - a.lastAccess.getTime())
-      .slice(0, 3);
-    
-    return workerProgress.map(p => {
-      const course = mockCourses.find(c => c.id === p.courseId);
-      return course ? { ...course, progress: p.progress } : null;
-    }).filter(Boolean);
-  };
-
-  const handleAssignCourses = () => {
+  const handleAssignCourses = async () => {
     if (!selectedWorker) {
       toast.error("Por favor selecciona un trabajador");
       return;
@@ -91,14 +105,23 @@ export const Assignments: React.FC<AssignmentsProps> = () => {
       return;
     }
 
-    const worker = workers.find((w) => w.id === selectedWorker);
-    toast.success(
-      `${selectedCourses.length} curso(s) asignado(s) a ${worker?.name}`,
-    );
+    try {
+      await Promise.all(
+        selectedCourses.map((courseId) =>
+          enrollInCourse({ profileId: selectedWorker, courseId })
+        )
+      );
 
-    // Reset form
-    setSelectedWorker("");
-    setSelectedCourses([]);
+      toast.success(
+        `${selectedCourses.length} curso(s) asignado(s) a ${selectedWorkerData?.firstName}`,
+      );
+
+      // Only reset selected courses, keep worker selected to see instant updates
+      setSelectedCourses([]);
+    } catch (error) {
+      console.error("Error asignando cursos:", error);
+      toast.error("Hubo un error al asignar los cursos o el trabajador ya los tenía asignados");
+    }
   };
 
   const handleGenerate = async () => {
@@ -204,12 +227,15 @@ export const Assignments: React.FC<AssignmentsProps> = () => {
               {/* Worker Results */}
               {workerSearch && (
                 <div className="absolute top-full left-0 mt-1 w-full z-[100] space-y-2 max-h-64 overflow-y-auto bg-white shadow-xl border rounded-lg p-2">
-                  {filteredWorkers.length > 0 ? (
-                    filteredWorkers.map((worker) => (
+                  {isSearchingWorkers ? (
+                    <p className="text-sm text-muted-foreground text-center py-4">Buscando...</p>
+                  ) : workerSearchResults.length > 0 ? (
+                    workerSearchResults.map((worker) => (
                       <div
                         key={worker.id}
                         onClick={() => {
                           setSelectedWorker(worker.id);
+                          setSelectedWorkerData(worker);
                           setWorkerSearch("");
                         }}
                         className={`p-3 rounded-lg cursor-pointer transition-colors ${
@@ -220,9 +246,9 @@ export const Assignments: React.FC<AssignmentsProps> = () => {
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="font-medium text-sm">{worker.name}</p>
+                            <p className="font-medium text-sm">{`${worker.firstName} ${worker.lastName}`}</p>
                             <p className="text-xs text-muted-foreground">
-                              {worker.department}
+                              {worker.area || "Sin área"}
                             </p>
                           </div>
                           {selectedWorker === worker.id && (
@@ -231,9 +257,13 @@ export const Assignments: React.FC<AssignmentsProps> = () => {
                         </div>
                       </div>
                     ))
-                  ) : (
+                  ) : workerSearch.trim().length >= 3 ? (
                     <p className="text-sm text-muted-foreground text-center py-4">
                       No se encontraron trabajadores
+                    </p>
+                  ) : (
+                    <p className="text-sm text-muted-foreground text-center py-4">
+                      Escribe al menos 3 caracteres
                     </p>
                   )}
                 </div>
@@ -241,20 +271,23 @@ export const Assignments: React.FC<AssignmentsProps> = () => {
             </div>
 
             {/* Selected Worker Display */}
-            {selectedWorker && (
+            {selectedWorkerData && (
               <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-blue-900">
-                    {workers.find((w) => w.id === selectedWorker)?.name}
+                    {`${selectedWorkerData.firstName} ${selectedWorkerData.lastName}`}
                   </p>
                   <p className="text-xs text-blue-700">
-                    {workers.find((w) => w.id === selectedWorker)?.department}
+                    {selectedWorkerData.area || "Sin área"}
                   </p>
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setSelectedWorker("")}
+                  onClick={() => {
+                    setSelectedWorker("");
+                    setSelectedWorkerData(null);
+                  }}
                   className="h-8 w-8 p-0"
                 >
                   <X className="size-4" />
@@ -262,22 +295,22 @@ export const Assignments: React.FC<AssignmentsProps> = () => {
               </div>
             )}
              {(() => {
-                        const uncompletedCourses = getWorkerUncompletedCourses(selectedWorker);
+                        const uncompletedCourses = selectedWorkerEnrollments.filter((e: any) => e.progress < 100);
                         return uncompletedCourses.length > 0 && (
                           <div className="pt-2 border-t border-blue-200">
                             <p className="text-xs font-medium text-blue-800 mb-1.5">
                               Cursos pendientes:
                             </p>
                             <div className="flex flex-wrap gap-1.5">
-                              {uncompletedCourses.map((course: any) => (
+                              {uncompletedCourses.slice(0,3).map((course: any) => (
                                 <Badge 
-                                  key={course.id} 
+                                  key={course.courseId} 
                                   variant="outline"
                                   className="text-xs bg-white border-blue-300 text-blue-800"
                                 >
-                                  {course.title.length > 30 
-                                    ? `${course.title.substring(0, 30)}...` 
-                                    : course.title}
+                                  {course.courseTitle.length > 30 
+                                    ? `${course.courseTitle.substring(0, 30)}...` 
+                                    : course.courseTitle}
                                   <span className="ml-1 font-semibold">({course.progress}%)</span>
                                 </Badge>
                               ))}
@@ -366,7 +399,7 @@ export const Assignments: React.FC<AssignmentsProps> = () => {
                 <p className="text-sm font-medium">Cursos seleccionados ({selectedCourses.length}):</p>
                 <div className="flex flex-wrap gap-2">
                   {selectedCourses.map((id) => {
-                    const course = mockCourses.find((c) => c.id === id);
+                    const course = allCourses.find((c: any) => c.id === id);
                     if (!course) return null;
                     return (
                       <Badge key={id} variant="secondary" className="flex items-center gap-1.5 py-1 px-2">
@@ -384,12 +417,12 @@ export const Assignments: React.FC<AssignmentsProps> = () => {
           </div>
 
           {/* Assignment Summary */}
-          {selectedWorker && selectedCourses.length > 0 && (
+          {selectedWorkerData && selectedCourses.length > 0 && (
             <Alert>
               <Users className="size-4" />
               <AlertDescription>
                 {selectedCourses.length} curso(s) serán asignados a{" "}
-                {workers.find((w) => w.id === selectedWorker)?.name}
+                {`${selectedWorkerData.firstName} ${selectedWorkerData.lastName}`}
               </AlertDescription>
             </Alert>
           )}
