@@ -123,7 +123,7 @@ export class SimulationAttemptService{
             
             const config = simulation.configuration as any;
             const hotspots = config?.hotspots || [];
-            const timeLimit = config?.timeLimit || 120; // default 120s
+            const timeLimit = config?.timeLimitSeconds || config?.timeLimit || 120; // default 120s
 
             const result = await scoringService.calculateScore(
                 hotspots, 

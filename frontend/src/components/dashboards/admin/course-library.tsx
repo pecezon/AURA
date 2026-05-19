@@ -53,7 +53,7 @@ export const CourseLibrary: React.FC<CourseLibraryProps> = ({
           </div>
         ) : (
           <div className="space-y-4">
-            {coursesToRender.map((course: any) => {
+            {coursesToRender.map((course: PublishedCourse) => {
               const displayType = toSpanish(course.type) || course.type;
               return (
                 <div

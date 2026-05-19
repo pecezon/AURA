@@ -27,6 +27,7 @@ export interface ModuleContent {
   content: string;
   url: string;
   file: File | null;
+  isGeneratedByAI?: boolean;
 }
 
 export interface EditableModule {

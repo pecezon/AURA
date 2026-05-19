@@ -68,7 +68,7 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
   }, [content]);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval> | undefined;
     if (isGenerating) {
       interval = setInterval(() => {
         setLoadingPhraseIndex((prev) => (prev + 1) % loadingPhrases.length);
@@ -76,7 +76,9 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
     } else {
       setLoadingPhraseIndex(0);
     }
-    return () => clearInterval(interval);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, [isGenerating]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -291,7 +293,7 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
             {formData.selectedSimulation === "ss101" && (
               <div className="mt-2 border border-blue-150 bg-blue-50/50 rounded-lg p-3.5 flex gap-4 animate-fade-in shadow-sm">
                 <img
-                  src="/simulation-ss101.png"
+                  src="/simulations/industrial_safety_1.png"
                   alt="Sempra Terminal"
                   className="w-28 h-20 object-cover rounded-md border border-blue-200 shadow-sm shrink-0"
                 />

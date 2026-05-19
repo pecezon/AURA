@@ -134,9 +134,9 @@ export default function SimulationEngine() {
       config = {};
     }
   }
-  let imageUrl = config?.imageUrl || '/simulation-ss101.png';
+  let imageUrl = config?.imageUrl || '/simulations/industrial_safety_1.png';
   if (imageUrl === 'placeholder-sempra-terminal') {
-    imageUrl = '/simulation-ss101.png';
+    imageUrl = '/simulations/industrial_safety_1.png';
   }
   const hotspots = config?.hotspots || [];
 
