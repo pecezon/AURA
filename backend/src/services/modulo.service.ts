@@ -118,6 +118,34 @@ export class ModuleService {
         return ModuleResponseReturn(module)
     }
 
+    //Get module by id
+    async getModuleById( moduleId : string ) : Promise<ModuleResponseDTO> {
+        const module = await prisma.module.findUnique({
+            where : { id : moduleId },
+            include : {
+                contents : {
+                    orderBy: { order: "asc" }
+                },
+                quizzes : {
+                    include : {
+                        questions : {
+                            include : {
+                                reactives : true
+                            }
+                        }
+                    }
+                },
+                simulation : true
+            },
+        });
+
+        if(!module){
+            throw new NotFoundError("Module Not Found")
+        }
+
+        return ModuleResponseReturn(module)
+    }
+
     //POST METHODS (Create Full Module)
     async createFullModule(dto : ModuleCreateDTO): Promise <ModuleResponseDTO> {
         const existsModule = await prisma.module.findFirst({where : {title : dto.title}})

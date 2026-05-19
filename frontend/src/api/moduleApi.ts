@@ -5,6 +5,7 @@ export const moduleKeys = {
   byCourse: (courseId: string) => ['modules', 'course', courseId] as const,
   byType: (type: string, courseId?: string) => ['modules', 'content-type', type, courseId].filter(Boolean) as string[],
   byTitle: (title: string) => ['modules', 'title', title] as const,
+  byId: (moduleId: string) => ['modules', 'id', moduleId] as const,
 };
 
 export const moduleApi = {
@@ -12,4 +13,5 @@ export const moduleApi = {
   getAllByCourseId: (courseId: string) => api.get(`/api/modules/get-all-modules-by-course/${courseId}`).then(r => r.data),
   getContentByType: (type: string, courseId?: string) => api.get('/api/modules/get-all-modules-content-by-type', { params: { type, courseId } }).then(r => r.data),
   getModuleByTitle: (title: string) => api.get('/api/modules/get-module-by-title', { params: { title } }).then(r => r.data),
+  getModuleById: (moduleId: string) => api.get(`/api/modules/get-module-by-id/${moduleId}`).then(r => r.data),
 };
