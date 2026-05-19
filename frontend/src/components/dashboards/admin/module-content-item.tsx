@@ -326,7 +326,7 @@ export const ModuleContentItem: React.FC<Props> = ({ content, index, onUpdate, o
 
                     {/* Locked state messages — shown whenever a tab is blocked, regardless of active tab */}
                     {fileTabDisabled && (
-                      <p className="text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded-md p-3 flex items-center gap-2">
+                      <p className="text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded-md p-3 flex items-center gap-2 mt-4">
                         <Lock className="w-4 h-4 text-amber-500 shrink-0" />
                         <span>
                           El tab <strong>Archivo</strong> está deshabilitado. Limpia la URL para poder subir un archivo.
@@ -334,7 +334,7 @@ export const ModuleContentItem: React.FC<Props> = ({ content, index, onUpdate, o
                       </p>
                     )}
                     {urlTabDisabled && (
-                      <p className="text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded-md p-3 flex items-center gap-2">
+                      <p className="text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded-md p-3 flex items-center gap-2 mt-4">
                         <Lock className="w-4 h-4 text-amber-500 shrink-0" />
                         <span>
                           El tab <strong>URL</strong> está deshabilitado. Quita el archivo adjunto para usar una URL.
