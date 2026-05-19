@@ -33,6 +33,16 @@ export async function getModuleByTitle(req : Request, res : Response, next : Nex
     }
 }
 
+export async function getModuleById(req : Request, res : Response, next : NextFunction){
+    try{
+        const { moduleId } = req.params as { moduleId : string }
+        const response = await moduleService.getModuleById(moduleId)
+        return res.status(200).json(response)
+    } catch (error){
+        next(error)
+    }
+}
+
 export async function createFullModule(req : Request, res : Response, next : NextFunction){
     try{
         const response = await moduleService.createFullModule(req.body)

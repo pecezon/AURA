@@ -3,6 +3,56 @@
 Este documento mantiene un registro cronológico de las sesiones de trabajo, tareas en curso, decisiones importantes y tareas pendientes. Esto asegura que el contexto no se pierda entre sesiones.
 
 
+## Sesión: 2026-05-19 — Asignación de Cursos a Trabajadores (Búsqueda Real, Paginación y Filtrado)
+
+**Qué implementamos en esta sesión:**
+- **Backend (Paginación y Clean-up)**:
+  - Se modificó `searchProfiles` en `profile.service.ts`, `profile.controller.ts` y su esquema de validación para aceptar `search`, `page` y `limit`, devolviendo resultados paginados (`{ data, total, page, limit }`).
+  - Se removió un hack en `enrollment.service.ts` que matriculaba automáticamente al rol `ADMIN` en todos los cursos al consultar el endpoint. Ahora devuelve estrictamente los registros reales de `CourseEnrollment`.
+- **Frontend (UI/UX Pro Max en Asignaciones)**:
+  - Migración completa del componente `assignments.tsx` para dejar de depender de `mockUsers`, `mockCourses` y `mockProgress`.
+  - **Búsqueda de Trabajadores:** Se implementó búsqueda real al endpoint `/api/profile/search` con `debounce` de 300ms y un mínimo de 3 caracteres antes de gatillar la red.
+  - **Cursos Pendientes:** Al seleccionar un trabajador, se hace fetch automático (`useProfileEnrollments`) a sus enrolamientos reales, desplegando únicamente sus cursos asignados que no han sido completados (`progress < 100`).
+  - **Búsqueda de Cursos:** Ahora la lista disponible para asignar (`useCourses()`) **filtra dinámicamente** los cursos para ocultar aquellos en los que el usuario ya está inscrito, previniendo asignaciones duplicadas.
+  - **Persistencia en Base de Datos:** Se implementó la mutación real `useEnrollInCourse` para que el botón "Asignar Cursos Seleccionados" impacte la base de datos (con un loop concurrente de peticiones POST).
+  - **UX en Tiempo Real:** Se evitó limpiar el trabajador seleccionado tras asignar, logrando que el componente reaccione en tiempo real gracias a la invalidación de caché de `@tanstack/react-query`, moviendo el curso instantáneamente a la sección de "Cursos pendientes".
+
+**Qué quedó en progreso:**
+- Proceder con el desarrollo de la interfaz de carga híbrida de archivos y dropzone en el Dashboard de Administrador (`module-content-item.tsx`), o continuar con la Fase 4 (Supervisor Metrics).
+
+**Bloqueos:**
+- Ninguno. 
+
+**Próximos pasos en orden de prioridad:**
+1. Proceder con el desarrollo de la interfaz de carga híbrida de archivos y dropzone en el Dashboard de Administrador (`module-content-item.tsx`).
+2. Completar los dashboards de Supervisores con data analítica proveniente de la base de datos (eliminando mocks restantes).
+
+---
+
+## Sesión: 2026-05-19 — Parte II y III (Vista Paginada, Quizzes y Videos Embeds)
+
+**Qué implementamos en esta sesión:**
+- **Backend (TDD)**:
+  - Implementación del nuevo endpoint `GET /api/modules/get-module-by-id/:moduleId` en `modulo.controller.ts` y `modulo.service.ts` para obtener todo el árbol de contenido de un módulo, incluyendo las evaluaciones (`quizzes` y sus reactivos).
+  - Creación del archivo de pruebas `modulo.integration.test.ts` verificando el caso de éxito (con autenticación de Supabase mockeada) y el manejo de errores `404` (NotFoundError). Ambas pruebas pasaron en verde.
+- **Frontend (UI/UX Pro Max)**:
+  - Creación de la pantalla inmersiva `ModuleLearning` (`frontend/src/routes/module-learning.tsx`) que despliega una barra superior de progreso y permite navegar de manera horizontal a través de todas las `ModuleContent` (Lecturas, Imágenes, Videos).
+  - Al superar los contenidos de lectura, se adjuntan las evaluaciones (Quizzes) asociadas.
+  - Creación de custom hook `useModuleById` conectándolo a `moduleApi`.
+  - **Lógica de QuizAttempt en Tiempo Real**: Se agregó la funcionalidad para enviar el Quiz vía `useCreateQuizAttempt`, bloqueando los *inputs* tras el envío y brindando feedback visual inmediato (Aprobado/Reprobado, calificación en %, y marcado en verde/rojo de los reactivos correctos e incorrectos).
+  - **Fix de Video URLs (YouTube)**: Se modificó la renderización del contenido `VIDEO` añadiendo una expresión regular para detectar URLs externas de YouTube (`youtu.be`, `watch?v=`), reemplazando dinámicamente la etiqueta nativa `<video>` por un `<iframe>` embed fluido.
+
+**Qué quedó en progreso:**
+- Proceder con el desarrollo de la interfaz de carga híbrida de archivos y dropzone en el Dashboard de Administrador (`module-content-item.tsx`).
+
+**Bloqueos:**
+- Ninguno. Las validaciones estáticas `npx tsc --noEmit` en backend y frontend pasaron sin errores.
+
+**Próximos pasos en orden de prioridad:**
+1. Proceder con el desarrollo de la interfaz de carga híbrida de archivos y dropzone en el Dashboard de Administrador (`module-content-item.tsx`).
+
+---
+
 ## Sesión: 2026-05-19 — (Fix de Roles y Autorización de Worker)
 
 **Qué implementamos en esta sesión:**

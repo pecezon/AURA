@@ -206,19 +206,34 @@ export default function CourseDetail() {
                           )}
                         </div>
                         
-                        {completed ? (
-                          <div className="flex items-center text-sm text-green-600 font-medium">
-                            <CheckCircle className="h-4 w-4 mr-2" />
-                            Módulo completado
-                          </div>
-                        ) : (
-                          <Button 
-                            onClick={() => markModuleAsCompleted(module.id)}
-                            className="bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-sm px-6 cursor-pointer"
-                          >
-                            Marcar como Completado
-                          </Button>
-                        )}
+                        <div className="flex items-center gap-3">
+                          {completed ? (
+                            <>
+                              <div className="flex items-center text-sm text-green-600 font-medium bg-green-50 px-3 py-1.5 rounded-full border border-green-200">
+                                <CheckCircle className="h-4 w-4 mr-2" />
+                                Módulo completado
+                              </div>
+                              <Button 
+                                asChild
+                                variant="outline"
+                                className="rounded-lg text-sm px-6 cursor-pointer"
+                              >
+                                <Link to="/course/$courseId/module/$moduleId" params={{ courseId, moduleId: module.id }}>
+                                  Repasar Módulo
+                                </Link>
+                              </Button>
+                            </>
+                          ) : (
+                            <Button 
+                              asChild
+                              className="bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-sm px-6 cursor-pointer"
+                            >
+                              <Link to="/course/$courseId/module/$moduleId" params={{ courseId, moduleId: module.id }}>
+                                Comenzar Módulo
+                              </Link>
+                            </Button>
+                          )}
+                        </div>
                       </AccordionContent>
                     </AccordionItem>
                   );
