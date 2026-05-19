@@ -56,28 +56,36 @@ export async function getAllProfiles() {
   }));
 }
 
-export async function searchProfiles(name: string) {
-  const profiles = await prisma.profile.findMany({
-    where: {
-      OR: [
-        { firstName: { contains: name, mode: 'insensitive' } },
-        { lastName: { contains: name, mode: 'insensitive' } },
-      ],
-    },
-    select: {
-      id: true,
-      email: true,
-      firstName: true,
-      lastName: true,
-      employeeId: true,
-      area: true,
-      role: true,
-      isProfileComplete: true,
-      birthDate: true,
-      createdAt: true,
-    },
-  });
-  return profiles.map((profile) => ({
+export async function searchProfiles(search?: string, page: number = 1, limit: number = 20) {
+  const where = search ? {
+    OR: [
+      { firstName: { contains: search, mode: 'insensitive' as const } },
+      { lastName: { contains: search, mode: 'insensitive' as const } },
+    ],
+  } : {};
+
+  const [profiles, total] = await Promise.all([
+    prisma.profile.findMany({
+      where,
+      skip: (page - 1) * limit,
+      take: limit,
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        employeeId: true,
+        area: true,
+        role: true,
+        isProfileComplete: true,
+        birthDate: true,
+        createdAt: true,
+      },
+    }),
+    prisma.profile.count({ where }),
+  ]);
+
+  const data = profiles.map((profile) => ({
     id: profile.id,
     email: profile.email,
     firstName: profile.firstName,
@@ -89,6 +97,13 @@ export async function searchProfiles(name: string) {
     birthDate: profile.birthDate ? profile.birthDate.toISOString() : null,
     createdAt: profile.createdAt.toISOString(),
   }));
+
+  return {
+    data,
+    total,
+    page,
+    limit,
+  };
 }
 
 export async function getProfileById(id: string) {

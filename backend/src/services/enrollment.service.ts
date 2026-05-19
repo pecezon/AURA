@@ -58,26 +58,7 @@ export class EnrollmentService {
 
   async getEnrollmentsByProfileId(profileId: string) {
     const profile = await prisma.profile.findUnique({ where: { id: profileId } });
-    if (profile && profile.role === "ADMIN") {
-      const courses = await prisma.course.findMany();
-      const existingEnrollments = await prisma.courseEnrollment.findMany({
-        where: { profileId }
-      });
-      const enrolledCourseIds = new Set(existingEnrollments.map(e => e.courseId));
-      const missingCourseIds = courses
-        .map(c => c.id)
-        .filter(id => !enrolledCourseIds.has(id));
 
-      if (missingCourseIds.length > 0) {
-        await prisma.courseEnrollment.createMany({
-          data: missingCourseIds.map(courseId => ({
-            profileId,
-            courseId
-          })),
-          skipDuplicates: true
-        });
-      }
-    }
 
     const enrollments = await prisma.courseEnrollment.findMany({
       where: { profileId },

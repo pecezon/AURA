@@ -10,6 +10,9 @@ export const useModuleContentByType = (type: string, courseId?: string) =>
 export const useModuleByTitle = (title: string) =>
   useQuery({ queryKey: moduleKeys.byTitle(title), queryFn: () => moduleApi.getModuleByTitle(title), enabled: !!title });
 
+export const useModuleById = (moduleId: string) =>
+  useQuery({ queryKey: moduleKeys.byId(moduleId), queryFn: () => moduleApi.getModuleById(moduleId), enabled: !!moduleId });
+
 export const useCreateModule = () => {
   const queryClient = useQueryClient();
   return useMutation({
