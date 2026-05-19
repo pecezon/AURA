@@ -18,6 +18,7 @@ export function toEditableModule(mod: RawModule, idx: number): EditableModule {
       content: c.content ?? "",
       url: c.url ?? "",
       file: c.file ?? null,
+      isGeneratedByAI: c.isGeneratedByAI ?? (c.type === "QUIZ" ? true : undefined),
     }));
     return {
       id: mod.id ?? crypto.randomUUID(),
@@ -42,6 +43,7 @@ export function toEditableModule(mod: RawModule, idx: number): EditableModule {
         content: mod.contentText ?? "",
         url: mod.contentUrl ?? "",
         file: null,
+        isGeneratedByAI: type === "QUIZ" ? true : undefined,
       },
     ],
   };
@@ -97,7 +99,7 @@ export function buildPayload(content: GeneratedContent): CourseCreateDTO {
         }
         return {
           title: c.title || "Evaluación Rápida",
-          isGeneratedByAI: false,
+          isGeneratedByAI: c.isGeneratedByAI !== undefined ? c.isGeneratedByAI : true,
           questions: [
             {
               text: questionText,

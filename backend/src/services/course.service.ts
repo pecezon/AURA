@@ -65,7 +65,7 @@ export class CourseService {
                     configuration: {
                       scenario: "Terminal de Gasoductos Sempra",
                       imageUrl: "placeholder-sempra-terminal",
-                      timeLimit: 120,
+                      timeLimitSeconds: 120,
                       hotspots: [
                         {
                           id: "risk-1",

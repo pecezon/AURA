@@ -59,31 +59,28 @@ export default function AdminDashboard() {
         </div>
 
         {/* Create Content Tab */}
-        {activeTab === "create" && (
-          <>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <AIForm 
-                onGenerateContent={handleGenerateContent} 
-                content={generatedContent}
-                setGeneratedContent={setGeneratedContent}
-              />
-              <GeneratedPreview content={generatedContent} setGeneratedContent={setGeneratedContent} isLoading={isLoading} />
-            </div>
+        <div className={activeTab === "create" ? "space-y-6" : "hidden"}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <AIForm 
+              onGenerateContent={handleGenerateContent} 
+              content={generatedContent}
+              setGeneratedContent={setGeneratedContent}
+            />
+            <GeneratedPreview content={generatedContent} setGeneratedContent={setGeneratedContent} isLoading={isLoading} />
+          </div>
 
-            {/* Tutorial Section */}
-            <div>
-              <Tutorial />
-            </div>
-          </>
-        )}
+          {/* Tutorial Section */}
+          <div>
+            <Tutorial />
+          </div>
+        </div>
 
         {/* Library Tab */}
-        {activeTab === "library" && (
+        <div className={activeTab === "library" ? "block" : "hidden"}>
           <div className="flex flex-col gap-4">
             <CourseLibrary />
-           
           </div>
-        )}
+        </div>
       </main>
     </div>
   );

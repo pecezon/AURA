@@ -53,6 +53,7 @@ export function useModuleEditor(
       content: "",
       url: "",
       file: null,
+      isGeneratedByAI: type === "QUIZ" ? false : undefined,
     };
     updateDraft({ contents: [...draft.contents, newContent] });
   };

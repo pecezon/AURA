@@ -4,6 +4,7 @@ import { type EditableModule } from "../types/module.types";
 import { type GeneratedContent } from "../types/course.types";
 import { toEditableModule, buildPayload } from "../utils/course.utils";
 import { useCreateCourse } from "../../../../hooks/useCourses";
+import { toast } from "react-hot-toast";
 
 export interface UseGeneratedPreviewReturn {
   modules: EditableModule[];
@@ -106,9 +107,9 @@ export function useGeneratedPreview(
       const payload = buildPayload(content);
       publishCourse(payload, {
         onSuccess: () => {
-          // No limpiamos el contenido inmediatamente: el componente se desmontaría
-          // antes de que el banner de éxito se renderice. El usuario lo cierra manualmente.
-          setPublishSuccess(true);
+          toast.success("¡Curso publicado exitosamente!");
+          setGeneratedContent?.(undefined);
+          setPublishSuccess(false);
         },
         onError: (err: Error & { response?: { data?: { message?: string } } }) => {
           setPublishError(
