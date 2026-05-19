@@ -213,7 +213,7 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
             <Label htmlFor="applicableNorms">Normativas Aplicables</Label>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full justify-between font-normal border-gray-350 bg-white">
+                <Button variant="outline" className="w-full justify-between font-normal border-gray-300 bg-white">
                   {formData.applicableNorms.length > 0 
                     ? `${formData.applicableNorms.length} normativa(s) seleccionada(s)`
                     : "Seleccionar normativas..."}

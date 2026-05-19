@@ -217,4 +217,7 @@
   button, select, [role="button"], a {
     @apply cursor-pointer;
   }
+  button:disabled, select:disabled {
+    @apply cursor-not-allowed;
+  }
 }
