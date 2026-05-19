@@ -16,6 +16,7 @@ import Landing from "./routes/landing";
 import RegistrationForm from "./routes/registration-form";
 import CourseDetail from "./routes/course-detail";
 import SimulationEngine from "./routes/simulation-engine";
+import ModuleLearning from "./routes/module-learning";
 
 import { getUserState } from "./lib/authGuard";
 
@@ -215,6 +216,23 @@ const simulationEngineRoute = createRoute({
   component: SimulationEngine,
 });
 
+const moduleLearningRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/course/$courseId/module/$moduleId",
+  beforeLoad: async () => {
+    const user = await getUserState();
+
+    if (!user.isAuthenticated) {
+      throw redirect({ to: "/login" });
+    }
+
+    if (!user.isProfileComplete) {
+      throw redirect({ to: "/registration-form" });
+    }
+  },
+  component: ModuleLearning,
+});
+
 const routeTree = rootRoute.addChildren([
   loginRoute,
   dashboardRoute,
@@ -226,6 +244,7 @@ const routeTree = rootRoute.addChildren([
   profileRoute,
   courseDetailRoute,
   simulationEngineRoute,
+  moduleLearningRoute,
 ]);
 
 export const router = createRouter({ routeTree });
