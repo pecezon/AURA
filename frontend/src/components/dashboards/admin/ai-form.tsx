@@ -27,7 +27,7 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
   const [formData, setFormData] = useState<AIFormData>({
     topic: "",
     courseType: "TECHNICAL",
-    duration: "1",
+    duration: "1 hora",
     applicableNorms: [],
     selectedSimulation: "ss101",
   });
@@ -60,7 +60,7 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
       setFormData({
         topic: "",
         courseType: "TECHNICAL",
-        duration: "1",
+        duration: "1 hora",
         applicableNorms: [],
         selectedSimulation: "ss101",
       });
@@ -192,20 +192,20 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="duration">Duración Objetivo (horas)</Label>
+            <Label htmlFor="duration">Duración Objetivo</Label>
             <select
               id="duration"
               name="duration"
               value={formData.duration}
               onChange={(e) => handleDurationChange(e.target.value)}
-              className="h-9 w-full px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white font-medium"
+              className="h-9 w-full px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white font-medium cursor-pointer"
             >
-              <option value="0.5">30 minutos (0.5 h)</option>
-              <option value="1">1 hora</option>
-              <option value="1.5">1.5 horas</option>
-              <option value="2">2 horas</option>
-              <option value="2.5">2.5 horas</option>
-              <option value="3">3 horas</option>
+              <option value="30 min">30 minutos</option>
+              <option value="1 hora">1 hora</option>
+              <option value="1.5 horas">1.5 horas</option>
+              <option value="2 horas">2 horas</option>
+              <option value="2.5 horas">2.5 horas</option>
+              <option value="3 horas">3 horas</option>
             </select>
           </div>
 
