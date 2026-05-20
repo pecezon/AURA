@@ -15,7 +15,7 @@ export async function getAllModulesByCourseId(req : Request, res: Response, next
 
 export async function getAllModulesContentByTypeAndCourseId(req : Request, res : Response, next : NextFunction){
     try{
-        const { courseId , type } = req.query as {courseId : string, type : "READING" | "VIDEO" | "IMAGE"}
+        const { courseId , type } = req.query as {courseId : string, type : "READING" | "VIDEO" | "IMAGE" | "AUDIO"}
         const response = await moduleService.getAllModulesContentByTypeAndCourseId(courseId,type)
         return res.status(200).json(response)
     } catch (error){

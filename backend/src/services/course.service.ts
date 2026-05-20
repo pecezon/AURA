@@ -68,34 +68,48 @@ export class CourseService {
                       timeLimitSeconds: 120,
                       hotspots: [
                         {
-                          id: "risk-1",
-                          type: "GAS_LEAK",
-                          name: "Fuga de Gas en Válvula Principal",
-                          x: 45.5,
-                          y: 60.2,
-                          radius: 5,
-                          penaltyPoints: 30,
-                          justification: "Fuga de Gas en Válvula Principal detectada. Se requiere cierre inmediato y control de ignición."
+                          id: "h1",
+                          type: "OIL_SPILL",
+                          riskType: "Derrame de Aceite",
+                          name: "Derrame de Aceite",
+                          x: 25,
+                          y: 80,
+                          radius: 10,
+                          penaltyPoints: 25,
+                          justification: "Los derrames en el piso son una de las causas más frecuentes de accidentes por resbalones y caídas. Además, representan un riesgo grave de incendio o contaminación."
                         },
                         {
-                          id: "risk-2",
+                          id: "h2",
                           type: "NO_PPE",
-                          name: "Personal sin equipo de protección (Casco/Lentes)",
-                          x: 75.0,
-                          y: 30.5,
-                          radius: 6,
-                          penaltyPoints: 20,
-                          justification: "Trabajador en área operativa sin casco ni protección ocular básica."
+                          riskType: "Falta de EPP (Casco)",
+                          name: "Falta de EPP (Casco)",
+                          x: 37,
+                          y: 46,
+                          radius: 8,
+                          penaltyPoints: 25,
+                          justification: "El uso de Equipo de Protección Personal (EPP) es mandatorio en áreas operativas. La ausencia de casco expone al trabajador a traumatismos craneoencefálicos por caída de herramientas o materiales."
                         },
                         {
-                          id: "risk-3",
-                          type: "OBSTRUCTION",
-                          name: "Maquinaria pesada obstruyendo ruta de evacuación",
-                          x: 20.0,
-                          y: 80.0,
-                          radius: 8,
-                          penaltyPoints: 15,
-                          justification: "Ruta de evacuación obstruida por maquinaria pesada fuera de operación."
+                          id: "h3",
+                          type: "EXPOSED_CABLES",
+                          riskType: "Cables Expuestos",
+                          name: "Cables Expuestos",
+                          x: 80,
+                          y: 55,
+                          radius: 12,
+                          penaltyPoints: 25,
+                          justification: "El cableado eléctrico expuesto fuera de su canalización o panel cerrado crea un riesgo inminente de electrocución, cortocircuito y posibles arcos eléctricos que pueden desencadenar incendios."
+                        },
+                        {
+                          id: "h4",
+                          type: "LOOSE_CABLES",
+                          riskType: "Cables Sueltos",
+                          name: "Cables Sueltos",
+                          x: 74,
+                          y: 65,
+                          radius: 10,
+                          penaltyPoints: 25,
+                          justification: "Los cables sueltos colgando o tirados en el suelo representan un riesgo grave de tropiezo y caída, además de peligro eléctrico si llegan a entrar en contacto con agua o maquinaria."
                         }
                       ]
                     }

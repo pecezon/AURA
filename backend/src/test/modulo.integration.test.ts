@@ -57,7 +57,8 @@ describe("Module API Integration", () => {
         courseId: "course-123",
         createdAt: new Date("2026-01-01T00:00:00.000Z"),
         contents: [
-          { id: "content-1", type: "READING", title: "Read this", content: "Some text", order: 1 }
+          { id: "content-1", type: "READING", title: "Read this", content: "Some text", order: 1 },
+          { id: "content-2", type: "AUDIO", title: "Listen to this", content: "Audio description", url: "http://example.com/audio.mp3", order: 2 }
         ],
         quizzes: [
           {
