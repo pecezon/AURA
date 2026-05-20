@@ -45,7 +45,7 @@ export const ModuleContentItem: React.FC<Props> = ({ content, index, onUpdate, o
     } else {
       setActiveTab("text");
     }
-  }, [content.id, content.type]);
+  }, [content.id, content.type, hasFile, hasUrl]);
 
   // Parse quiz JSON content safely if type is QUIZ
   let quizData: { question: string; options: string[]; correctAnswer: number } = {
