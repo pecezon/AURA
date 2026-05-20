@@ -252,7 +252,7 @@ export default function ModuleLearning() {
           <CardContent className="p-6 md:p-8 flex flex-col items-center justify-center h-full min-h-0 overflow-y-auto">
             {slide.title && <h2 className="text-xl md:text-2xl font-bold mb-4 text-slate-800 w-full text-left shrink-0">{slide.title}</h2>}
             {slide.content && <p className="text-gray-600 text-sm md:text-base mb-4 w-full text-left shrink-0">{slide.content}</p>}
-            <div className="w-full max-w-2xl rounded-xl overflow-hidden border border-gray-150 bg-slate-50 flex items-center justify-center flex-1 min-h-0">
+            <div className="w-full max-w-2xl rounded-xl overflow-hidden border border-gray-200 bg-slate-50 flex items-center justify-center flex-1 min-h-0">
                <img src={slide.url} alt={slide.title || "Imagen del módulo"} className="max-w-full max-h-[55vh] object-contain" />
             </div>
           </CardContent>
