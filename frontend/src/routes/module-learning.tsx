@@ -269,7 +269,7 @@ export default function ModuleLearning() {
         <Card className="border-0 shadow-sm flex flex-col h-full overflow-hidden">
           <CardContent className="p-6 md:p-8 flex flex-col items-center justify-center h-full min-h-0 overflow-y-auto">
             {slide.title && <h2 className="text-xl md:text-2xl font-bold mb-4 text-slate-800 w-full text-left shrink-0">{slide.title}</h2>}
-            {slide.content && <p className="text-gray-650 text-sm md:text-base mb-4 w-full text-left shrink-0">{slide.content}</p>}
+            {slide.content && <p className="text-gray-600 text-sm md:text-base mb-4 w-full text-left shrink-0">{slide.content}</p>}
             <div className="w-full max-w-4xl aspect-video rounded-xl overflow-hidden border border-gray-200 bg-black flex-1 min-h-0">
                {isYouTube ? (
                  <iframe 
