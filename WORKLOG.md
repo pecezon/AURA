@@ -3,6 +3,34 @@
 Este documento mantiene un registro cronológico de las sesiones de trabajo, tareas en curso, decisiones importantes y tareas pendientes. Esto asegura que el contexto no se pierda entre sesiones.
 
 
+## Sesión: 2026-05-19 — Parte IV (Ajustes de UI/UX de Láminas, Soporte de Audio y Corrección de Simulación 1)
+
+**Qué implementamos en esta sesión:**
+- **UI/UX y Visor de Láminas Flexibles**:
+  - Removido el comportamiento estricto de pantalla fija `h-screen overflow-hidden` en `module-learning.tsx`, permitiendo scroll normal y fluido de página para dispositivos pequeños.
+  - Agregado espaciado `pb-12` en el contenedor detallado de `course-detail.tsx` para evitar que el acordeón de módulos toque el bottom de la página.
+  - Rediseñado el visualizador de PDF estableciendo una altura mínima de `min-h-[600px]` y una altura responsiva de `h-[75vh]`, asegurando proporciones estables en el Split-View.
+  - Reposicionado el `<Toaster />` global de notificaciones a `"top-right"` en `main.tsx` para no bloquear los botones de quizzes ni de navegación del pie de página.
+- **Soporte de Recursos AUDIO (Admin Dashboard)**:
+  - Importado `Headphones` y mapeado el tipo de contenido `AUDIO` en `module-card.tsx` para renderizar el chip correcto (icono de auriculares y etiqueta "Audio") en el panel administrativo.
+- **Alineación de Hotspots de la Simulación 1**:
+  - Corregida la inyección de hotspots por defecto en `course.service.ts` y en el seed `seed-ss101.ts`. Reemplazados los 3 puntos incorrectos de fuga de gas por los 4 puntos reales y alineados con la imagen de seguridad de la terminal Sempra (Derrame de Aceite, Falta de EPP, Cables Expuestos y Cables Sueltos).
+  - Actualizado con éxito el curso de gasoductos SS101 en la base de datos local a través del script de seeding.
+- **Validación de Compilación y Testeo**:
+  - Compilación de TypeScript verificada exitosamente en frontend y backend (`npx tsc --noEmit` con 0 errores).
+  - Pruebas de integración de backend (`modulo.integration.test.ts`) y pruebas unitarias de scoring (`scoring.service.test.ts`) aprobadas al 100%.
+
+**Qué quedó en progreso:**
+- Ninguno. Los requerimientos de ajuste de UI/UX, soporte de audio y corrección de la simulación 1 se completaron en su totalidad de acuerdo a lo planificado.
+
+**Bloqueos:**
+- Ninguno.
+
+**Próximos pasos en orden de prioridad:**
+- Continuar con las fases de desarrollo planificadas en `SPEC.md`.
+
+---
+
 ## Sesión: 2026-05-19 — Asignación de Cursos a Trabajadores (Búsqueda Real, Paginación y Filtrado)
 
 **Qué implementamos en esta sesión:**

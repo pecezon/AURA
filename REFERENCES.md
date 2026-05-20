@@ -3111,7 +3111,7 @@ Generic polling function:
 async function waitFor<T>(
   condition: () => T | undefined | null | false,
   description: string,
-  timeoutMs = 5000
+  timeoutMs = 10000
 ): Promise<T> {
   const startTime = Date.now();
 
@@ -3582,7 +3582,7 @@ You're exhausted. You have dinner plans at 8:30pm (already late). Code review is
 - All 4 hours of timeout attempts were wasted
 
 **Option B: "Good enough" solution**
-- Use `await sleep(5000)` - seems to work
+- Use `await sleep(10000)` - seems to work
 - Add comment: "TODO: investigate why status update is slow"
 - Commit and go to dinner
 - File ticket to investigate later
