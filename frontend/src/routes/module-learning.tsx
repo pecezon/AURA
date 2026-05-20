@@ -401,6 +401,9 @@ export default function ModuleLearning() {
       };
 
       const handleAudioEnded = () => {
+        if (audioRef.current) {
+          audioRef.current.currentTime = 0;
+        }
         setIsPlaying(false);
         setCurrentTime(0);
       };
