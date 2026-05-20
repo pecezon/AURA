@@ -12,6 +12,18 @@ import { Navbar } from "@/components/navbar";
 import { useCreateQuizAttempt } from "@/hooks/useQuizzes";
 import { toast } from "react-hot-toast";
 
+const sanitizeUrl = (url: string, type?: string): string => {
+  if (!url) return "";
+  const trimmed = url.trim();
+  
+  if (type === 'IMAGE' && /^data:image\//i.test(trimmed)) {
+    return trimmed;
+  }
+  
+  const isSafeScheme = /^(https?:\/\/|\/|blob:)/i.test(trimmed);
+  return isSafeScheme ? trimmed : "about:blank";
+};
+
 export default function ModuleLearning() {
   const { courseId, moduleId } = useParams({ strict: false }) as { courseId: string; moduleId: string };
   const navigate = useNavigate();
@@ -169,10 +181,11 @@ export default function ModuleLearning() {
 
   const renderContent = (slide: any) => {
     if (slide.type === 'READING') {
-      const hasUrl = slide.url && slide.url.trim().length > 0;
+      const safeUrl = sanitizeUrl(slide.url, slide.type);
+      const hasUrl = safeUrl && safeUrl !== "about:blank" && safeUrl.trim().length > 0;
 
       if (hasUrl) {
-        const isPdf = slide.url.toLowerCase().endsWith('.pdf') || slide.url.toLowerCase().includes('.pdf');
+        const isPdf = safeUrl.toLowerCase().endsWith('.pdf') || safeUrl.toLowerCase().includes('.pdf');
 
         return (
           <div className="flex flex-col md:flex-row gap-6 items-stretch w-full min-h-[600px] h-[75vh]">
@@ -188,7 +201,7 @@ export default function ModuleLearning() {
 
                 <div className="mt-4 pt-4 border-t border-gray-100 shrink-0">
                   <a
-                    href={slide.url}
+                    href={safeUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full inline-flex items-center justify-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors text-sm"
@@ -204,7 +217,7 @@ export default function ModuleLearning() {
             <Card className="border-0 shadow-sm flex-[2.5] flex flex-col overflow-hidden h-full p-0">
               {isPdf ? (
                 <iframe
-                  src={`${slide.url}#toolbar=0&navpanes=0`}
+                  src={`${safeUrl}#toolbar=0&navpanes=0`}
                   className="w-full h-full border-0 bg-slate-50"
                   title={slide.title || "Lector PDF"}
                 />
@@ -218,7 +231,7 @@ export default function ModuleLearning() {
                     Este recurso informativo se encuentra alojado de forma segura en un sitio externo. Haz clic abajo para abrir el enlace en una nueva pestaña del navegador.
                   </p>
                   <a
-                    href={slide.url}
+                    href={safeUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-lg transition-colors text-sm shadow"
@@ -253,7 +266,7 @@ export default function ModuleLearning() {
             {slide.title && <h2 className="text-xl md:text-2xl font-bold mb-4 text-slate-800 w-full text-left shrink-0">{slide.title}</h2>}
             {slide.content && <p className="text-gray-600 text-sm md:text-base mb-4 w-full text-left shrink-0">{slide.content}</p>}
             <div className="w-full max-w-2xl rounded-xl overflow-hidden border border-gray-150 bg-slate-50 flex items-center justify-center flex-1 min-h-0">
-               <img src={slide.url} alt={slide.title || "Imagen del módulo"} className="max-w-full max-h-[55vh] object-contain" />
+               <img src={sanitizeUrl(slide.url, slide.type)} alt={slide.title || "Imagen del módulo"} className="max-w-full max-h-[55vh] object-contain" />
             </div>
           </CardContent>
         </Card>
@@ -261,7 +274,8 @@ export default function ModuleLearning() {
     }
 
     if (slide.type === 'VIDEO') {
-      const ytMatch = slide.url?.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/);
+      const safeUrl = sanitizeUrl(slide.url, slide.type);
+      const ytMatch = safeUrl?.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/);
       const isYouTube = ytMatch && ytMatch[2].length === 11;
       const videoId = isYouTube ? ytMatch[2] : null;
 
@@ -279,7 +293,7 @@ export default function ModuleLearning() {
                    className="w-full h-full border-0"
                  />
                ) : (
-                 <video src={slide.url} controls className="w-full h-full" />
+                 <video src={safeUrl} controls className="w-full h-full" />
                )}
             </div>
           </CardContent>
@@ -404,7 +418,7 @@ export default function ModuleLearning() {
           <CardContent className="p-6 md:p-8 flex flex-col justify-between h-full flex-1 overflow-y-auto min-h-0">
             <audio
               ref={audioRef}
-              src={slide.url}
+              src={sanitizeUrl(slide.url, slide.type)}
               onTimeUpdate={handleTimeUpdate}
               onLoadedMetadata={handleLoadedMetadata}
               onEnded={handleAudioEnded}
