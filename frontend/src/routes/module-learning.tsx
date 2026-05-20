@@ -15,11 +15,11 @@ import { toast } from "react-hot-toast";
 const sanitizeUrl = (url: string, type?: string): string => {
   if (!url) return "";
   const trimmed = url.trim();
-  
+
   if (type === 'IMAGE' && /^data:image\//i.test(trimmed)) {
     return trimmed;
   }
-  
+
   const isSafeScheme = /^(https?:\/\/|\/|blob:)/i.test(trimmed);
   return isSafeScheme ? trimmed : "about:blank";
 };
@@ -27,17 +27,17 @@ const sanitizeUrl = (url: string, type?: string): string => {
 export default function ModuleLearning() {
   const { courseId, moduleId } = useParams({ strict: false }) as { courseId: string; moduleId: string };
   const navigate = useNavigate();
-  
+
   const { data: sessionId } = useSessionId();
   const profileId = sessionId || "";
-  
+
   const { data: moduleData, isLoading, isError } = useModuleById(moduleId);
   const { markModuleAsCompleted, isLoading: isProgressLoading } = useCourseProgress(profileId, courseId);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({});
   const [quizResults, setQuizResults] = useState<Record<string, any>>({});
-  
+
   // Audio playback state
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -68,7 +68,7 @@ export default function ModuleLearning() {
     return (
       <div className="flex flex-col min-h-screen bg-gray-100 pb-12">
         <Navbar role="EMPLOYEE" />
-        
+
         <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-4 flex-1 flex flex-col justify-between animate-pulse">
           {/* Header Skeleton */}
           <div className="flex items-center justify-between mb-4 shrink-0">
@@ -118,14 +118,14 @@ export default function ModuleLearning() {
   }
 
   const slides = [...(moduleData.contents || [])];
-  
+
   if (moduleData.quizzes && moduleData.quizzes.length > 0) {
     slides.push(...moduleData.quizzes.map((q: any) => ({ ...q, type: 'QUIZ' })));
   }
 
   const isLastSlide = currentIndex === slides.length - 1;
   const currentSlide = slides[currentIndex];
-  
+
   const progressPercent = slides.length > 1 ? (currentIndex / (slides.length - 1)) * 100 : 100;
 
   const handleNext = () => {
@@ -258,7 +258,7 @@ export default function ModuleLearning() {
         </Card>
       );
     }
-    
+
     if (slide.type === 'IMAGE') {
       return (
         <Card className="border-0 shadow-sm flex flex-col h-full overflow-hidden">
@@ -266,7 +266,7 @@ export default function ModuleLearning() {
             {slide.title && <h2 className="text-xl md:text-2xl font-bold mb-4 text-slate-800 w-full text-left shrink-0">{slide.title}</h2>}
             {slide.content && <p className="text-gray-600 text-sm md:text-base mb-4 w-full text-left shrink-0">{slide.content}</p>}
             <div className="w-full max-w-2xl rounded-xl overflow-hidden border border-gray-150 bg-slate-50 flex items-center justify-center flex-1 min-h-0">
-               <img src={sanitizeUrl(slide.url, slide.type)} alt={slide.title || "Imagen del módulo"} className="max-w-full max-h-[55vh] object-contain" />
+              <img src={sanitizeUrl(slide.url, slide.type)} alt={slide.title || "Imagen del módulo"} className="max-w-full max-h-[55vh] object-contain" />
             </div>
           </CardContent>
         </Card>
@@ -283,18 +283,18 @@ export default function ModuleLearning() {
         <Card className="border-0 shadow-sm flex flex-col h-full overflow-hidden">
           <CardContent className="p-6 md:p-8 flex flex-col items-center justify-center h-full min-h-0 overflow-y-auto">
             {slide.title && <h2 className="text-xl md:text-2xl font-bold mb-4 text-slate-800 w-full text-left shrink-0">{slide.title}</h2>}
-            {slide.content && <p className="text-gray-650 text-sm md:text-base mb-4 w-full text-left shrink-0">{slide.content}</p>}
+            {slide.content && <p className="text-gray-600 text-sm md:text-base mb-4 w-full text-left shrink-0">{slide.content}</p>}
             <div className="w-full max-w-4xl aspect-video rounded-xl overflow-hidden border border-gray-200 bg-black flex-1 min-h-0">
-               {isYouTube ? (
-                 <iframe 
-                   src={`https://www.youtube.com/embed/${videoId}?rel=0`}
-                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                   allowFullScreen
-                   className="w-full h-full border-0"
-                 />
-               ) : (
-                 <video src={safeUrl} controls className="w-full h-full" />
-               )}
+              {isYouTube ? (
+                <iframe
+                  src={`https://www.youtube.com/embed/${videoId}?rel=0`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="w-full h-full border-0"
+                />
+              ) : (
+                <video src={safeUrl} controls className="w-full h-full" />
+              )}
             </div>
           </CardContent>
         </Card>
@@ -322,7 +322,7 @@ export default function ModuleLearning() {
                     {q.reactives?.map((r: any) => {
                       const isSelected = selectedAnswers[q.id] === r.id;
                       const isCorrectReactive = r.isCorrect;
-                      
+
                       let itemClass = "bg-white border-gray-200 hover:border-slate-400";
                       let icon = null;
 
@@ -345,14 +345,14 @@ export default function ModuleLearning() {
                       return (
                         <label key={r.id} className={`flex items-center justify-between gap-3 p-4 rounded-lg border cursor-pointer transition-colors ${itemClass}`}>
                           <div className="flex items-center gap-3">
-                            <input 
-                              type="radio" 
-                              name={`question-${q.id}`} 
-                              value={r.id} 
+                            <input
+                              type="radio"
+                              name={`question-${q.id}`}
+                              value={r.id}
                               disabled={!!result}
                               checked={isSelected}
                               onChange={() => setSelectedAnswers(prev => ({ ...prev, [q.id]: r.id }))}
-                              className="mt-1 disabled:opacity-50" 
+                              className="mt-1 disabled:opacity-50"
                             />
                             <span className="text-gray-700">{r.text}</span>
                           </div>
@@ -376,8 +376,15 @@ export default function ModuleLearning() {
           audioRef.current.pause();
           setIsPlaying(false);
         } else {
-          audioRef.current.play().catch(e => console.error("Playback failed", e));
-          setIsPlaying(true);
+          const audio = audioRef.current;
+          audio.play()
+            .then(() => {
+              setIsPlaying(true);
+            })
+            .catch(e => {
+              console.error("Playback failed", e);
+              setIsPlaying(false);
+            });
         }
       };
 
@@ -501,16 +508,16 @@ export default function ModuleLearning() {
     }
 
     return (
-       <Card className="border-0 shadow-sm flex items-center justify-center p-8 text-gray-500 h-full">
-         Contenido no soportado
-       </Card>
+      <Card className="border-0 shadow-sm flex items-center justify-center p-8 text-gray-500 h-full">
+        Contenido no soportado
+      </Card>
     );
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 pb-12">
       <Navbar role="EMPLOYEE" />
-      
+
       <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-4 flex-1 flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between mb-4 shrink-0">
@@ -541,9 +548,9 @@ export default function ModuleLearning() {
 
         {/* Footer Navigation */}
         <div className="flex items-center justify-between mt-auto bg-white p-4 rounded-xl border border-gray-200 shadow-sm shrink-0">
-          <Button 
-            variant="outline" 
-            onClick={handlePrev} 
+          <Button
+            variant="outline"
+            onClick={handlePrev}
             disabled={currentIndex === 0}
             className="px-6 cursor-pointer"
           >
@@ -561,8 +568,8 @@ export default function ModuleLearning() {
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           ) : currentSlide.type === 'QUIZ' && !quizResults[currentSlide.id] ? (
-            <Button 
-              onClick={() => handleQuizSubmit(currentSlide)} 
+            <Button
+              onClick={() => handleQuizSubmit(currentSlide)}
               className="bg-blue-600 text-white hover:bg-blue-700 px-8 font-medium cursor-pointer"
               disabled={isSubmittingQuiz}
             >
