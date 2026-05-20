@@ -31,9 +31,9 @@ export function useCourseProgress(profileId: string, courseId: string) {
   const completedModules = enrollment?.completedModules || [];
 
   const markModuleAsCompleted = (moduleId: string) => {
-    if (!profileId || !courseId) return;
-    if (completedModules.includes(moduleId)) return;
-    mutation.mutate(moduleId);
+    if (!profileId || !courseId) return Promise.resolve(null);
+    if (completedModules.includes(moduleId)) return Promise.resolve(null);
+    return mutation.mutateAsync(moduleId);
   };
 
   const isModuleCompleted = (moduleId: string) => {
