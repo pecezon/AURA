@@ -362,8 +362,15 @@ export default function ModuleLearning() {
           audioRef.current.pause();
           setIsPlaying(false);
         } else {
-          audioRef.current.play().catch(e => console.error("Playback failed", e));
-          setIsPlaying(true);
+          const audio = audioRef.current;
+          audio.play()
+            .then(() => {
+              setIsPlaying(true);
+            })
+            .catch(e => {
+              console.error("Playback failed", e);
+              setIsPlaying(false);
+            });
         }
       };
 
