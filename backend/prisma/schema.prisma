@@ -184,6 +184,7 @@ enum ContentType {
   READING
   VIDEO
   IMAGE
+  AUDIO
 }
 
 enum EnrollmentStatus {

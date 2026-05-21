@@ -19,7 +19,7 @@ export const createCourseSchema = z.object({
         contents: z
           .array(
             z.object({
-              type: z.enum(["READING", "VIDEO", "IMAGE"]),
+              type: z.enum(["READING", "VIDEO", "IMAGE", "AUDIO"]),
               title: z.string().optional().nullable(),
               content: z.string().optional().nullable(),
               url: z.string().optional().nullable(),

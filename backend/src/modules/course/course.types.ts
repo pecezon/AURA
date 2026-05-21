@@ -12,7 +12,7 @@ export interface ModuleResponse {
 }
 
 export interface ModuleContentCreateDTO {
-  type: "READING" | "VIDEO" | "IMAGE";
+  type: "READING" | "VIDEO" | "IMAGE" | "AUDIO";
   title?: string | null;
   content?: string | null;
   url?: string | null;
@@ -21,7 +21,7 @@ export interface ModuleContentCreateDTO {
 
 export interface ModuleContentResponse {
   id: string;
-  type: "READING" | "VIDEO" | "IMAGE";
+  type: "READING" | "VIDEO" | "IMAGE" | "AUDIO";
   title?: string | null;
   content?: string | null;
   url?: string | null;

@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "../../ui/button";
-import { Pencil, Trash2, CheckCircle2, FileText, Film, Image, GripVertical, Clock, HelpCircle } from "lucide-react";
+import { Pencil, Trash2, CheckCircle2, FileText, Film, Image, GripVertical, Clock, HelpCircle, Headphones } from "lucide-react";
 import { type EditableModule, type ContentType } from "./types/module.types";
 import { Draggable } from "@hello-pangea/dnd";
 
@@ -9,6 +9,7 @@ const CONTENT_TYPE_ICON: Record<ContentType, React.ReactNode> = {
   IMAGE: <Image className="w-3.5 h-3.5" />,
   VIDEO: <Film className="w-3.5 h-3.5" />,
   QUIZ: <HelpCircle className="w-3.5 h-3.5" />,
+  AUDIO: <Headphones className="w-3.5 h-3.5" />,
 };
 
 const CONTENT_TYPE_LABEL: Record<ContentType, string> = {
@@ -16,6 +17,7 @@ const CONTENT_TYPE_LABEL: Record<ContentType, string> = {
   IMAGE: "Imagen",
   VIDEO: "Video",
   QUIZ: "Quiz",
+  AUDIO: "Audio",
 };
 
 interface ModuleCardProps {

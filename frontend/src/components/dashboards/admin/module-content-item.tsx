@@ -1,14 +1,14 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { type ModuleContent, type ContentType, CONTENT_TYPE_LABELS, ACCEPTED_EXTENSIONS } from "./types/module.types";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Textarea } from "../../ui/textarea";
 import { Label } from "../../ui/label";
-import { X, FileText, Upload, GripVertical, Lock } from "lucide-react";
+import { X, FileText, Upload, GripVertical, Lock, Headphones } from "lucide-react";
 import { Draggable } from "@hello-pangea/dnd";
 
 // Types that show a description field instead of a text editor
-const DESCRIPTION_TYPES: ContentType[] = ["VIDEO", "IMAGE"];
+const DESCRIPTION_TYPES: ContentType[] = ["VIDEO", "IMAGE", "AUDIO"];
 
 interface Props {
   content: ModuleContent;
@@ -28,10 +28,24 @@ export const ModuleContentItem: React.FC<Props> = ({ content, index, onUpdate, o
   const hasUrl = content.url.trim().length > 0;
   const hasFile = content.file !== null;
   const fileTabDisabled = hasUrl;
-  const urlTabDisabled = hasFile;
+  const urlTabDisabled = hasFile || content.type === "AUDIO" || content.type === "READING";
 
   // Derive active tab: if file is set → force "file", if url is set → force "url"
-  const [activeTab, setActiveTab] = useState<"text" | "file" | "url">("text");
+  const [activeTab, setActiveTab] = useState<"text" | "file" | "url">(() => {
+    if (content.file !== null) return "file";
+    if (content.url.trim().length > 0 && content.type !== "READING" && content.type !== "AUDIO") return "url";
+    return "text";
+  });
+
+  useEffect(() => {
+    if (content.file !== null) {
+      setActiveTab("file");
+    } else if (content.url.trim().length > 0 && content.type !== "READING" && content.type !== "AUDIO") {
+      setActiveTab("url");
+    } else {
+      setActiveTab("text");
+    }
+  }, [content.id, content.type, hasFile, hasUrl]);
 
   // Parse quiz JSON content safely if type is QUIZ
   let quizData: { question: string; options: string[]; correctAnswer: number } = {
@@ -231,16 +245,18 @@ export const ModuleContentItem: React.FC<Props> = ({ content, index, onUpdate, o
                         {fileTabDisabled && <Lock className="w-3 h-3 text-amber-500" />}
                       </span>
                     </button>
-                    <button
-                      onClick={() => handleTabChange("url")}
-                      className={tabClass("url")}
-                      title={urlTabDisabled ? "Elimina el archivo para usar una URL" : undefined}
-                    >
-                      <span className="flex items-center gap-1.5">
-                        URL
-                        {urlTabDisabled && <Lock className="w-3 h-3 text-amber-500" />}
-                      </span>
-                    </button>
+                    {content.type !== "READING" && content.type !== "AUDIO" && (
+                      <button
+                        onClick={() => handleTabChange("url")}
+                        className={tabClass("url")}
+                        title={urlTabDisabled ? "Elimina el archivo para usar una URL" : undefined}
+                      >
+                        <span className="flex items-center gap-1.5">
+                          URL
+                          {urlTabDisabled && <Lock className="w-3 h-3 text-amber-500" />}
+                        </span>
+                      </button>
+                    )}
                   </div>
 
                   <div className="pt-3">
@@ -296,7 +312,11 @@ export const ModuleContentItem: React.FC<Props> = ({ content, index, onUpdate, o
 
                         {hasFile && (
                           <div className="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-md text-sm">
-                            <FileText className="w-4 h-4 text-gray-500 shrink-0" />
+                            {content.type === "AUDIO" ? (
+                              <Headphones className="w-4 h-4 text-blue-500 shrink-0" />
+                            ) : (
+                              <FileText className="w-4 h-4 text-gray-500 shrink-0" />
+                            )}
                             <span className="truncate text-gray-700 flex-1">{content.file!.name}</span>
                             <button
                               onClick={(e) => { e.stopPropagation(); onUpdate(content.id, { file: null }); }}
@@ -337,7 +357,9 @@ export const ModuleContentItem: React.FC<Props> = ({ content, index, onUpdate, o
                       <p className="text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded-md p-3 flex items-center gap-2 mt-4">
                         <Lock className="w-4 h-4 text-amber-500 shrink-0" />
                         <span>
-                          El tab <strong>URL</strong> está deshabilitado. Quita el archivo adjunto para usar una URL.
+                          {content.type === "AUDIO"
+                            ? "Los contenidos de audio solo admiten archivos locales (.mp3, .wav, etc.) subidos por el administrador."
+                            : "El tab URL está deshabilitado. Quita el archivo adjunto para usar una URL."}
                         </span>
                       </p>
                     )}

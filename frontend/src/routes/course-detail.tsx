@@ -86,7 +86,7 @@ export default function CourseDetail() {
     <div className="flex flex-col items-center min-h-screen bg-gray-100 gap-6 md:gap-8">
       <Navbar role="EMPLOYEE" />
 
-        <div className="w-full max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 pb-12">
           <div className="flex flex-col gap-2">
             {/* Nav */}
             <Link

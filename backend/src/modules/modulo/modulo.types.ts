@@ -1,7 +1,7 @@
 import { Prisma } from "../../../generated/prisma";
 
 export interface ModuleContentCreateDTO {
-    type : "READING" | "VIDEO" | "IMAGE";
+    type : "READING" | "VIDEO" | "IMAGE" | "AUDIO";
     title?: string | null;
     content?: string | null;
     url?: string | null;
@@ -11,7 +11,7 @@ export interface ModuleContentCreateDTO {
 export interface ResponseModuleContentDTO {
     id: string;
     moduleId: string;
-    type: "READING" | "VIDEO" | "IMAGE";
+    type: "READING" | "VIDEO" | "IMAGE" | "AUDIO";
     title: string | null;
     content: string | null;
     url: string | null;
@@ -90,7 +90,7 @@ export interface SimulationResponseDTO{
 
 export interface ModuleGetByTypeAndCourseDTO {
     courseId : string,
-    type: "READING" | "VIDEO" | "IMAGE";
+    type: "READING" | "VIDEO" | "IMAGE" | "AUDIO";
 }
 
 export interface ModuleGetByName{

@@ -9,6 +9,7 @@ El asistente está equipado con dos frameworks base ubicados en repositorios loc
 Para desarrollo robusto y sin regresiones, el asistente aplica de manera estricta y nativa las siguientes metodologías (Skills):
 - **test-driven-development (TDD)**: Estricto ciclo RED-GREEN-REFACTOR. Jamás se debe escribir código funcional sin antes escribir una prueba que falle. Todo código pre-existente sin pruebas debe refactorizarse.
 - **systematic-debugging**: Diagnóstico en 4 fases. Prohibido adivinar. Se debe realizar análisis de causa raíz, buscar efectos colaterales y probar exhaustivamente antes de dar un fix por terminado.
+- **brainstorming**: Ciclo de refinamiento colaborativo para convertir ideas en diseños y especificaciones técnicas antes de programar.
 - **writing-plans & subagent-driven-development**: Para cualquier feature, dividir el alcance en tareas de 2-5 minutos. Ejecutar y validar paso a paso.
 - **using-git-worktrees**: Usar branches paralelos aislados para desarrollo sin afectar el baseline estable.
 
@@ -20,6 +21,7 @@ Al construir interfaces o componentes frontend:
 
 ## Comandos Personalizados (The Steering Wheel)
 - `/load-project`: Lee CLAUDE.md, SPEC.md y WORKLOG.md en ese orden. El asistente debe responder con un resumen del estado actual, qué estaba en progreso y el próximo paso. No debe escribir código hasta recibir aprobación.
+- `/brainstorm [tema]`: Inicia un proceso colaborativo de lluvia de ideas utilizando la metodología `brainstorming` de Superpowers. Diseña y define especificaciones antes de pasar a la implementación.
 - `/review-code`: Revisa el código recién escrito con mentalidad de senior developer estricto. Evalúa: 1) Bugs/Edge cases, 2) Cumplimiento estricto de TDD y UI/UX Pro Max, 3) Simplificación (over-engineering), 4) Manejo de errores, 5) Riesgos en producción. El asistente será directo y claro.
 - `/new-feature [descripción]`: Inicia una nueva feature. Genera un plan estructurado (`writing-plans`). Al ser aprobado, implementa en orden: Backend (usando TDD estricto) y luego Frontend (aplicando guías de UI/UX Pro Max). Escribe tipos TS primero y usa patrones de REFERENCES.md.
 - `/fix-bug [descripción]`: Ejecuta `systematic-debugging`. Responde con: 1) Causa probable, 2) Archivos involucrados, y 3) El fix mínimo necesario. Promete estrictamente NO arreglar nada más allá del bug reportado y mostrar el diff exacto.

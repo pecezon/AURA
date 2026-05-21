@@ -113,7 +113,7 @@ export function buildPayload(content: GeneratedContent): CourseCreateDTO {
         title: mod.title,
         order: mIdx,
         contents: contentsOnly.map((c, cIdx) => ({
-          type: c.type as "READING" | "VIDEO" | "IMAGE",
+          type: c.type as "READING" | "VIDEO" | "IMAGE" | "AUDIO",
           title: c.title || null,
           content: c.content || null,
           url: c.url || null,

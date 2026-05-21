@@ -1,6 +1,6 @@
 // ─── Content Types ────────────────────────────────────────────────────────────
 
-export type ContentType = "READING" | "VIDEO" | "IMAGE" | "QUIZ";
+export type ContentType = "READING" | "VIDEO" | "IMAGE" | "AUDIO" | "QUIZ";
 
 export type EditorTab = "text" | "file" | "url" | "quiz";
 
@@ -48,6 +48,7 @@ export const ACCEPTED_EXTENSIONS: Record<ContentType, string> = {
   READING: ".txt,.md,.pdf",
   IMAGE: ".jpg,.jpeg,.png,.webp,.gif",
   VIDEO: ".mp4,.mov,.webm",
+  AUDIO: ".mp3,.wav,.m4a,.ogg",
   QUIZ: "",
 };
 
@@ -55,5 +56,6 @@ export const CONTENT_TYPE_LABELS: Record<ContentType, string> = {
   READING: "Texto / Lectura / PDF",
   IMAGE: "Imagen",
   VIDEO: "Video",
+  AUDIO: "Audio (Podcast/Instrucción)",
   QUIZ: "Evaluación (Quiz)",
 };

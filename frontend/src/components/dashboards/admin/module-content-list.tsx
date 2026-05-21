@@ -51,6 +51,9 @@ export const ModuleContentList: React.FC<Props> = ({ contents, onAdd, onUpdate, 
         <Button variant="outline" size="sm" onClick={() => onAdd("VIDEO")} className="text-xs">
           <Plus className="w-3 h-3 mr-1" /> Añadir Video
         </Button>
+        <Button variant="outline" size="sm" onClick={() => onAdd("AUDIO")} className="text-xs">
+          <Plus className="w-3 h-3 mr-1" /> Añadir Audio
+        </Button>
         <Button variant="outline" size="sm" onClick={() => onAdd("QUIZ")} className="text-xs">
           <Plus className="w-3 h-3 mr-1" /> Añadir Pregunta
         </Button>
