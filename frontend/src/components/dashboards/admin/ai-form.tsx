@@ -27,7 +27,7 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
   const [formData, setFormData] = useState<AIFormData>({
     topic: "",
     courseType: "TECHNICAL",
-    duration: "1 hora",
+    duration: "1",
     applicableNorms: [],
     selectedSimulation: "ss101",
   });
@@ -60,7 +60,7 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
       setFormData({
         topic: "",
         courseType: "TECHNICAL",
-        duration: "1 hora",
+        duration: "1",
         applicableNorms: [],
         selectedSimulation: "ss101",
       });
