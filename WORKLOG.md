@@ -3,6 +3,23 @@
 Este documento mantiene un registro cronológico de las sesiones de trabajo, tareas en curso, decisiones importantes y tareas pendientes. Esto asegura que el contexto no se pierda entre sesiones.
 
 
+## Sesión: 2026-05-25 (Sesión C) — Creación del Curso y Simulación TEC110 (Redes de Polietileno)
+
+**Qué implementamos en esta sesión:**
+- **Creación del Curso y Simulación TEC110**:
+  - Diseñado y creado el script de seed `seed-tec110.ts` para registrar el nuevo curso de capacitación técnica `"TEC110: Diseño, construcción, comisionamiento y puesta en marcha de redes de polietileno para transporte y distribución de gas natural"`.
+  - Definida la simulación guiada para el ensamble, termofusión, prueba de hermeticidad y purga con nitrógeno de redes de polietileno de alta densidad (PEAD) en estaciones de distribución de Sempra Infrastructure, mapeada en 4 grandes hotspots rectangulares:
+    1. Inspección de tubería y alineación (`x: 8.0`, `y: 20.0`, `width: 18.0`, `height: 40.0`).
+    2. Raspado mecánico y alineador para fusión (`x: 30.0`, `y: 15.0`, `width: 18.0`, `height: 40.0`).
+    3. Manifold y manómetro para prueba de presión neumática con nitrógeno (`x: 52.0`, `y: 20.0`, `width: 20.0`, `height: 50.0`).
+    4. Válvula de venteo y detector de gas para purga y puesta en servicio (`x: 76.0`, `y: 15.0`, `width: 18.0`, `height: 45.0`).
+  - Asociadas las regulaciones normativas e internacionales: la norma oficial mexicana **NOM-003-ASEA-2016** (distribución de gas natural por ductos) y el estándar internacional **ASME B31.8** (especificación de sistemas de tubería de gas).
+- **Mapeo Dinámico y Selección de Plantilla**:
+  - Agregada la configuración de la simulación `TEC110` en el catálogo central de plantillas `simulationTemplates.ts`.
+  - Explicado el soporte en la interfaz del administrador (`ai-form.tsx`) para permitir previsualizar y asociar la simulación `TEC110` al generar cursos dinámicos.
+- **Ejecución y Verificación de Base de Datos**:
+  - Ejecutada la siembra exitosa en la base de datos local y corroborada la correcta compilación de todo el software del backend.
+
 ## Sesión: 2026-05-25 (Sesión B) — Creación del Curso y Simulación TEC102 (Bombas Centrífugas)
 
 **Qué implementamos en esta sesión:**
