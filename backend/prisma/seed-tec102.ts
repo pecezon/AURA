@@ -122,7 +122,7 @@ async function main() {
   // 3. Check if Course already exists
   const existingCourse = await prisma.course.findFirst({
     where: { title: "TEC102: Bombas centrífugas – principios, operación, mantenimiento y seguridad" },
-    include: { modules: true }
+    include: { modules: { orderBy: { order: "asc" } } }
   });
 
   if (existingCourse) {
