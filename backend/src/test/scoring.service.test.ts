@@ -83,11 +83,11 @@ describe('ScoringService', () => {
     ];
 
     const events: SimulationEvent[] = [
-      { type: 'WRONG_CLICK', id: '', x: 10, y: 10, expectedStep: 1, timestamp: 500 }, // -5
+      { type: 'WRONG_CLICK', id: '', x: 10, y: 10, expectedStep: 1, timestamp: 500 }, // -2
       { type: 'PLACE_PIN', id: 'h1', x: 17.0, y: 42.0, timestamp: 1000 },
-      { type: 'QUIZ_ERROR', id: 'h2', optionId: 'o1', timestamp: 1500 }, // -10
+      { type: 'QUIZ_ERROR', id: 'h2', optionId: 'o1', timestamp: 1500 }, // -5
       { type: 'PLACE_PIN', id: 'h2', x: 34.0, y: 42.0, timestamp: 2000 },
-      { type: 'WRONG_CLICK', id: '', x: 10, y: 10, expectedStep: 3, timestamp: 2500 }, // -5
+      { type: 'WRONG_CLICK', id: '', x: 10, y: 10, expectedStep: 3, timestamp: 2500 }, // -2
       { type: 'PLACE_PIN', id: 'h3', x: 48.0, y: 39.0, timestamp: 3000 },
       { type: 'PLACE_PIN', id: 'h4', x: 50.0, y: 88.0, timestamp: 4000 }
     ];
