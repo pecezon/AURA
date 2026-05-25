@@ -24,7 +24,7 @@ Este documento mantiene un registro cronológico de las sesiones de trabajo, tar
 - **Reducción de Penalizaciones (Fair Scoring)**:
   - Disminuidas las penalizaciones de puntuación de riesgos (`ScoringService`) para evitar que el `riskScore` decaiga abruptamente:
     - `WRONG_CLICK` (clics erróneos): Reducido de `-2` (antes `-5`).
-    - `QUIZ_ERROR` (respuestas incorrectas): Reducido de `-5` (antes `-10`).
+    - `QUIZ_ERROR` (respuestas incorrectas): Ajustado a `-15` (antes `-10`/`-5`) para penalizar adecuadamente los vacíos de conocimiento en seguridad crítica.
     - `REMOVE_PIN` (indecisión en exploración libre): Reducido de `-2` (antes `-5`).
     - Omitir pasos/hotspots: Reducido de `-15` (antes `-20`/`-25`).
   - Actualizados y validados todos los tests correspondientes en `scoring.service.test.ts` para reflejar y asegurar las nuevas puntuaciones.
