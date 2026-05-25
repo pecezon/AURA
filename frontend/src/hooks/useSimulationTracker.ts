@@ -7,19 +7,21 @@ export interface Pin {
 }
 
 export interface SimulationEvent {
-  type: 'PLACE_PIN' | 'REMOVE_PIN';
+  type: 'PLACE_PIN' | 'REMOVE_PIN' | 'WRONG_CLICK' | 'QUIZ_ERROR';
   id: string;
   x?: number;
   y?: number;
   timestamp: number;
+  expectedStep?: number;
+  optionId?: string;
 }
 
 export const useSimulationTracker = () => {
   const [pins, setPins] = useState<Pin[]>([]);
   const eventsRef = useRef<SimulationEvent[]>([]);
 
-  const addPin = useCallback((x: number, y: number) => {
-    const newId = `pin-${Date.now()}`;
+  const addPin = useCallback((x: number, y: number, customId?: string) => {
+    const newId = customId || `pin-${Date.now()}`;
     const newPin = { id: newId, x, y };
     
     setPins(prev => [...prev, newPin]);
@@ -43,6 +45,13 @@ export const useSimulationTracker = () => {
     });
   }, []);
 
+  const addCustomEvent = useCallback((event: Omit<SimulationEvent, 'timestamp'>) => {
+    eventsRef.current.push({
+      ...event,
+      timestamp: Date.now()
+    } as SimulationEvent);
+  }, []);
+
   const getEvents = useCallback(() => {
     return [...eventsRef.current];
   }, []);
@@ -56,6 +65,7 @@ export const useSimulationTracker = () => {
     pins,
     addPin,
     removePin,
+    addCustomEvent,
     getEvents,
     clearTracker
   };
