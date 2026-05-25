@@ -14,6 +14,53 @@ import { useSimulationTracker } from "@/hooks/useSimulationTracker";
 import { clsx } from "clsx";
 import { toast } from "react-hot-toast";
 
+export interface QuizOption {
+  id: string;
+  text: string;
+  isCorrect?: boolean;
+  feedback?: string;
+}
+
+export interface HotspotQuiz {
+  question: string;
+  options: QuizOption[];
+}
+
+export interface GuidedHotspot {
+  id: string;
+  type: string;
+  riskType: string;
+  name: string;
+  x: number;
+  y: number;
+  width?: number;
+  height?: number;
+  radius?: number;
+  stepOrder: number;
+  instruction?: string;
+  penaltyPoints?: number;
+  justification?: string;
+  quiz?: HotspotQuiz;
+}
+
+export interface SimulationConfig {
+  simulationType: "EXPLORATION" | "GUIDED_SEQUENCE";
+  scenario: string;
+  imageUrl: string;
+  timeLimitSeconds: number;
+  hotspots: GuidedHotspot[];
+}
+
+export interface ScoringResult {
+  score: number;
+  riskScore: number;
+  passed: boolean;
+  totalPenalties: number;
+  foundHotspots: string[];
+  missedHotspots: string[];
+  feedback: string;
+}
+
 export default function SimulationEngine() {
   const { simulationId } = useParams({ strict: false }) as { simulationId: string };
   const { data: profileId } = useSessionId();
@@ -27,14 +74,26 @@ export default function SimulationEngine() {
   const [attemptId, setAttemptId] = useState<string | null>(null);
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
-  const [results, setResults] = useState<any>(null);
+  const [results, setResults] = useState<ScoringResult | null>(null);
 
   // Guided sequence states
   const [currentStepOrder, setCurrentStepOrder] = useState(1);
-  const [activeQuiz, setActiveQuiz] = useState<any>(null);
+  const [activeQuiz, setActiveQuiz] = useState<GuidedHotspot | null>(null);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [quizFeedback, setQuizFeedback] = useState<string | null>(null);
   const [isQuizSuccess, setIsQuizSuccess] = useState<boolean | null>(null);
+
+  const getSimulationConfig = (): SimulationConfig | null => {
+    if (!simulation?.configuration) return null;
+    if (typeof simulation.configuration === 'string') {
+      try {
+        return JSON.parse(simulation.configuration);
+      } catch {
+        return null;
+      }
+    }
+    return simulation.configuration as unknown as SimulationConfig;
+  };
 
   // Timer
   useEffect(() => {
@@ -57,15 +116,7 @@ export default function SimulationEngine() {
   const handleImageClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (isFinished) return;
 
-    let config = simulation?.configuration as any;
-    if (typeof config === 'string') {
-      try {
-        config = JSON.parse(config);
-      } catch {
-        config = {};
-      }
-    }
-
+    const config = getSimulationConfig();
     const rect = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
@@ -74,7 +125,7 @@ export default function SimulationEngine() {
       if (activeQuiz) return; // Must answer active quiz first
 
       const hotspots = config?.hotspots || [];
-      const currentHotspot = hotspots.find((h: any) => h.stepOrder === currentStepOrder);
+      const currentHotspot = hotspots.find((h) => h.stepOrder === currentStepOrder);
       if (!currentHotspot) return;
 
       let isHit = false;
@@ -133,7 +184,7 @@ export default function SimulationEngine() {
   const handleQuizSubmit = () => {
     if (!activeQuiz || !selectedOptionId) return;
 
-    const selectedOption = activeQuiz.quiz.options.find((o: any) => o.id === selectedOptionId);
+    const selectedOption = activeQuiz.quiz?.options?.find((o) => o.id === selectedOptionId);
     if (!selectedOption) return;
 
     const pinX = activeQuiz.width !== undefined ? activeQuiz.x + activeQuiz.width / 2 : activeQuiz.x;
@@ -167,10 +218,7 @@ export default function SimulationEngine() {
     const nextStep = currentStepOrder + 1;
     setCurrentStepOrder(nextStep);
 
-    let config = simulation?.configuration as any;
-    if (typeof config === 'string') {
-      try { config = JSON.parse(config); } catch { config = {}; }
-    }
+    const config = getSimulationConfig();
     const hotspots = config?.hotspots || [];
 
     if (nextStep > hotspots.length) {
@@ -248,29 +296,22 @@ export default function SimulationEngine() {
     );
   }
 
-  let config = simulation.configuration as any;
-  if (typeof config === 'string') {
-    try {
-      config = JSON.parse(config);
-    } catch {
-      config = {};
-    }
-  }
+  const config = getSimulationConfig();
   let imageUrl = config?.imageUrl || '/simulations/industrial_safety_1.png';
   if (imageUrl === 'placeholder-sempra-terminal') {
     imageUrl = '/simulations/industrial_safety_1.png';
   }
   const hotspots = config?.hotspots || [];
 
-  let foundHotspots: any[] = [];
-  let missedHotspots: any[] = [];
+  let foundHotspots: GuidedHotspot[] = [];
+  let missedHotspots: GuidedHotspot[] = [];
   
   if (isFinished && results) {
     if (Array.isArray(results.foundHotspots) && Array.isArray(results.missedHotspots)) {
-      foundHotspots = hotspots.filter((h: any) => results.foundHotspots.includes(h.id));
-      missedHotspots = hotspots.filter((h: any) => results.missedHotspots.includes(h.id));
+      foundHotspots = hotspots.filter((h) => results.foundHotspots.includes(h.id));
+      missedHotspots = hotspots.filter((h) => results.missedHotspots.includes(h.id));
     } else {
-      hotspots.forEach((h: any) => {
+      hotspots.forEach((h) => {
         const isFound = pins.some(pin => {
           if (h.width !== undefined && h.height !== undefined) {
             return pin.x >= h.x && pin.x <= h.x + h.width && pin.y >= h.y && pin.y <= h.y + h.height;
@@ -328,10 +369,12 @@ export default function SimulationEngine() {
             {pins.map((pin, i) => {
               let isCorrect = false;
               if (isFinished && results) {
-                isCorrect = hotspots.some((h: any) => {
+                isCorrect = hotspots.some((h) => {
                   const dx = h.x - pin.x;
                   const dy = h.y - pin.y;
-                  return pin.id === h.id || Math.sqrt(dx * dx + dy * dy) <= h.radius;
+                  return pin.id === h.id || (h.width !== undefined && h.height !== undefined
+                    ? (pin.x >= h.x && pin.x <= h.x + h.width && pin.y >= h.y && pin.y <= h.y + h.height)
+                    : Math.sqrt(dx * dx + dy * dy) <= (h.radius || 8));
                 });
               }
 
@@ -375,20 +418,38 @@ export default function SimulationEngine() {
             })}
 
             {/* Render Missing Hotspots if finished and fully evaluated */}
-            {isFinished && !isSubmitting && hotspots.map((h: any) => (
-              <div 
-                key={`hotspot-${h.id}`}
-                className="absolute border-2 border-dashed border-emerald-400 rounded-full animate-pulse pointer-events-none"
-                style={{ 
-                  left: `${h.x}%`, 
-                  top: `${h.y}%`, 
-                  width: `${h.radius * 2}%`, 
-                  height: `${h.radius * 2}%`,
-                  transform: 'translate(-50%, -50%)',
-                  backgroundColor: 'rgba(52, 211, 153, 0.1)'
-                }}
-              />
-            ))}
+            {isFinished && !isSubmitting && hotspots.map((h) => {
+              if (h.width !== undefined && h.height !== undefined) {
+                return (
+                  <div 
+                    key={`hotspot-${h.id}`}
+                    className="absolute border-2 border-dashed border-emerald-400 rounded-lg animate-pulse pointer-events-none"
+                    style={{ 
+                      left: `${h.x}%`, 
+                      top: `${h.y}%`, 
+                      width: `${h.width}%`, 
+                      height: `${h.height}%`,
+                      backgroundColor: 'rgba(52, 211, 153, 0.1)'
+                    }}
+                  />
+                );
+              }
+              const rad = h.radius || 8;
+              return (
+                <div 
+                  key={`hotspot-${h.id}`}
+                  className="absolute border-2 border-dashed border-emerald-400 rounded-full animate-pulse pointer-events-none"
+                  style={{ 
+                    left: `${h.x}%`, 
+                    top: `${h.y}%`, 
+                    width: `${rad * 2}%`, 
+                    height: `${rad * 2}%`,
+                    transform: 'translate(-50%, -50%)',
+                    backgroundColor: 'rgba(52, 211, 153, 0.1)'
+                  }}
+                />
+              );
+            })}
           </div>
         </div>
 
@@ -432,11 +493,11 @@ export default function SimulationEngine() {
                     </div>
                     
                     <h3 className="text-md font-bold text-white leading-snug">
-                      {activeQuiz.quiz.question}
+                      {activeQuiz.quiz?.question}
                     </h3>
 
                     <div className="space-y-2.5 flex-1 overflow-y-auto max-h-[40vh] pr-1">
-                      {activeQuiz.quiz.options.map((opt: any) => {
+                      {activeQuiz.quiz?.options?.map((opt) => {
                         const isSelected = selectedOptionId === opt.id;
                         let optionStyle = "border-slate-indigo-800 bg-slate-indigo-900/60 hover:bg-slate-indigo-800/60 text-slate-indigo-200";
                         if (isSelected) {
@@ -513,7 +574,7 @@ export default function SimulationEngine() {
                       </h3>
 
                       <div className="space-y-3 flex-1 overflow-y-auto">
-                        {hotspots.map((h: any) => {
+                        {hotspots.map((h) => {
                           const isCompleted = h.stepOrder < currentStepOrder;
                           const isActive = h.stepOrder === currentStepOrder;
                           const isPending = h.stepOrder > currentStepOrder;
