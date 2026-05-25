@@ -32,7 +32,7 @@ export const MyCourses: React.FC = () => {
 
   return (
     <div className="w-full flex flex-col pb-4 justify-center gap-4 md:gap-6 px-4 md:px-16">
-      <h2 className="text-xl font-bold md:text-2xl">My Courses</h2>
+      <h2 className="text-xl font-bold md:text-2xl">Mis Cursos</h2>
       {sortedEnrollments.map((enrollment: any) => (
         <CourseCard
           key={enrollment.courseId}
