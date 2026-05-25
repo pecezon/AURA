@@ -3,6 +3,82 @@
 Este documento mantiene un registro cronológico de las sesiones de trabajo, tareas en curso, decisiones importantes y tareas pendientes. Esto asegura que el contexto no se pierda entre sesiones.
 
 
+## Sesión: 2026-05-25 — Correcciones en SS104 (Esquema de Validación, Disciplina del Quiz "Te Chingas", y Hotspots más grandes)
+
+**Qué implementamos en esta sesión:**
+- **Resolución de Bloqueo de Envío (Backend Zod)**:
+  - Corregido `simulationEventSchema` en `simuAttempt.validation.ts` para aceptar los tipos de evento `WRONG_CLICK` y `QUIZ_ERROR` y sus campos opcionales. Esto resuelve el error `400 Bad Request` en el envío que impedía calcular la puntuación de riesgo y mostrar el reporte de IA al terminar.
+- **Implementación del Flujo de Un Solo Intento (Frontend)**:
+  - Modificada la interfaz de mini-quizzes en `simulation-engine.tsx`. Ahora, tras enviar una respuesta (correcta o incorrecta), la opción queda bloqueada (`disabled={isQuizSuccess !== null}`).
+  - Si la respuesta es incorrecta, se registra el evento `QUIZ_ERROR` (para restar puntos), se despliega el feedback específico provisto por la base de datos de por qué está mal, y se coloca el marcador/pin para permitirle avanzar en el flujo guiado. En ambos casos, se habilita inmediatamente el botón para continuar al siguiente paso.
+- **Optimización de Posiciones y Tamaños de Hotspots (Base de Datos)**:
+  - Modificado el script de seeding `seed-ss104.ts` aumentando el tamaño de los hotspots (radios de 12% y 15%) y definiendo una secuencia limpia de izquierda a derecha acorde al prompt de Gemini.
+  - Añadido el campo `feedback` explicativo para cada una de las opciones incorrectas en las preguntas del seed.
+  - Ejecutado el script de seed exitosamente actualizando la base de datos local.
+- **Validaciones**:
+  - Compilación verificada exitosamente tanto en frontend como en backend (`tsc` limpio y sin errores).
+  - Pruebas unitarias de scoring aprobadas al 100%.
+
+**Qué quedó en progreso:**
+- Espera de reemplazo manual del archivo `electrical_safety_1.png` con la imagen de subestación real generada por el usuario para su posterior verificación visual.
+
+**Bloqueos:**
+- Ninguno.
+
+**Próximos pasos en orden de prioridad:**
+- [ ] 1. Esperar confirmación de la carga de imagen real del usuario.
+- [ ] 2. Ajustar porcentajes finos de coordenadas x/y de los hotspots si difieren de la distribución por defecto una vez cargada la imagen.
+- [ ] 3. Continuar con la Fase 4 del MVP (Supervisor Dashboard).
+
+---
+
+## Sesión: 2026-05-21 — Simulación SS104 de Seguridad Eléctrica (Flujo Guiado y Disciplina en la Secuencia)
+
+**Qué implementamos en esta sesión:**
+- **Activo Visual de Alta Fidelidad**: Generación e inyección de la escena de la sala de control eléctrico `electrical_safety_1.png` en `frontend/public/simulations/`.
+- **Seeding de Base de Datos para SS104**: Creación e integración del script `seed-ss104.ts` que pobla el curso "SS104: Seguridad Eléctrica y Bloqueo LOTO" y su simulación de tipo `GUIDED_SEQUENCE` asociada a las normativas NOM-029-STPS-2011 y NFPA 70E.
+- **Motor de Scoring para Secuencias**: Implementación de la lógica en `scoring.service.ts` para evaluar intentos `GUIDED_SEQUENCE`, penalizando desviaciones de secuencia (`WRONG_CLICK`), errores en las preguntas (`QUIZ_ERROR`), pasos omitidos y tiempo excedido.
+- **TDD del Backend**: Adición y aprobación de casos de prueba unitarios en `scoring.service.test.ts` que validan tanto flujos perfectos de secuenciación como flujos con desviaciones (ambos aprobando exitosamente).
+- **Interfaz Interactiva de Disciplina Operativa (UI/UX)**:
+  - Modificación completa del motor de visualización `simulation-engine.tsx` para guiar al usuario a través de los 4 pasos cronológicos obligatorios (Libranza, LOTO, Verificación de Ausencia de Tensión y Delimitación del Área).
+  - Integración de micro-quizzes contextuales en barra lateral para cada hotspot.
+  - Implementación de retroalimentación inmediata, bloqueos dinámicos en respuestas correctas, visualización de pines interactivos verdes con íconos de check al completar y advertencias mediante `react-hot-toast` al hacer clicks inseguros fuera de la secuencia.
+- **Sincronización y Tipado**: Corrección de tipos en hooks de tracking y verificación de compilación con 0 errores de TypeScript (`npx tsc --noEmit` exitoso en frontend y backend).
+
+**Qué quedó en progreso:**
+- Ninguno. La simulación SS104 está totalmente implementada en base de datos, motor de scoring y experiencia del frontend.
+
+**Bloqueos:**
+- Ninguno.
+
+**Próximos pasos en orden de prioridad:**
+- [ ] 1. Pruebas visuales locales del flujo guiado directamente en el navegador del desarrollador.
+- [ ] 2. Continuar con la Fase 4 del MVP: Dashboard para Supervisor con métricas de comportamiento reales.
+
+---
+
+## Sesión: 2026-05-20 — Corrección de Bugs (XSS en Visor de Módulos, Tipos en handleScrubChange y Sincronización en AIForm)
+
+**Qué implementamos en esta sesión:**
+- **Sanitización de URLs (Prevención de XSS)**:
+  - Implementación de la función helper `sanitizeUrl` en `module-learning.tsx`.
+  - Validación y filtrado defensivo de `slide.url` en todos los bloques de renderizado (`READING`, `IMAGE`, `VIDEO` y `AUDIO`), restringiendo los esquemas permitidos únicamente a `http:`, `https:`, `/` (rutas relativas), `blob:` y `data:image/` (exclusivamente para imágenes).
+- **Corrección de Espacio de Nombres de React**:
+  - Reemplazo de la referencia de tipo `React.ChangeEvent` por la importación directa y limpia de `ChangeEvent` de React en `module-learning.tsx` para evitar fallos de compilación en el JSX runtime automático.
+- **Sincronización de Valores en AIForm**:
+  - Ajuste en el estado inicial y en el reset del formulario `formData.duration` en `ai-form.tsx` cambiando `"1 hora"` por `"1"` para coincidir de forma consistente con las opciones numéricas del select.
+
+**Qué quedó en progreso:**
+- Ninguno. Todos los bugs identificados por Copilot han sido resueltos de forma óptima.
+
+**Bloqueos:**
+- Ninguno.
+
+**Próximos pasos en orden de prioridad:**
+- Continuar con las fases de desarrollo planificadas en `SPEC.md`.
+
+---
+
 ## Sesión: 2026-05-19 — Parte IV (Ajustes de UI/UX de Láminas, Soporte de Audio y Corrección de Simulación 1)
 
 **Qué implementamos en esta sesión:**
