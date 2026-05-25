@@ -164,12 +164,9 @@ export default function SimulationEngine() {
   const handleRemovePin = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     if (isFinished) return;
-    
-    let config = simulation?.configuration as any;
-    if (typeof config === 'string') {
-      try { config = JSON.parse(config); } catch { config = {}; }
-    }
-    
+
+    const config = getSimulationConfig();
+
     if (config?.simulationType === 'GUIDED_SEQUENCE') {
       return; // Cannot remove pins in guided sequence
     }
