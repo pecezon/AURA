@@ -49,7 +49,18 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
   // Sincronizar el formulario con el contenido generado si cambia externamente
   useEffect(() => {
     if (content) {
-      const derivedSimulation = (content.modules || []).some((m: any) => m.simulation !== undefined) ? "ss101" : "none";
+      let derivedSimulation = "none";
+      const hasSim = (content.modules || []).find((m: any) => m.simulation !== undefined);
+      if (hasSim) {
+        const title = hasSim.simulation?.title || "";
+        if (title.includes("SS104") || title.includes("Seguridad Eléctrica")) {
+          derivedSimulation = "ss104";
+        } else if (title.includes("TEC102") || title.includes("Bombas")) {
+          derivedSimulation = "tec102";
+        } else {
+          derivedSimulation = "ss101";
+        }
+      }
       setFormData(prev => ({
         ...prev,
         duration: content.duration || prev.duration,
@@ -124,10 +135,16 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
           };
 
           // Attach simulation DTO to the last module if selected
-          if (formData.selectedSimulation === "ss101" && enhancedData.modules && enhancedData.modules.length > 0) {
+          if (formData.selectedSimulation !== "none" && enhancedData.modules && enhancedData.modules.length > 0) {
             const lastIdx = enhancedData.modules.length - 1;
+            let simTitle = "Simulación de Práctica Industrial (SS101)";
+            if (formData.selectedSimulation === "ss104") {
+              simTitle = "Simulación de Seguridad Eléctrica SS104";
+            } else if (formData.selectedSimulation === "tec102") {
+              simTitle = "Simulación de Operación de Bombas TEC102";
+            }
             enhancedData.modules[lastIdx].simulation = {
-              title: "Simulación de Práctica Industrial (SS101)",
+              title: simTitle,
               passingScore: 80
             };
           }
@@ -268,11 +285,17 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
                     if (!prev || !prev.modules) return prev;
                     const updatedModules = prev.modules.map((mod: any, idx: number) => {
                       const isLast = idx === prev.modules.length - 1;
-                      if (selected === "ss101" && isLast) {
+                      if (selected !== "none" && isLast) {
+                        let simTitle = "Simulación de Práctica Industrial (SS101)";
+                        if (selected === "ss104") {
+                          simTitle = "Simulación de Seguridad Eléctrica SS104";
+                        } else if (selected === "tec102") {
+                          simTitle = "Simulación de Operación de Bombas TEC102";
+                        }
                         return {
                           ...mod,
                           simulation: {
-                            title: "Simulación de Práctica Industrial (SS101)",
+                            title: simTitle,
                             passingScore: 80
                           }
                         };
@@ -288,18 +311,42 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
             >
               <option value="none">Sin simulación interactiva</option>
               <option value="ss101">SS101: Identificación de Riesgos en Gasoductos (Sempra)</option>
+              <option value="ss104">SS104: Seguridad Eléctrica y Bloqueo LOTO</option>
+              <option value="tec102">TEC102: Protocolo de Arranque de Bombas Centrífugas</option>
             </select>
 
-            {formData.selectedSimulation === "ss101" && (
+            {formData.selectedSimulation !== "none" && (
               <div className="mt-2 border border-blue-150 bg-blue-50/50 rounded-lg p-3.5 flex gap-4 animate-fade-in shadow-sm">
                 <img
-                  src="/simulations/industrial_safety_1.png"
-                  alt="Sempra Terminal"
+                  src={
+                    formData.selectedSimulation === "ss104"
+                      ? "/simulations/electrical_safety_1.png"
+                      : formData.selectedSimulation === "tec102"
+                      ? "/simulations/centrifugal_pump_1.png"
+                      : "/simulations/industrial_safety_1.png"
+                  }
+                  alt="Simulación"
                   className="w-28 h-20 object-cover rounded-md border border-blue-200 shadow-sm shrink-0"
+                  onError={(e) => {
+                    // Fallback to placeholder if visual asset is not created yet
+                    (e.target as HTMLImageElement).src = "/simulations/industrial_safety_1.png";
+                  }}
                 />
                 <div className="flex flex-col justify-center">
-                  <h4 className="text-sm font-semibold text-blue-900">SS101: Identificación de Riesgos</h4>
-                  <p className="text-xs text-blue-700 mt-0.5">Escenario: Terminal de Gasoductos Sempra</p>
+                  <h4 className="text-sm font-semibold text-blue-900">
+                    {formData.selectedSimulation === "ss104"
+                      ? "SS104: Seguridad Eléctrica y LOTO"
+                      : formData.selectedSimulation === "tec102"
+                      ? "TEC102: Protocolo de Arranque de Bombas"
+                      : "SS101: Identificación de Riesgos"}
+                  </h4>
+                  <p className="text-xs text-blue-700 mt-0.5">
+                    {formData.selectedSimulation === "ss104"
+                      ? "Escenario: Subestación de Control de Motores (MCC)"
+                      : formData.selectedSimulation === "tec102"
+                      ? "Escenario: Estación de Distribución de Gas Natural"
+                      : "Escenario: Terminal de Gasoductos Sempra"}
+                  </p>
                   <span className="inline-flex items-center gap-1 mt-2 text-xxs font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 w-fit">
                     Puntaje Mínimo: 80%
                   </span>
