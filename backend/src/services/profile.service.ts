@@ -42,18 +42,15 @@ export async function getAllProfiles() {
       createdAt: true,
     },
   });
-  return profiles.map((profile) => ({
-    id: profile.id,
-    email: profile.email,
-    firstName: profile.firstName,
-    lastName: profile.lastName,
-    employeeId: profile.employeeId,
-    area: profile.area,
-    role: profile.role,
-    isProfileComplete: profile.isProfileComplete,
-    birthDate: profile.birthDate ? profile.birthDate.toISOString() : null,
-    createdAt: profile.createdAt.toISOString(),
-  }));
+
+  const profilesWithStats = await Promise.all(
+    profiles.map(async (profile) => {
+      const fullProfile = await getProfileById(profile.id);
+      return fullProfile;
+    })
+  );
+
+  return profilesWithStats.filter((p) => p !== null) as any[];
 }
 
 export async function searchProfiles(search?: string, page: number = 1, limit: number = 20) {

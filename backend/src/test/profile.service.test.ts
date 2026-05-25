@@ -1,10 +1,11 @@
-import { getProfileById } from "../services/profile.service";
+import { getProfileById, getAllProfiles } from "../services/profile.service";
 import { prisma } from "../config/prisma";
 
 jest.mock("../config/prisma", () => ({
   prisma: {
     profile: {
       findUnique: jest.fn(),
+      findMany: jest.fn(),
     },
     simulationAttempt: {
       findMany: jest.fn(),
@@ -101,5 +102,48 @@ describe("ProfileService - calculateBehavioralProfile", () => {
       reactionIndex: 70, // ((100 - 30) / 100) * 100 = 70
       proceduralDiscipline: 68,
     });
+  });
+});
+
+describe("ProfileService - getAllProfiles with behavioralProfile", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should return profiles populated with behavioralProfile data", async () => {
+    (prisma.profile.findMany as jest.Mock).mockResolvedValue([
+      {
+        id: "profile-1",
+        email: "worker1@example.com",
+        firstName: "Juan",
+        lastName: "Perez",
+        employeeId: "EMP001",
+        area: "Sistemas",
+        role: "EMPLOYEE",
+        isProfileComplete: true,
+        birthDate: new Date("1990-01-01"),
+        createdAt: new Date(),
+      }
+    ]);
+
+    (prisma.profile.findUnique as jest.Mock).mockResolvedValue({
+      id: "profile-1",
+      email: "worker1@example.com",
+      firstName: "Juan",
+      lastName: "Perez",
+      employeeId: "EMP001",
+      area: "Sistemas",
+      role: "EMPLOYEE",
+      isProfileComplete: true,
+      birthDate: new Date("1990-01-01"),
+      createdAt: new Date(),
+    });
+
+    (prisma.simulationAttempt.findMany as jest.Mock).mockResolvedValue([]);
+    (prisma.quizAttempt.findMany as jest.Mock).mockResolvedValue([]);
+
+    const result = await getAllProfiles();
+    expect(result).toHaveLength(1);
+    expect(result[0].behavioralProfile).toBeNull(); // Sin intentos
   });
 });
