@@ -23,7 +23,9 @@ async function main() {
     }
   });
 
-  console.log("Regulations NOM-029-STPS-2011 and NFPA 70E are ensured.");  // 2. Define Simulation Configuration
+  console.log("Regulations NOM-029-STPS-2011 and NFPA 70E are ensured.");
+
+  // 2. Define Simulation Configuration
   const simulationConfig = {
     simulationType: "GUIDED_SEQUENCE",
     scenario: "Subestación de Control de Motores (MCC)",
