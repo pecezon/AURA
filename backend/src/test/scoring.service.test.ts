@@ -45,9 +45,58 @@ describe('ScoringService', () => {
 
     const result = await scoringService.calculateScore(hotspots, events, 100, 100);
 
-    // Score = 100 (base) - 20 (1 missed: h2) - 5 (1 remove) = 75
-    expect(result.riskScore).toBe(75);
+    // Score = 100 (base) - 15 (1 missed: h2) - 2 (1 remove) = 83
+    expect(result.riskScore).toBe(83);
     expect(result.foundHotspots).toEqual(['h1']);
     expect(result.missedHotspots).toEqual(['h2']);
+  });
+
+  it('should calculate perfect score for guided sequence simulation with zero errors', async () => {
+    const hotspots: Hotspot[] = [
+      { id: 'h1', x: 17.0, y: 42.0, radius: 8, riskType: 'Libranza' },
+      { id: 'h2', x: 34.0, y: 42.0, radius: 8, riskType: 'LOTO' },
+      { id: 'h3', x: 48.0, y: 39.0, radius: 8, riskType: 'Measurement' },
+      { id: 'h4', x: 50.0, y: 88.0, radius: 12, riskType: 'Boundary' }
+    ];
+
+    const events: SimulationEvent[] = [
+      { type: 'PLACE_PIN', id: 'h1', x: 17.0, y: 42.0, timestamp: 1000 },
+      { type: 'PLACE_PIN', id: 'h2', x: 34.0, y: 42.0, timestamp: 2000 },
+      { type: 'PLACE_PIN', id: 'h3', x: 48.0, y: 39.0, timestamp: 3000 },
+      { type: 'PLACE_PIN', id: 'h4', x: 50.0, y: 88.0, timestamp: 4000 }
+    ];
+
+    // Pass simulationType explicitly as the 5th parameter so the guided-sequence scoring rules are applied.
+    const result = await scoringService.calculateScore(hotspots, events, 180, 100, 'GUIDED_SEQUENCE');
+
+    expect(result.riskScore).toBe(100);
+    expect(result.foundHotspots).toEqual(['h1', 'h2', 'h3', 'h4']);
+    expect(result.missedHotspots).toEqual([]);
+  });
+
+  it('should apply correct penalties for guided sequence simulation mistakes', async () => {
+    const hotspots: Hotspot[] = [
+      { id: 'h1', x: 17.0, y: 42.0, radius: 8, riskType: 'Libranza' },
+      { id: 'h2', x: 34.0, y: 42.0, radius: 8, riskType: 'LOTO' },
+      { id: 'h3', x: 48.0, y: 39.0, radius: 8, riskType: 'Measurement' },
+      { id: 'h4', x: 50.0, y: 88.0, radius: 12, riskType: 'Boundary' }
+    ];
+
+    const events: SimulationEvent[] = [
+      { type: 'WRONG_CLICK', id: '', x: 10, y: 10, expectedStep: 1, timestamp: 500 }, // -2
+      { type: 'PLACE_PIN', id: 'h1', x: 17.0, y: 42.0, timestamp: 1000 },
+      { type: 'QUIZ_ERROR', id: 'h2', optionId: 'o1', timestamp: 1500 }, // -5
+      { type: 'PLACE_PIN', id: 'h2', x: 34.0, y: 42.0, timestamp: 2000 },
+      { type: 'WRONG_CLICK', id: '', x: 10, y: 10, expectedStep: 3, timestamp: 2500 }, // -2
+      { type: 'PLACE_PIN', id: 'h3', x: 48.0, y: 39.0, timestamp: 3000 },
+      { type: 'PLACE_PIN', id: 'h4', x: 50.0, y: 88.0, timestamp: 4000 }
+    ];
+
+    // Score = 100 - (2 * 2) - (1 * 15) = 81
+    const result = await scoringService.calculateScore(hotspots, events, 180, 100, 'GUIDED_SEQUENCE');
+
+    expect(result.riskScore).toBe(81);
+    expect(result.foundHotspots).toEqual(['h1', 'h2', 'h3', 'h4']);
+    expect(result.missedHotspots).toEqual([]);
   });
 });

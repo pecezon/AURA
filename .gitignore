@@ -1,0 +1,7 @@
+# Skill & superpowers directories
+.superpowers/
+.ui-ux-pro-max-skill/
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -129,7 +129,8 @@ export class SimulationAttemptService{
                 hotspots, 
                 dto.events, 
                 timeLimit, 
-                dto.timeTakenSeconds
+                dto.timeTakenSeconds,
+                config?.simulationType
             );
 
             riskScore = result.riskScore;
