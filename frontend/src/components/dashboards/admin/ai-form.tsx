@@ -57,6 +57,8 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
           derivedSimulation = "ss104";
         } else if (title.includes("TEC102") || title.includes("Bombas")) {
           derivedSimulation = "tec102";
+        } else if (title.includes("TEC110") || title.includes("Polietileno") || title.includes("Gas")) {
+          derivedSimulation = "tec110";
         } else {
           derivedSimulation = "ss101";
         }
@@ -142,6 +144,8 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
               simTitle = "Simulación de Seguridad Eléctrica SS104";
             } else if (formData.selectedSimulation === "tec102") {
               simTitle = "Simulación de Operación de Bombas TEC102";
+            } else if (formData.selectedSimulation === "tec110") {
+              simTitle = "Simulación de Redes de Polietileno TEC110";
             }
             enhancedData.modules[lastIdx].simulation = {
               title: simTitle,
@@ -292,6 +296,8 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
                           simTitle = "Simulación de Seguridad Eléctrica SS104";
                         } else if (selected === "tec102") {
                           simTitle = "Simulación de Operación de Bombas TEC102";
+                        } else if (selected === "tec110") {
+                          simTitle = "Simulación de Redes de Polietileno TEC110";
                         }
                         return {
                           ...mod,
@@ -315,6 +321,7 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
               <option value="ss101">SS101: Identificación de Riesgos en Gasoductos (Sempra)</option>
               <option value="ss104">SS104: Seguridad Eléctrica y Bloqueo LOTO</option>
               <option value="tec102">TEC102: Protocolo de Arranque de Bombas Centrífugas</option>
+              <option value="tec110">TEC110: Instalación y Comisionamiento de Redes PEAD</option>
             </select>
 
             {formData.selectedSimulation !== "none" && (
@@ -325,6 +332,8 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
                       ? "/simulations/electrical_safety_1.png"
                       : formData.selectedSimulation === "tec102"
                       ? "/simulations/centrifugal_pump_1.png"
+                      : formData.selectedSimulation === "tec110"
+                      ? "/simulations/polyethylene_network_1.png"
                       : "/simulations/industrial_safety_1.png"
                   }
                   alt="Simulación"
@@ -341,6 +350,8 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
                       ? "SS104: Seguridad Eléctrica y LOTO"
                       : formData.selectedSimulation === "tec102"
                       ? "TEC102: Protocolo de Arranque de Bombas"
+                      : formData.selectedSimulation === "tec110"
+                      ? "TEC110: Redes de Polietileno (PEAD)"
                       : "SS101: Identificación de Riesgos"}
                   </h4>
                   <p className="text-xs text-blue-700 mt-0.5">
@@ -348,6 +359,8 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
                       ? "Escenario: Subestación de Control de Motores (MCC)"
                       : formData.selectedSimulation === "tec102"
                       ? "Escenario: Estación de Distribución de Gas Natural"
+                      : formData.selectedSimulation === "tec110"
+                      ? "Escenario: Estación de Distribución y Red de Gas"
                       : "Escenario: Terminal de Gasoductos Sempra"}
                   </p>
                   <span className="inline-flex items-center gap-1 mt-2 text-xxs font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 w-fit">
