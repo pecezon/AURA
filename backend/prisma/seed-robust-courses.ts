@@ -151,7 +151,7 @@ async function main() {
                   title: "Instrucciones de la Simulación Virtual de Riesgos",
                   type: ContentType.READING,
                   order: 1,
-                  content: "En la simulación interactiva del módulo, ingresarás virtualmente a una sección de la terminal de gas. Tu misión es de gran importancia: localizar 4 condiciones de riesgo crítico en menos de 5 minutos.\n\nRecuerda que cada clic en una zona vacía o incorrecta penalizará tu Risk Score (-2 puntos). Analiza bien la escena antes de colocar tu pin de riesgo."
+                  content: "En la simulación interactiva del módulo, ingresarás virtualmente a una sección de la terminal de gas. Tu misión es de gran importancia: localizar 4 condiciones de riesgo crítico en menos de 2 minutos.\n\nTu Risk Score se calculará con base en los riesgos correctamente identificados. Cada condición crítica que no detectes restará 15 puntos, y retirar un pin por indecisión puede restar 2 puntos. Analiza bien la escena antes de colocar tu pin de riesgo."
                 }
               ]
             },
