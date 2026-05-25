@@ -73,7 +73,17 @@ export function buildPayload(content: GeneratedContent): CourseCreateDTO {
     title: content.title ?? "Curso sin título",
     description: content.description ?? null,
     isPublished: true,
-    duration: content.duration || null,
+    duration: (() => {
+      if (!content.duration) return null;
+      const d = content.duration;
+      if (d === "0.5") return "30 minutos";
+      if (d === "1") return "1 hora";
+      if (d === "1.5") return "1.5 horas";
+      if (d === "2") return "2 horas";
+      if (d === "2.5") return "2.5 horas";
+      if (d === "3") return "3 horas";
+      return d;
+    })(),
     type: ensureEnglish(content.courseType || "TECHNICAL"),
     regulations: content.applicableNorms || [],
     modules: modules.map((mod, mIdx) => {

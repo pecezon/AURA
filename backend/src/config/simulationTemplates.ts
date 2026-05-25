@@ -5,8 +5,8 @@ type SimulationHotspot = {
   name: string;
   x: number;
   y: number;
-  radius: number;
-  penaltyPoints: number;
+  radius?: number;
+  penaltyPoints?: number;
   justification: string;
   [key: string]: unknown;
 };

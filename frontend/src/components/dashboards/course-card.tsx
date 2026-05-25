@@ -5,6 +5,8 @@ import { StatProgressBar } from "./stat-progress-bar";
 import { Button, buttonVariants } from "../ui/button";
 import { Link } from "@tanstack/react-router";
 import { useModulesByCourse } from "@/hooks/useModules";
+import { useSessionId } from "@/hooks/useSession";
+import { useSimulationAttemptsByProfile } from "@/hooks/useSimulations";
 
 interface Simulation {
   id: string;
@@ -37,8 +39,13 @@ export const CourseCard: React.FC<CourseCardProps> = ({
   progress,
 }) => {
   const { data: modules } = useModulesByCourse(courseId);
+  const { data: sessionId } = useSessionId();
+  const profileId = sessionId || "";
+  const { data: attempts = [] } = useSimulationAttemptsByProfile(profileId);
+
   const simulationModule = (modules as ModuleWithSimulation[] | undefined)?.find((m) => m.simulation);
   const actualSimulationId = simulationModule?.simulation?.id;
+  const hasFinishedSimulation = attempts?.some((att: any) => att.simulationId === actualSimulationId);
 
   return (
     <div className="flex flex-col gap-4 p-4 md:p-6 border border-gray-300 bg-white rounded-lg overflow-hidden w-full hover:shadow-lg transition-shadow duration-300 min-h-[200px]">
@@ -104,8 +111,8 @@ export const CourseCard: React.FC<CourseCardProps> = ({
                 params={{ simulationId: actualSimulationId }}
                 className="w-full md:w-auto"
               >
-                <Play className="w-4 h-4" />
-                Iniciar Simulación
+                <Play className="w-4 h-4 mr-2" />
+                {hasFinishedSimulation ? "Repetir Simulación" : "Iniciar Simulación"}
               </Link>
             </Button>
           )}

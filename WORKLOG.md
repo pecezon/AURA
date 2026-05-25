@@ -3,6 +3,33 @@
 Este documento mantiene un registro cronológico de las sesiones de trabajo, tareas en curso, decisiones importantes y tareas pendientes. Esto asegura que el contexto no se pierda entre sesiones.
 
 
+## Sesión: 2026-05-25 (Sesión D) — Plan Curricular Maestro y Siembra de Cursos Multimedia Robustos
+
+**Qué implementamos en esta sesión:**
+- **Limpieza de Cursos de Prueba**:
+  - Desarrollado y ejecutado un script de limpieza (`backend/prisma/cleanup-courses.ts`) que removió todos los cursos de prueba desactualizados, módulos, contenidos, simulaciones e intentos relacionados, preservando intactos los perfiles de usuario (`Profile`) y las normativas (`Regulation`).
+- **Diseño Curricular del Plan Maestro (AURA Showcase)**:
+  - Generado un plan de capacitación integral detallado en el artefacto `curriculum_plan.md` que define 4 cursos estructurados (`SS101`, `SS104`, `TEC102`, `TEC110`), con duraciones exactas, descripciones de módulos, clasificaciones de seguridad/técnicas y alineaciones normativas.
+- **Enriquecimiento Multimedia e Interactividad**:
+  - Se incorporaron contenidos tipo **Video (`VIDEO`)** y **Audio (`AUDIO`)** junto a las tradicionales lecturas (`READING`) e imágenes (`IMAGE`) para demostrar la versatilidad de la plataforma AURA.
+  - Diseñados textos didácticos completos para los contenidos técnicos y de seguridad, así como guías de términos de búsqueda en internet para materiales y esquemas visuales.
+- **Siembra Programática Consistente**:
+  - Creado el script de inicialización de datos `backend/prisma/seed-robust-courses.ts` para sembrar automáticamente los 4 cursos oficiales y sus contenidos multimedia estructurados.
+  - Ejecutada exitosamente la siembra en la base de datos local conectando de forma precisa cada curso con sus respectivas normativas (NOMs, API 610, ASME, etc.) y vinculando cada simulación con su módulo correspondiente.
+- **Inscripción Programática Masiva de Usuarios**:
+  - Creado y ejecutado el script de inscripción `backend/prisma/enroll-all-users.ts` que consulta todos los perfiles registrados (10 perfiles en total) e inscribe automáticamente a cada uno de ellos en los 4 cursos objetivo de Sempra, asegurando el acceso inmediato desde cualquier cuenta o rol (Worker, Supervisor, Admin).
+- **Formateo de Duración Objetivo del Curso**:
+  - Actualizado el curso de "Seguridad industrial..." en la base de datos para cambiar su duración de `"2"` a `"2 horas"`.
+  - Refactorizada la función `buildPayload` en `frontend/src/components/dashboards/admin/utils/course.utils.ts` para mapear de manera transparente los valores numéricos seleccionados de la duración (ej. `"2"`, `"1"`, `"0.5"`) a su formato de texto correcto (ej. `"2 horas"`, `"1 hora"`, `"30 minutos"`) antes de guardarlos.
+- **Reordenamiento de Cursos del Trabajador (Worker Dashboard)**:
+  - Modificado el componente `MyCourses` (`frontend/src/components/dashboards/my-courses.tsx`) para ordenar los cursos inscritos, posicionando todos los cursos que tienen estatus `"COMPLETED"` o progreso igual a `100` al final de la lista, optimizando la visibilidad de los cursos pendientes.
+- **Acción Dinámica para Repetición de Simulaciones**:
+  - Modificadas tanto la vista de detalle del curso (`frontend/src/routes/course-detail.tsx`) como el componente de tarjeta de curso (`frontend/src/components/dashboards/course-card.tsx`) del dashboard para consultar los intentos de simulación del perfil actual y cambiar de manera condicional la etiqueta del botón de la simulación de `"Iniciar Simulación"` a `"Repetir Simulación"` si el usuario ya ha realizado por lo menos una ejecución previa.
+- **Resolución de Errores de Compilación de TypeScript**:
+  - Modificado el tipo de datos `SimulationHotspot` en `backend/src/config/simulationTemplates.ts` para hacer opcionales los atributos `radius` y `penaltyPoints`, permitiendo la correcta definición de hotspots rectangulares y previniendo errores del compilador.
+  - Corregidos los errores de tipado de Prisma en `backend/src/services/course.service.ts` mediante casteo explícito a `any` en los retornos de transacciones e importaciones de plantillas de simulación.
+  - Validada la compilación limpia del backend mediante un análisis estático de tipos exitoso (`tsc --noEmit`).
+
 ## Sesión: 2026-05-25 (Sesión C) — Creación del Curso y Simulación TEC110 (Redes de Polietileno)
 
 **Qué implementamos en esta sesión:**

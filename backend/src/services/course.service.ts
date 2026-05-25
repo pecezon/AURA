@@ -15,7 +15,7 @@ export class CourseService {
     const existing = await prisma.course.findFirst({ where: { title: dto.title } });
     if (existing) throw new ConflictError("Course with this title already exists");
 
-    const created = await prisma.$transaction(async (tx) =>
+    const created: any = await prisma.$transaction(async (tx) =>
       tx.course.create({
         data: {
           title: dto.title,
@@ -63,7 +63,7 @@ export class CourseService {
                   create: {
                     title: m.simulation.title,
                     passingScore: m.simulation.passingScore,
-                    configuration: simulationTemplates[m.simulation.templateId || "ss101"] || simulationTemplates.ss101,
+                    configuration: (simulationTemplates[m.simulation.templateId || "ss101"] || simulationTemplates.ss101) as any,
                   },
                 }
                 : undefined,
@@ -95,6 +95,10 @@ export class CourseService {
       });
     }
 
+    const enrolledWorkersCount = await prisma.courseEnrollment.count({
+      where: { courseId: created.id }
+    });
+
     // hellish mapping to convert Date to string and fit the CourseResponse type
     return {
       id: created.id,
@@ -107,13 +111,13 @@ export class CourseService {
       isPublished: created.isPublished,
       createdAt: created.createdAt.toISOString(),
       updatedAt: created.updatedAt.toISOString(),
-      enrolledWorkers: admins.length,
-      modules: created.modules.map((m) => ({
+      enrolledWorkers: enrolledWorkersCount,
+      modules: created.modules.map((m: any) => ({
         id: m.id,
         title: m.title,
         order: m.order,
         createdAt: m.createdAt.toISOString(),
-        contents: m.contents.map((c) => ({
+        contents: m.contents.map((c: any) => ({
           id: c.id,
           type: c.type,
           title: c.title,
@@ -121,14 +125,14 @@ export class CourseService {
           url: c.url,
           order: c.order,
         })),
-        quizzes: m.quizzes.map((q) => ({
+        quizzes: m.quizzes.map((q: any) => ({
           id: q.id,
           title: q.title,
           isGeneratedByAI: q.isGeneratedByAI,
-          questions: q.questions.map((qq) => ({
+          questions: q.questions.map((qq: any) => ({
             id: qq.id,
             text: qq.text,
-            reactives: qq.reactives.map((r) => ({
+            reactives: qq.reactives.map((r: any) => ({
               id: r.id,
               text: r.text,
               isCorrect: r.isCorrect,

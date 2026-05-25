@@ -16,6 +16,7 @@ import { useCourseProgress } from "@/hooks/use-course-progress";
 import { useCourse } from "@/hooks/useCourses";
 import { useModulesByCourse } from "@/hooks/useModules";
 import { useSessionId } from "@/hooks/useSession";
+import { useSimulationAttemptsByProfile } from "@/hooks/useSimulations";
 
 
 
@@ -53,7 +54,9 @@ export default function CourseDetail() {
   const { progress, markModuleAsCompleted, isModuleCompleted, isLoading: isProgressLoading, isEnrolled } =
     useCourseProgress(profileId, courseId);
 
-  const isLoading = isCourseLoading || isModulesLoading || !profileId || isProgressLoading;
+  const { data: attempts = [], isLoading: isAttemptsLoading } = useSimulationAttemptsByProfile(profileId);
+
+  const isLoading = isCourseLoading || isModulesLoading || !profileId || isProgressLoading || isAttemptsLoading;
 
   if (isLoading) {
     return (
@@ -81,6 +84,17 @@ export default function CourseDetail() {
   
   const simulationModule = modules?.find((m: any) => m.simulation);
   const actualSimulationId = simulationModule?.simulation?.id;
+  const hasFinishedSimulation = attempts?.some(
+    (att: any) =>
+      att.simulationId === actualSimulationId &&
+      (
+        att.passed === true ||
+        att.completed === true ||
+        att.completedAt != null ||
+        att.finishedAt != null ||
+        att.score != null
+      )
+  );
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-100 gap-6 md:gap-8">
@@ -157,8 +171,10 @@ export default function CourseDetail() {
                 </div>
                 <Button asChild className="cursor-pointer w-full md:w-auto" disabled={!actualSimulationId}>
                   <Link to="/simulation/$simulationId" params={{ simulationId: actualSimulationId || "none" }}>
-                    <Play className="w-4 h-4" />
-                    {actualSimulationId ? "Iniciar Simulación" : "Simulación no disponible"}
+                    <Play className="w-4 h-4 mr-2" />
+                    {actualSimulationId 
+                      ? (hasFinishedSimulation ? "Repetir Simulación" : "Iniciar Simulación") 
+                      : "Simulación no disponible"}
                   </Link>
                 </Button>
               </div>
