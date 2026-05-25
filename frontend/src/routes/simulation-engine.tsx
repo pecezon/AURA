@@ -370,11 +370,14 @@ export default function SimulationEngine() {
               let isCorrect = false;
               if (isFinished && results) {
                 isCorrect = hotspots.some((h) => {
+                  if (pin.id === h.id) return true;
+                  if (h.width !== undefined && h.height !== undefined) {
+                    return pin.x >= h.x && pin.x <= h.x + h.width && pin.y >= h.y && pin.y <= h.y + h.height;
+                  }
                   const dx = h.x - pin.x;
                   const dy = h.y - pin.y;
-                  return pin.id === h.id || (h.width !== undefined && h.height !== undefined
-                    ? (pin.x >= h.x && pin.x <= h.x + h.width && pin.y >= h.y && pin.y <= h.y + h.height)
-                    : Math.sqrt(dx * dx + dy * dy) <= (h.radius || 8));
+                  const distance = Math.sqrt(dx * dx + dy * dy);
+                  return distance <= (h.radius ?? 8);
                 });
               }
 
