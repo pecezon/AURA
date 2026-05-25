@@ -50,7 +50,7 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
   useEffect(() => {
     if (content) {
       let derivedSimulation = "none";
-      const hasSim = (content.modules || []).find((m: any) => m.simulation !== undefined);
+      const hasSim = (content.modules || []).find((m: any) => m.simulation != null);
       if (hasSim) {
         const title = hasSim.simulation?.title || "";
         if (title.includes("SS104") || title.includes("Seguridad Eléctrica")) {
