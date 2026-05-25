@@ -145,7 +145,8 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
             }
             enhancedData.modules[lastIdx].simulation = {
               title: simTitle,
-              passingScore: 80
+              passingScore: 80,
+              templateId: formData.selectedSimulation,
             };
           }
 
@@ -296,7 +297,8 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
                           ...mod,
                           simulation: {
                             title: simTitle,
-                            passingScore: 80
+                            passingScore: 80,
+                            templateId: selected,
                           }
                         };
                       }

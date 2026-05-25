@@ -17,6 +17,7 @@ export type RawModule = { //Made it to prevent use of "any", in the editableModu
   simulation?: {
     title: string;
     passingScore: number;
+    templateId?: string | null;
   };
 };
 
@@ -39,6 +40,7 @@ export interface EditableModule {
   simulation?: {
     title: string;
     passingScore: number;
+    templateId?: string | null;
   };
 }
 

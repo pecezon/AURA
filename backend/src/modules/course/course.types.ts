@@ -66,12 +66,14 @@ export interface QuizResponse {
 export interface SimulationCreateDTO {
   title: string;
   passingScore: number;
+  templateId?: string | null;
 }
 
 export interface SimulationResponse {
   id: string;
   title: string;
   passingScore: number;
+  templateId?: string | null;
 }
 
 export interface CourseCreateDTO {

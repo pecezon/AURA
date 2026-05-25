@@ -35,6 +35,7 @@ export interface CourseModuleDTO {
   simulation?: {
     title: string;
     passingScore: number;
+    templateId?: string | null;
   };
 }
 
