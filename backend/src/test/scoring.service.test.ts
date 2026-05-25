@@ -50,4 +50,69 @@ describe('ScoringService', () => {
     expect(result.foundHotspots).toEqual(['h1']);
     expect(result.missedHotspots).toEqual(['h2']);
   });
+
+  it('should calculate perfect score for guided sequence simulation with zero errors', async () => {
+    const hotspots: Hotspot[] = [
+      { id: 'h1', x: 17.0, y: 42.0, radius: 8, riskType: 'Libranza' },
+      { id: 'h2', x: 34.0, y: 42.0, radius: 8, riskType: 'LOTO' },
+      { id: 'h3', x: 48.0, y: 39.0, radius: 8, riskType: 'Measurement' },
+      { id: 'h4', x: 50.0, y: 88.0, radius: 12, riskType: 'Boundary' }
+    ];
+
+    const events: SimulationEvent[] = [
+      { type: 'PLACE_PIN', id: 'h1', x: 17.0, y: 42.0, timestamp: 1000 },
+      { type: 'PLACE_PIN', id: 'h2', x: 34.0, y: 42.0, timestamp: 2000 },
+      { type: 'PLACE_PIN', id: 'h3', x: 48.0, y: 39.0, timestamp: 3000 },
+      { type: 'PLACE_PIN', id: 'h4', x: 50.0, y: 88.0, timestamp: 4000 }
+    ];
+
+    // Config passed dynamically or mocked in the service, let's test it.
+    // We pass config or specify parameters. Wait! How does ScoringService know the simulation type?
+    // Let's pass simulationType: 'GUIDED_SEQUENCE' as part of the hotspots config or extend calculateScore?
+    // Wait, let's see calculateScore signature:
+    // async calculateScore(hotspots: Hotspot[], events: SimulationEvent[], timeLimitSeconds: number, timeTakenSeconds: number, simulationType?: string)
+    // Ah! Let's check how simuAttempt.service.ts calls it:
+    // const config = simulation.configuration as any;
+    // const hotspots = config?.hotspots || [];
+    // const timeLimit = config?.timeLimitSeconds || config?.timeLimit || 120;
+    // const result = await scoringService.calculateScore(hotspots, dto.events, timeLimit, dto.timeTakenSeconds);
+    // So the config is in the DB. But calculateScore only receives hotspots, events, timeLimit, timeTakenSeconds!
+    // Wait, how can calculateScore know the simulation type?
+    // We can pass the simulationType as an optional 5th parameter to calculateScore! Or we can check if any hotspots contain stepOrder or if the event list contains WRONG_CLICK/QUIZ_ERROR.
+    // Wait, passing simulationType as a 5th parameter is MUCH cleaner and explicit!
+    // Let's modify calculateScore's signature:
+    // calculateScore(hotspots: Hotspot[], events: SimulationEvent[], timeLimitSeconds: number, timeTakenSeconds: number, simulationType?: string)
+    // Yes! Let's write the test assuming we pass 'GUIDED_SEQUENCE' as the 5th parameter.
+    const result = await scoringService.calculateScore(hotspots, events, 180, 100, 'GUIDED_SEQUENCE');
+
+    expect(result.riskScore).toBe(100);
+    expect(result.foundHotspots).toEqual(['h1', 'h2', 'h3', 'h4']);
+    expect(result.missedHotspots).toEqual([]);
+  });
+
+  it('should apply correct penalties for guided sequence simulation mistakes', async () => {
+    const hotspots: Hotspot[] = [
+      { id: 'h1', x: 17.0, y: 42.0, radius: 8, riskType: 'Libranza' },
+      { id: 'h2', x: 34.0, y: 42.0, radius: 8, riskType: 'LOTO' },
+      { id: 'h3', x: 48.0, y: 39.0, radius: 8, riskType: 'Measurement' },
+      { id: 'h4', x: 50.0, y: 88.0, radius: 12, riskType: 'Boundary' }
+    ];
+
+    const events: SimulationEvent[] = [
+      { type: 'WRONG_CLICK', id: '', x: 10, y: 10, expectedStep: 1, timestamp: 500 }, // -5
+      { type: 'PLACE_PIN', id: 'h1', x: 17.0, y: 42.0, timestamp: 1000 },
+      { type: 'QUIZ_ERROR', id: 'h2', optionId: 'o1', timestamp: 1500 }, // -10
+      { type: 'PLACE_PIN', id: 'h2', x: 34.0, y: 42.0, timestamp: 2000 },
+      { type: 'WRONG_CLICK', id: '', x: 10, y: 10, expectedStep: 3, timestamp: 2500 }, // -5
+      { type: 'PLACE_PIN', id: 'h3', x: 48.0, y: 39.0, timestamp: 3000 },
+      { type: 'PLACE_PIN', id: 'h4', x: 50.0, y: 88.0, timestamp: 4000 }
+    ];
+
+    // Score = 100 - (2 * 5) - (1 * 10) = 80
+    const result = await scoringService.calculateScore(hotspots, events, 180, 100, 'GUIDED_SEQUENCE');
+
+    expect(result.riskScore).toBe(80);
+    expect(result.foundHotspots).toEqual(['h1', 'h2', 'h3', 'h4']);
+    expect(result.missedHotspots).toEqual([]);
+  });
 });

@@ -1,11 +1,13 @@
 import { z } from "zod";
 
 export const simulationEventSchema = z.object({
-  type: z.enum(['PLACE_PIN', 'REMOVE_PIN']),
-  id: z.string().min(1, "Event ID is required"),
+  type: z.enum(['PLACE_PIN', 'REMOVE_PIN', 'WRONG_CLICK', 'QUIZ_ERROR']),
+  id: z.string().optional().default(""),
   x: z.number().optional(),
   y: z.number().optional(),
-  timestamp: z.number().nonnegative("Timestamp must be a positive number")
+  timestamp: z.number().nonnegative("Timestamp must be a positive number"),
+  expectedStep: z.number().optional(),
+  optionId: z.string().optional()
 });
 
 export const simulationAttemptProgressSchema = z.object({
