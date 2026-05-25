@@ -29,9 +29,10 @@ export const ProfileRecap: React.FC = () => {
     return value;
   };
 
-  const mockRiskScore = 20;
-  const mockReactionIndex = 75;
-  const mockProceduralDiscipline = 60;
+  const riskScore = profile?.behavioralProfile ? profile.behavioralProfile.riskScore : null;
+  const reactionIndex = profile?.behavioralProfile ? profile.behavioralProfile.reactionIndex : null;
+  const proceduralDiscipline = profile?.behavioralProfile ? profile.behavioralProfile.proceduralDiscipline : null;
+
   const userName = isProfileError ? "Usuario" : (profile?.firstName || "Usuario");
 
   return (
@@ -67,10 +68,10 @@ export const ProfileRecap: React.FC = () => {
           gradientColor="from-green-500 to-green-700"
         />
         <StatCard
-          label="Puntaje de Riesgo"
+          label="Risk Score"
           stat={
             <div className="flex gap-1 items-center">
-              <h1>{mockRiskScore}</h1>
+              <h1>{riskScore !== null ? riskScore : "N/A"}</h1>
               <p className="text-gray-400 text-lg font-normal">/100</p>
             </div>
           }
@@ -81,9 +82,9 @@ export const ProfileRecap: React.FC = () => {
 
       {/* Behavioral Profile Summary */}
       <BehavioralProfile
-        riskScore={mockRiskScore}
-        reactionIndex={mockReactionIndex}
-        proceduralDiscipline={mockProceduralDiscipline}
+        riskScore={riskScore}
+        reactionIndex={reactionIndex}
+        proceduralDiscipline={proceduralDiscipline}
       />
     </div>
   );
