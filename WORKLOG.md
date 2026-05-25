@@ -27,6 +27,14 @@ Este documento mantiene un registro cronológico de las sesiones de trabajo, tar
     - `REMOVE_PIN` (indecisión en exploración libre): Reducido de `-2` (antes `-5`).
     - Omitir pasos/hotspots: Reducido de `-15` (antes `-20`/`-25`).
   - Actualizados y validados todos los tests correspondientes en `scoring.service.test.ts` para reflejar y asegurar las nuevas puntuaciones.
+- **Validación Estricta de Eventos de Simulación**:
+  - Refactorizado `simulationEventSchema` en `simuAttempt.validation.ts` usando `z.discriminatedUnion("type", ...)` para evitar la debilidad en la validación donde se permitían ids vacíos de forma indiscriminada.
+  - El esquema ahora exige de forma robusta las restricciones según el tipo de evento:
+    - `PLACE_PIN`: Requiere `id` no vacío, `x` e `y`.
+    - `REMOVE_PIN`: Requiere `id` no vacío.
+    - `WRONG_CLICK`: Permite `id` opcional/vacío, requiere `x`, `y` y `expectedStep`.
+    - `QUIZ_ERROR`: Requiere `id` no vacío y `optionId` no vacío.
+  - Creado y validado el archivo de pruebas unitarias `simulation-validation.test.ts` para corroborar el comportamiento correcto y robusto del validador de eventos.
 
 ## Sesión: 2026-05-25 (Sesión B) — Creación del Curso y Simulación TEC102 (Bombas Centrífugas)
 
