@@ -479,7 +479,7 @@ export default function SimulationEngine() {
                   <div className="w-full bg-slate-indigo-900 rounded-full h-2 overflow-hidden">
                     <div 
                       className="bg-gradient-to-r from-amber-500 to-emerald-500 h-2 transition-all duration-500"
-                      style={{ width: `${((Math.min(currentStepOrder, hotspots.length) - 1) / hotspots.length) * 100}%` }}
+                      style={{ width: `${hotspots.length > 0 ? ((Math.min(currentStepOrder, hotspots.length) - 1) / hotspots.length) * 100 : 0}%` }}
                     />
                   </div>
                 </div>
