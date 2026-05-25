@@ -1,4 +1,26 @@
-export const simulationTemplates: Record<string, any> = {
+type SimulationHotspot = {
+  id: string;
+  type: string;
+  riskType: string;
+  name: string;
+  x: number;
+  y: number;
+  radius: number;
+  penaltyPoints: number;
+  justification: string;
+  [key: string]: unknown;
+};
+
+type SimulationTemplate = {
+  simulationType: string;
+  scenario: string;
+  imageUrl: string;
+  timeLimitSeconds: number;
+  hotspots: SimulationHotspot[];
+  [key: string]: unknown;
+};
+
+export const simulationTemplates: Record<string, SimulationTemplate> = {
   ss101: {
     simulationType: "EXPLORATION",
     scenario: "Terminal de Gasoductos Sempra",
