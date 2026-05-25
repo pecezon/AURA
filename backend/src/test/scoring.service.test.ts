@@ -66,23 +66,7 @@ describe('ScoringService', () => {
       { type: 'PLACE_PIN', id: 'h4', x: 50.0, y: 88.0, timestamp: 4000 }
     ];
 
-    // Config passed dynamically or mocked in the service, let's test it.
-    // We pass config or specify parameters. Wait! How does ScoringService know the simulation type?
-    // Let's pass simulationType: 'GUIDED_SEQUENCE' as part of the hotspots config or extend calculateScore?
-    // Wait, let's see calculateScore signature:
-    // async calculateScore(hotspots: Hotspot[], events: SimulationEvent[], timeLimitSeconds: number, timeTakenSeconds: number, simulationType?: string)
-    // Ah! Let's check how simuAttempt.service.ts calls it:
-    // const config = simulation.configuration as any;
-    // const hotspots = config?.hotspots || [];
-    // const timeLimit = config?.timeLimitSeconds || config?.timeLimit || 120;
-    // const result = await scoringService.calculateScore(hotspots, dto.events, timeLimit, dto.timeTakenSeconds);
-    // So the config is in the DB. But calculateScore only receives hotspots, events, timeLimit, timeTakenSeconds!
-    // Wait, how can calculateScore know the simulation type?
-    // We can pass the simulationType as an optional 5th parameter to calculateScore! Or we can check if any hotspots contain stepOrder or if the event list contains WRONG_CLICK/QUIZ_ERROR.
-    // Wait, passing simulationType as a 5th parameter is MUCH cleaner and explicit!
-    // Let's modify calculateScore's signature:
-    // calculateScore(hotspots: Hotspot[], events: SimulationEvent[], timeLimitSeconds: number, timeTakenSeconds: number, simulationType?: string)
-    // Yes! Let's write the test assuming we pass 'GUIDED_SEQUENCE' as the 5th parameter.
+    // Pass simulationType explicitly as the 5th parameter so the guided-sequence scoring rules are applied.
     const result = await scoringService.calculateScore(hotspots, events, 180, 100, 'GUIDED_SEQUENCE');
 
     expect(result.riskScore).toBe(100);
