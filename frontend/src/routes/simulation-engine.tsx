@@ -385,8 +385,18 @@ export default function SimulationEngine() {
               let pinContent: React.ReactNode = null;
 
               if (config?.simulationType === 'GUIDED_SEQUENCE') {
-                pinBgClass = "bg-emerald-500 text-white ring-2 ring-emerald-300 scale-110";
-                pinContent = <CheckCircle className="w-4 h-4" />;
+                const quizErrorHotspotIds = getEvents()
+                  .filter((e) => e.type === 'QUIZ_ERROR')
+                  .map((e) => e.id);
+                const hasQuizError = quizErrorHotspotIds.includes(pin.id);
+
+                if (hasQuizError) {
+                  pinBgClass = "bg-classic-crimson-500 text-white ring-2 ring-classic-crimson-300 opacity-80 scale-110";
+                  pinContent = <XCircle className="w-4 h-4" />;
+                } else {
+                  pinBgClass = "bg-emerald-500 text-white ring-2 ring-emerald-300 scale-110";
+                  pinContent = <CheckCircle className="w-4 h-4" />;
+                }
               } else if (isFinished) {
                 if (isSubmitting) {
                   pinBgClass = "bg-yellow-500 text-yellow-950 ring-2 ring-yellow-300 animate-pulse scale-110";
@@ -420,19 +430,32 @@ export default function SimulationEngine() {
               );
             })}
 
-            {/* Render Missing Hotspots if finished and fully evaluated */}
+            {/* Render Hotspots if finished and fully evaluated */}
             {isFinished && !isSubmitting && hotspots.map((h) => {
+              const quizErrorHotspotIds = getEvents()
+                .filter((e) => e.type === 'QUIZ_ERROR')
+                .map((e) => e.id);
+              const hasQuizError = quizErrorHotspotIds.includes(h.id);
+              const isFound = pins.some((p) => p.id === h.id);
+
+              const isSuccess = isFound && !hasQuizError;
+              const borderColorClass = isSuccess ? "border-emerald-400" : "border-classic-crimson-400";
+              const bgColor = isSuccess ? "rgba(52, 211, 153, 0.1)" : "rgba(220, 38, 38, 0.1)";
+
               if (h.width !== undefined && h.height !== undefined) {
                 return (
                   <div 
                     key={`hotspot-${h.id}`}
-                    className="absolute border-2 border-dashed border-emerald-400 rounded-lg animate-pulse pointer-events-none"
+                    className={clsx(
+                      "absolute border-2 border-dashed rounded-lg animate-pulse pointer-events-none",
+                      borderColorClass
+                    )}
                     style={{ 
                       left: `${h.x}%`, 
                       top: `${h.y}%`, 
                       width: `${h.width}%`, 
                       height: `${h.height}%`,
-                      backgroundColor: 'rgba(52, 211, 153, 0.1)'
+                      backgroundColor: bgColor
                     }}
                   />
                 );
@@ -441,14 +464,17 @@ export default function SimulationEngine() {
               return (
                 <div 
                   key={`hotspot-${h.id}`}
-                  className="absolute border-2 border-dashed border-emerald-400 rounded-full animate-pulse pointer-events-none"
+                  className={clsx(
+                    "absolute border-2 border-dashed rounded-full animate-pulse pointer-events-none",
+                    borderColorClass
+                  )}
                   style={{ 
                     left: `${h.x}%`, 
                     top: `${h.y}%`, 
                     width: `${rad * 2}%`, 
                     height: `${rad * 2}%`,
                     transform: 'translate(-50%, -50%)',
-                    backgroundColor: 'rgba(52, 211, 153, 0.1)'
+                    backgroundColor: bgColor
                   }}
                 />
               );
