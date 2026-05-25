@@ -95,6 +95,10 @@ export class CourseService {
       });
     }
 
+    const enrolledWorkersCount = await prisma.courseEnrollment.count({
+      where: { courseId: created.id }
+    });
+
     // hellish mapping to convert Date to string and fit the CourseResponse type
     return {
       id: created.id,
@@ -107,7 +111,7 @@ export class CourseService {
       isPublished: created.isPublished,
       createdAt: created.createdAt.toISOString(),
       updatedAt: created.updatedAt.toISOString(),
-      enrolledWorkers: admins.length,
+      enrolledWorkers: enrolledWorkersCount,
       modules: created.modules.map((m: any) => ({
         id: m.id,
         title: m.title,
