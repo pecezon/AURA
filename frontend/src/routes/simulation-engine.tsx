@@ -300,6 +300,48 @@ export default function SimulationEngine() {
   }
   const hotspots = config?.hotspots || [];
 
+  const getNormativeDetails = () => {
+    const titleLower = (simulation?.title || "").toLowerCase();
+    const scenarioLower = (config?.scenario || "").toLowerCase();
+
+    if (titleLower.includes("ss104") || titleLower.includes("eléctrica") || scenarioLower.includes("mcc")) {
+      return {
+        badge: "PROTOCOLO NOM-029 / NFPA 70E",
+        discipline: "Disciplina Operativa",
+        subtitle: "Sigue estrictamente la secuencia técnica de seguridad eléctrica.",
+        progressLabel: "Progreso de la Libranza",
+        normCode: "NOM-029"
+      };
+    }
+    if (titleLower.includes("tec102") || titleLower.includes("bombas")) {
+      return {
+        badge: "NORMATIVA NOM-004-STPS-1999",
+        discipline: "Operación de Equipos",
+        subtitle: "Sigue la secuencia de pre-arranque y operación segura de bombas centrífugas.",
+        progressLabel: "Progreso del Operativo",
+        normCode: "NOM-004"
+      };
+    }
+    if (titleLower.includes("tec110") || titleLower.includes("polietileno") || titleLower.includes("gas")) {
+      return {
+        badge: "NORMA DE REDES PEAD",
+        discipline: "Tendido y Distribución de Gas",
+        subtitle: "Sigue la secuencia técnica de comisionamiento y distribución de redes de gas.",
+        progressLabel: "Progreso del Comisionamiento",
+        normCode: "PEAD"
+      };
+    }
+    return {
+      badge: "SEGURIDAD INDUSTRIAL BÁSICA",
+      discipline: "Inspección de Riesgos",
+      subtitle: "Sigue estrictamente la secuencia técnica de inspección y seguridad de la planta.",
+      progressLabel: "Progreso de Inspección",
+      normCode: "SEGURIDAD"
+    };
+  };
+
+  const normative = getNormativeDetails();
+
   let foundHotspots: GuidedHotspot[] = [];
   let missedHotspots: GuidedHotspot[] = [];
   
@@ -486,20 +528,20 @@ export default function SimulationEngine() {
               <div className="space-y-6 flex-1 flex flex-col">
                 <div>
                   <Badge className="bg-amber-500 hover:bg-amber-500 text-amber-950 font-bold mb-2">
-                    PROTOCOLO NOM-029 / NFPA 70E
+                    {normative.badge}
                   </Badge>
                   <h2 className="text-xl font-bold text-white mb-1">
-                    Disciplina Operativa
+                    {normative.discipline}
                   </h2>
                   <p className="text-slate-indigo-300 text-sm">
-                    Sigue estrictamente la secuencia técnica de seguridad eléctrica.
+                    {normative.subtitle}
                   </p>
                 </div>
 
                 {/* Progress bar */}
                 <div className="bg-slate-indigo-950 rounded-xl p-4 border border-slate-indigo-800/85">
                   <div className="flex justify-between items-center text-xs mb-2">
-                    <span className="text-slate-indigo-400 font-semibold uppercase tracking-wider text-[10px]">Progreso de la Libranza</span>
+                    <span className="text-slate-indigo-400 font-semibold uppercase tracking-wider text-[10px]">{normative.progressLabel}</span>
                     <span className="text-amber-400 font-bold text-xs">{Math.min(currentStepOrder, hotspots.length)} / {hotspots.length} Pasos</span>
                   </div>
                   <div className="w-full bg-slate-indigo-900 rounded-full h-2 overflow-hidden">
@@ -566,7 +608,7 @@ export default function SimulationEngine() {
                           : "bg-classic-crimson-950/40 border-classic-crimson-500/30 text-classic-crimson-300"
                       )}>
                         <div className="font-bold mb-1 uppercase tracking-wider text-[10px]">
-                          {isQuizSuccess ? "Justificación Técnica (NOM-029):" : "Desviación de Seguridad:"}
+                          {isQuizSuccess ? `Justificación Técnica (${normative.normCode}):` : "Desviación de Seguridad:"}
                         </div>
                         {quizFeedback}
                       </div>
