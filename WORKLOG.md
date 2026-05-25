@@ -17,6 +17,16 @@ Este documento mantiene un registro cronológico de las sesiones de trabajo, tar
   - Explicado el soporte en la interfaz del administrador (`ai-form.tsx`) para permitir previsualizar y asociar la simulación `TEC110` al generar cursos dinámicos.
 - **Ejecución y Verificación de Base de Datos**:
   - Ejecutada la siembra exitosa en la base de datos local y corroborada la correcta compilación de todo el software del backend.
+- **Tipado Fuerte del Motor de Simulaciones**:
+  - Definidas interfaces fuertemente tipadas (`QuizOption`, `HotspotQuiz`, `GuidedHotspot`, `SimulationConfig`, `ScoringResult`) en `simulation-engine.tsx`, eliminando por completo los tipos genéricos `any` de los estados y loops.
+  - Corrección visual: Ajustado el renderizado de hotspots no identificados/omitidos para soportar cajas rectangulares (`rounded-lg` con `width`/`height`) en lugar de forzar siempre círculos con radio inexistente.
+- **Reducción de Penalizaciones (Fair Scoring)**:
+  - Disminuidas las penalizaciones de puntuación de riesgos (`ScoringService`) para evitar que el `riskScore` decaiga abruptamente:
+    - `WRONG_CLICK` (clics erróneos): Reducido de `-2` (antes `-5`).
+    - `QUIZ_ERROR` (respuestas incorrectas): Reducido de `-5` (antes `-10`).
+    - `REMOVE_PIN` (indecisión en exploración libre): Reducido de `-2` (antes `-5`).
+    - Omitir pasos/hotspots: Reducido de `-15` (antes `-20`/`-25`).
+  - Actualizados y validados todos los tests correspondientes en `scoring.service.test.ts` para reflejar y asegurar las nuevas puntuaciones.
 
 ## Sesión: 2026-05-25 (Sesión B) — Creación del Curso y Simulación TEC102 (Bombas Centrífugas)
 
