@@ -51,7 +51,7 @@ export class ScoringService {
           baseScore -= 2; // Reduced penalty: -2 instead of -5
         } else if (event.type === 'QUIZ_ERROR') {
           quizErrorsCount++;
-          baseScore -= 5; // Reduced penalty: -5 instead of -10
+          baseScore -= 15; // Penalty: -15 per quiz error (crucial safety gap)
         } else if (event.type === 'PLACE_PIN') {
           if (event.id) {
             foundHotspots.push(event.id);

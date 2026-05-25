@@ -92,10 +92,10 @@ describe('ScoringService', () => {
       { type: 'PLACE_PIN', id: 'h4', x: 50.0, y: 88.0, timestamp: 4000 }
     ];
 
-    // Score = 100 - (2 * 2) - (1 * 5) = 91
+    // Score = 100 - (2 * 2) - (1 * 15) = 81
     const result = await scoringService.calculateScore(hotspots, events, 180, 100, 'GUIDED_SEQUENCE');
 
-    expect(result.riskScore).toBe(91);
+    expect(result.riskScore).toBe(81);
     expect(result.foundHotspots).toEqual(['h1', 'h2', 'h3', 'h4']);
     expect(result.missedHotspots).toEqual([]);
   });
