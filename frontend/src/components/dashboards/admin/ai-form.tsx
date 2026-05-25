@@ -328,8 +328,9 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
                   alt="Simulación"
                   className="w-28 h-20 object-cover rounded-md border border-blue-200 shadow-sm shrink-0"
                   onError={(e) => {
-                    // Fallback to placeholder if visual asset is not created yet
-                    (e.target as HTMLImageElement).src = "/simulations/industrial_safety_1.png";
+                    const img = e.currentTarget;
+                    img.onerror = null;
+                    img.src = "/simulations/industrial_safety_1.png";
                   }}
                 />
                 <div className="flex flex-col justify-center">
