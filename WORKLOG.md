@@ -8,11 +8,9 @@ Este documento mantiene un registro cronológico de las sesiones de trabajo, tar
 **Qué implementamos en esta sesión:**
 - **Creación del Curso y Simulación TEC110**:
   - Diseñado y creado el script de seed `seed-tec110.ts` para registrar el nuevo curso de capacitación técnica `"TEC110: Diseño, construcción, comisionamiento y puesta en marcha de redes de polietileno para transporte y distribución de gas natural"`.
-  - Definida la simulación guiada para el ensamble, termofusión, prueba de hermeticidad y purga con nitrógeno de redes de polietileno de alta densidad (PEAD) en estaciones de distribución de Sempra Infrastructure, mapeada en 4 grandes hotspots rectangulares:
-    1. Inspección de tubería y alineación (`x: 8.0`, `y: 20.0`, `width: 18.0`, `height: 40.0`).
-    2. Raspado mecánico y alineador para fusión (`x: 30.0`, `y: 15.0`, `width: 18.0`, `height: 40.0`).
-    3. Manifold y manómetro para prueba de presión neumática con nitrógeno (`x: 52.0`, `y: 20.0`, `width: 20.0`, `height: 50.0`).
-    4. Válvula de venteo y detector de gas para purga y puesta en servicio (`x: 76.0`, `y: 15.0`, `width: 18.0`, `height: 45.0`).
+  - Definida la simulación guiada para el ensamble, termofusión, prueba de hermeticidad y purga con nitrógeno de redes de polietileno de alta densidad (PEAD) en estaciones de distribución de Sempra Infrastructure, mapeada en 4 hotspots rectangulares con coordenadas alineadas a la configuración sembrada y usada en runtime en `seed-tec110.ts` y `simulationTemplates.ts`.
+    - Referencia verificada en runtime: el hotspot `p1` (inspección de tubería y alineación) usa exactamente `x: 2.0`, `y: 46.0`, `width: 28.0`, `height: 40.0`.
+    - Los demás hotspots de TEC110 deben consultarse y mantenerse documentados únicamente con los mismos valores definidos en esas fuentes de configuración, para evitar divergencias en la bitácora.
   - Asociadas las regulaciones normativas e internacionales: la norma oficial mexicana **NOM-003-ASEA-2016** (distribución de gas natural por ductos) y el estándar internacional **ASME B31.8** (especificación de sistemas de tubería de gas).
 - **Mapeo Dinámico y Selección de Plantilla**:
   - Agregada la configuración de la simulación `TEC110` en el catálogo central de plantillas `simulationTemplates.ts`.
