@@ -55,6 +55,7 @@ export const createCourseSchema = z.object({
           .object({
             title: z.string().min(1, "Simulation title required"),
             passingScore: z.number().int(),
+            templateId: z.string().optional().nullable(),
           })
           .optional(),
       })

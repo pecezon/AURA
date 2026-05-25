@@ -3,6 +3,21 @@
 Este documento mantiene un registro cronológico de las sesiones de trabajo, tareas en curso, decisiones importantes y tareas pendientes. Esto asegura que el contexto no se pierda entre sesiones.
 
 
+## Sesión: 2026-05-25 (Sesión B) — Creación del Curso y Simulación TEC102 (Bombas Centrífugas)
+
+**Qué implementamos en esta sesión:**
+- **Creación del Curso y Simulación TEC102**:
+  - Diseñado y creado el script de seed `seed-tec102.ts` para registrar el nuevo curso de capacitación técnica `"TEC102: Bombas centrífugas – principios, operación, mantenimiento y seguridad"`.
+  - Definida la simulación guiada para el arranque seguro de bombas centrífugas en estaciones de distribución de gas natural (Sempra Infrastructure), mapeada en 4 grandes hotspots rectangulares:
+    1. Cárter de rodamientos y visor de nivel de lubricante (`x: 8.0`, `y: 20.0`, `width: 18.0`, `height: 40.0`).
+    2. Válvula de purga/venteo manual de la carcasa (`x: 30.0`, `y: 15.0`, `width: 18.0`, `height: 35.0`).
+    3. Alineación de válvulas de proceso succión/descarga (`x: 52.0`, `y: 25.0`, `width: 20.0`, `height: 50.0`).
+    4. Monitoreo de presión diferencial en el manómetro de descarga (`x: 76.0`, `y: 15.0`, `width: 18.0`, `height: 40.0`).
+  - Asociadas las regulaciones normativas e internacionales: la norma oficial mexicana **NOM-004-STPS-1999** (maquinaria y equipo seguro en centros de trabajo) y el estándar internacional **API 610** (especificación de bombas centrífugas para gas natural e hidrocarburos).
+- **Ejecución y Verificación de Base de Datos**:
+  - Corregidos los paths de importación de la instancia interna del cliente Prisma en el seed.
+  - Ejecutada la siembra exitosa en la base de datos local y corroborada la correcta compilación de todo el software del backend.
+
 ## Sesión: 2026-05-25 — Correcciones en SS104 (Esquema de Validación, Disciplina del Quiz "Te Chingas", y Hotspots más grandes)
 
 **Qué implementamos en esta sesión:**
