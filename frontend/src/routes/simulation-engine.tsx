@@ -113,7 +113,7 @@ export default function SimulationEngine() {
     }
   }, [simulationId, profileId, attemptId, createAttempt]);
 
-  const handleImageClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleImageClick = (e: React.MouseEvent<HTMLImageElement>) => {
     if (isFinished) return;
 
     const config = getSimulationConfig();
