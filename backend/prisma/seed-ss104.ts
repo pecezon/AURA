@@ -120,7 +120,11 @@ async function main() {
   // 3. Check if Course already exists
   const existingCourse = await prisma.course.findFirst({
     where: { title: "SS104: Seguridad Eléctrica y Bloqueo LOTO" },
-    include: { modules: true }
+    include: {
+      modules: {
+        orderBy: { order: 'asc' }
+      }
+    }
   });
 
   if (existingCourse) {
