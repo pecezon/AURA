@@ -84,7 +84,17 @@ export default function CourseDetail() {
   
   const simulationModule = modules?.find((m: any) => m.simulation);
   const actualSimulationId = simulationModule?.simulation?.id;
-  const hasFinishedSimulation = attempts?.some((att: any) => att.simulationId === actualSimulationId);
+  const hasFinishedSimulation = attempts?.some(
+    (att: any) =>
+      att.simulationId === actualSimulationId &&
+      (
+        att.passed === true ||
+        att.completed === true ||
+        att.completedAt != null ||
+        att.finishedAt != null ||
+        att.score != null
+      )
+  );
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-100 gap-6 md:gap-8">
