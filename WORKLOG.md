@@ -21,6 +21,7 @@ Este documento mantiene un registro cronológico de las sesiones de trabajo, tar
   - Definidas interfaces fuertemente tipadas (`QuizOption`, `HotspotQuiz`, `GuidedHotspot`, `SimulationConfig`, `ScoringResult`) en `simulation-engine.tsx`, eliminando por completo los tipos genéricos `any` de los estados y loops.
   - Corrección visual: Ajustado el renderizado de hotspots no identificados/omitidos para soportar cajas rectangulares (`rounded-lg` con `width`/`height`) en lugar de forzar siempre círculos con radio inexistente.
   - Corrección de Validación de Pins: Refactorizada la lógica visual de `isCorrect` para calcular correctamente colisiones con hotspots rectangulares y aplicar un fallback seguro (`h.radius ?? 8`) para circular hotspots, evitando resultados de tipo `NaN`.
+  - Visualización Dinámica de Aciertos/Errores: Ajustada la renderización final de hotspots y pines para que utilicen color carmesí (`border-classic-crimson-400` y `bg-classic-crimson-500`) cuando existan eventos `QUIZ_ERROR` asociados a su respectivo paso, mostrando el estado en verde (`emerald`) únicamente si la respuesta al mini quiz fue correcta.
 - **Reducción de Penalizaciones (Fair Scoring)**:
   - Disminuidas las penalizaciones de puntuación de riesgos (`ScoringService`) para evitar que el `riskScore` decaiga abruptamente:
     - `WRONG_CLICK` (clics erróneos): Reducido de `-2` (antes `-5`).
