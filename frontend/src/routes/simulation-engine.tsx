@@ -545,7 +545,7 @@ export default function SimulationEngine() {
                                 </span>
                                 {isActive && (
                                   <p className="text-xs text-amber-400 mt-1 leading-relaxed animate-pulse">
-                                    🎯 {h.instruction}
+                                    {h.instruction}
                                   </p>
                                 )}
                               </div>
