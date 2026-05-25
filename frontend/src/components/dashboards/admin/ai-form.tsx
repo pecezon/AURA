@@ -316,7 +316,7 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
             </select>
 
             {formData.selectedSimulation !== "none" && (
-              <div className="mt-2 border border-blue-150 bg-blue-50/50 rounded-lg p-3.5 flex gap-4 animate-fade-in shadow-sm">
+              <div className="mt-2 border border-blue-200 bg-blue-50/50 rounded-lg p-3.5 flex gap-4 animate-fade-in shadow-sm">
                 <img
                   src={
                     formData.selectedSimulation === "ss104"
