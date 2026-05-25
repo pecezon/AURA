@@ -48,10 +48,10 @@ export class ScoringService {
       for (const event of events) {
         if (event.type === 'WRONG_CLICK') {
           wrongClicksCount++;
-          baseScore -= 5;
+          baseScore -= 2; // Reduced penalty: -2 instead of -5
         } else if (event.type === 'QUIZ_ERROR') {
           quizErrorsCount++;
-          baseScore -= 10;
+          baseScore -= 5; // Reduced penalty: -5 instead of -10
         } else if (event.type === 'PLACE_PIN') {
           if (event.id) {
             foundHotspots.push(event.id);
@@ -63,7 +63,7 @@ export class ScoringService {
       for (const hotspot of hotspots) {
         if (!foundHotspots.includes(hotspot.id)) {
           missedHotspots.push(hotspot.id);
-          baseScore -= 25; // -25 penalty for omissions in guided sequence
+          baseScore -= 15; // Reduced penalty: -15 instead of -25
         }
       }
     } else {
@@ -108,12 +108,12 @@ export class ScoringService {
           foundHotspots.push(hotspot.id);
         } else {
           missedHotspots.push(hotspot.id);
-          baseScore -= 20; // -20 penalty for omissions
+          baseScore -= 15; // Reduced penalty: -15 instead of -20
         }
       }
 
       // Apply indecision penalty
-      baseScore -= (indecisionCount * 5); // -5 per REMOVE_PIN
+      baseScore -= (indecisionCount * 2); // Reduced penalty: -2 instead of -5 per REMOVE_PIN
     }
 
     // Apply time penalty
