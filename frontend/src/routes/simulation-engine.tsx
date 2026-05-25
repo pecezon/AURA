@@ -722,19 +722,54 @@ export default function SimulationEngine() {
                 <div className="bg-slate-indigo-950 rounded-xl p-5 border border-slate-indigo-800">
                   <h3 className="font-semibold text-slate-indigo-200 text-sm mb-4">Justificación de Riesgos</h3>
                   <ul className="space-y-4">
-                    {foundHotspots.map((h, index) => (
-                      <li key={`found-${index}`} className="flex gap-3">
-                        <CheckCircle className="text-emerald-500 w-5 h-5 flex-shrink-0 mt-0.5" />
-                        <div>
-                          <span className="text-emerald-400 font-medium text-sm block mb-1">
-                            {config?.simulationType === 'GUIDED_SEQUENCE' ? "Paso Completado" : "Identificado"}: {h.riskType}
-                          </span>
-                          <p className="text-slate-indigo-300 text-xs leading-relaxed">
-                            {h.justification || 'Riesgo detectado correctamente.'}
-                          </p>
-                        </div>
-                      </li>
-                    ))}
+                    {foundHotspots.map((h, index) => {
+                      const quizErrorEvent = getEvents().find(
+                        (e) => e.type === 'QUIZ_ERROR' && e.id === h.id
+                      );
+                      const hasQuizError = !!quizErrorEvent;
+
+                      if (config?.simulationType === 'GUIDED_SEQUENCE' && hasQuizError) {
+                        const selectedOption = h.quiz?.options?.find((o) => o.id === quizErrorEvent.optionId);
+                        return (
+                          <li key={`found-${index}`} className="flex gap-3 border-l-2 border-classic-crimson-500 pl-3 py-1">
+                            <XCircle className="text-classic-crimson-500 w-5 h-5 flex-shrink-0 mt-0.5" />
+                            <div>
+                              <span className="text-classic-crimson-400 font-medium text-sm block mb-1">
+                                Paso Incorrecto (Quiz Fallado): {h.riskType}
+                              </span>
+                              <p className="text-slate-indigo-300 text-xs leading-relaxed mb-2">
+                                {h.justification || 'Riesgo detectado de forma incorrecta.'}
+                              </p>
+                              {selectedOption && (
+                                <div className="bg-classic-crimson-950/40 border border-classic-crimson-900/60 rounded p-2.5 text-xs">
+                                  <p className="text-classic-crimson-300 font-semibold mb-1">
+                                    Respuesta incorrecta seleccionada:
+                                  </p>
+                                  <p className="text-slate-200 italic mb-1">"{selectedOption.text}"</p>
+                                  <p className="text-classic-crimson-400">
+                                    <strong>Motivo:</strong> {selectedOption.feedback || "Esta medida no cumple con las directrices de seguridad de la planta."}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          </li>
+                        );
+                      }
+
+                      return (
+                        <li key={`found-${index}`} className="flex gap-3">
+                          <CheckCircle className="text-emerald-500 w-5 h-5 flex-shrink-0 mt-0.5" />
+                          <div>
+                            <span className="text-emerald-400 font-medium text-sm block mb-1">
+                              {config?.simulationType === 'GUIDED_SEQUENCE' ? "Paso Completado" : "Identificado"}: {h.riskType}
+                            </span>
+                            <p className="text-slate-indigo-300 text-xs leading-relaxed">
+                              {h.justification || 'Riesgo detectado correctamente.'}
+                            </p>
+                          </div>
+                        </li>
+                      );
+                    })}
                     {missedHotspots.map((h, index) => (
                       <li key={`missed-${index}`} className="flex gap-3">
                         <XCircle className="text-classic-crimson-500 w-5 h-5 flex-shrink-0 mt-0.5" />
