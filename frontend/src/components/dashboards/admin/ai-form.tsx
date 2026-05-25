@@ -52,15 +52,20 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
       let derivedSimulation = "none";
       const hasSim = (content.modules || []).find((m: any) => m.simulation != null);
       if (hasSim) {
-        const title = hasSim.simulation?.title || "";
-        if (title.includes("SS104") || title.includes("Seguridad Eléctrica")) {
-          derivedSimulation = "ss104";
-        } else if (title.includes("TEC102") || title.includes("Bombas")) {
-          derivedSimulation = "tec102";
-        } else if (title.includes("TEC110") || title.includes("Polietileno") || title.includes("Gas")) {
-          derivedSimulation = "tec110";
+        const templateId = hasSim.simulation?.templateId;
+        if (typeof templateId === "string" && templateId.trim() !== "") {
+          derivedSimulation = templateId;
         } else {
-          derivedSimulation = "ss101";
+          const title = hasSim.simulation?.title || "";
+          if (title.includes("SS104") || title.includes("Seguridad Eléctrica")) {
+            derivedSimulation = "ss104";
+          } else if (title.includes("TEC102") || title.includes("Bombas")) {
+            derivedSimulation = "tec102";
+          } else if (title.includes("TEC110") || title.includes("Polietileno") || title.includes("Gas")) {
+            derivedSimulation = "tec110";
+          } else {
+            derivedSimulation = "ss101";
+          }
         }
       }
       setFormData(prev => ({
