@@ -20,6 +20,7 @@ Este documento mantiene un registro cronológico de las sesiones de trabajo, tar
 - **Tipado Fuerte del Motor de Simulaciones**:
   - Definidas interfaces fuertemente tipadas (`QuizOption`, `HotspotQuiz`, `GuidedHotspot`, `SimulationConfig`, `ScoringResult`) en `simulation-engine.tsx`, eliminando por completo los tipos genéricos `any` de los estados y loops.
   - Corrección visual: Ajustado el renderizado de hotspots no identificados/omitidos para soportar cajas rectangulares (`rounded-lg` con `width`/`height`) en lugar de forzar siempre círculos con radio inexistente.
+  - Corrección de Validación de Pins: Refactorizada la lógica visual de `isCorrect` para calcular correctamente colisiones con hotspots rectangulares y aplicar un fallback seguro (`h.radius ?? 8`) para circular hotspots, evitando resultados de tipo `NaN`.
 - **Reducción de Penalizaciones (Fair Scoring)**:
   - Disminuidas las penalizaciones de puntuación de riesgos (`ScoringService`) para evitar que el `riskScore` decaiga abruptamente:
     - `WRONG_CLICK` (clics erróneos): Reducido de `-2` (antes `-5`).
