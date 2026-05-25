@@ -29,8 +29,18 @@ async function main() {
 
   console.log(`Encontrados ${courses.length} de los 4 cursos objetivos.`);
 
-  if (courses.length === 0) {
-    console.log("Error: No se encontró ninguno de los cursos objetivo en la base de datos.");
+  if (courses.length !== courseTitles.length) {
+    const foundCourseTitles = new Set(courses.map((course) => course.title));
+    const missingCourseTitles = courseTitles.filter((title) => !foundCourseTitles.has(title));
+
+    if (courses.length === 0) {
+      console.log("Error: No se encontró ninguno de los cursos objetivo en la base de datos.");
+    } else {
+      console.log(
+        `Error: Faltan ${missingCourseTitles.length} cursos objetivo en la base de datos: ${missingCourseTitles.join(", ")}.`
+      );
+    }
+
     return;
   }
 
