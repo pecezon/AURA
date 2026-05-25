@@ -122,7 +122,11 @@ async function main() {
   // 3. Check if Course already exists
   const existingCourse = await prisma.course.findFirst({
     where: { title: "TEC110: Diseño, construcción, comisionamiento y puesta en marcha de redes de polietileno para transporte y distribución de gas natural" },
-    include: { modules: true }
+    include: {
+      modules: {
+        orderBy: { order: 'asc' }
+      }
+    }
   });
 
   if (existingCourse) {
