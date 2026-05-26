@@ -9,41 +9,7 @@ import {
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { AlertTriangle, TrendingDown, CheckCircle } from "lucide-react";
 
-const riskData = [
-  { name: "Alto Riesgo", value: 1, color: "#ef4444" },
-  { name: "Riesgo Medio", value: 2, color: "#f97316" },
-  { name: "Bajo Riesgo", value: 4, color: "#10b981" },
-];
-
-const indicators = [
-  { label: "Risk Score Promedio", value: 72, max: 100 },
-  { label: "Índice de Reacción Promedio", value: 78, max: 100 },
-  { label: "Disciplina Procedural Promedio", value: 84, max: 100 },
-];
-
-const improvements = [
-  {
-    icon: <TrendingDown className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />,
-    title: "Tiempo de Reacción Bajo Presión",
-    description:
-      "1 trabajador muestra tiempos de reacción por debajo del promedio. Recomendado: simulaciones adicionales.",
-    variant: "danger" as const,
-  },
-  {
-    icon: <AlertTriangle className="w-4 h-4 text-orange-500 mt-0.5 shrink-0" />,
-    title: "Omisión de Pasos Críticos",
-    description:
-      "Patrón detectado en escenarios de espacios confinados. Sugerencia: reforzar protocolos LOTO.",
-    variant: "warning" as const,
-  },
-  {
-    icon: <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />,
-    title: "Fortaleza: Cumplimiento Normativo",
-    description:
-      "El equipo muestra excelente adherencia a normas NOM-029-STPS-2011.",
-    variant: "success" as const,
-  },
-];
+import { useAllProfiles } from "@/hooks/useProfile";
 
 const variantStyles = {
   danger: {
@@ -67,6 +33,108 @@ const variantStyles = {
 };
 
 export const SupervisorAnalyticsCard: React.FC = () => {
+  const { data: profiles = [] } = useAllProfiles();
+  const employeeProfiles = profiles.filter((p: any) => p.role === "EMPLOYEE");
+
+  // 1. Distribución de Riesgo
+  const activeWorkers = employeeProfiles.filter(
+    (p: any) => p.behavioralProfile?.riskScore !== null && p.behavioralProfile?.riskScore !== undefined
+  );
+
+  const altoRiesgoCount = employeeProfiles.filter(
+    (p: any) => p.behavioralProfile?.riskScore !== null && p.behavioralProfile?.riskScore < 40
+  ).length;
+
+  const medioRiesgoCount = employeeProfiles.filter(
+    (p: any) => p.behavioralProfile?.riskScore !== null && p.behavioralProfile?.riskScore >= 40 && p.behavioralProfile?.riskScore < 70
+  ).length;
+
+  const bajoRiesgoCount = employeeProfiles.filter(
+    (p: any) => p.behavioralProfile?.riskScore !== null && p.behavioralProfile?.riskScore >= 70
+  ).length;
+
+  const riskData = [
+    { name: "Alto Riesgo", value: altoRiesgoCount, color: "#ef4444" },
+    { name: "Riesgo Medio", value: medioRiesgoCount, color: "#f97316" },
+    { name: "Bajo Riesgo", value: bajoRiesgoCount, color: "#10b981" },
+  ];
+
+  // 2. Indicadores Clave Promedio
+  const avgRisk = activeWorkers.length > 0
+    ? Math.round(activeWorkers.reduce((acc: number, p: any) => acc + p.behavioralProfile.riskScore, 0) / activeWorkers.length)
+    : 0;
+
+  const activeReactionWorkers = employeeProfiles.filter(
+    (p: any) => p.behavioralProfile?.reactionIndex !== null && p.behavioralProfile?.reactionIndex !== undefined
+  );
+  const avgReaction = activeReactionWorkers.length > 0
+    ? Math.round(activeReactionWorkers.reduce((acc: number, p: any) => acc + p.behavioralProfile.reactionIndex, 0) / activeReactionWorkers.length)
+    : 0;
+
+  const activeDisciplineWorkers = employeeProfiles.filter(
+    (p: any) => p.behavioralProfile?.proceduralDiscipline !== null && p.behavioralProfile?.proceduralDiscipline !== undefined
+  );
+  const avgDiscipline = activeDisciplineWorkers.length > 0
+    ? Math.round(activeDisciplineWorkers.reduce((acc: number, p: any) => acc + p.behavioralProfile.proceduralDiscipline, 0) / activeDisciplineWorkers.length)
+    : 0;
+
+  const indicators = [
+    { label: "Risk Score Promedio", value: avgRisk, max: 100 },
+    { label: "Índice de Reacción Promedio", value: avgReaction, max: 100 },
+    { label: "Disciplina Procedimental Promedio", value: avgDiscipline, max: 100 },
+  ];
+
+  // 3. Áreas de Mejora Dinámicas
+  const slowReactionWorkers = employeeProfiles.filter(
+    (p: any) => p.behavioralProfile?.reactionIndex !== null && p.behavioralProfile?.reactionIndex < 60
+  ).length;
+
+  const lowDisciplineWorkers = employeeProfiles.filter(
+    (p: any) => p.behavioralProfile?.proceduralDiscipline !== null && p.behavioralProfile?.proceduralDiscipline < 70
+  ).length;
+
+  const improvements = [];
+
+  if (slowReactionWorkers > 0) {
+    improvements.push({
+      icon: <TrendingDown className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />,
+      title: "Tiempo de Reacción Bajo Presión",
+      description: `${slowReactionWorkers} trabajador(es) muestra(n) tiempos de reacción por debajo del promedio. Recomendado: simulaciones adicionales.`,
+      variant: "danger" as const,
+    });
+  } else {
+    improvements.push({
+      icon: <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />,
+      title: "Tiempo de Reacción Óptimo",
+      description: "Todo el equipo muestra tiempos de reacción adecuados bajo presión.",
+      variant: "success" as const,
+    });
+  }
+
+  if (lowDisciplineWorkers > 0) {
+    improvements.push({
+      icon: <AlertTriangle className="w-4 h-4 text-orange-500 mt-0.5 shrink-0" />,
+      title: "Disciplina Procedimental Baja",
+      description: `Patrón de omisión de pasos detectado en ${lowDisciplineWorkers} trabajador(es). Sugerencia: reforzar simulaciones guiadas.`,
+      variant: "warning" as const,
+    });
+  } else {
+    improvements.push({
+      icon: <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />,
+      title: "Disciplina Procedimental Excelente",
+      description: "El equipo muestra una excelente adherencia a los pasos y secuencias reguladas.",
+      variant: "success" as const,
+    });
+  }
+
+  // Agregar fortaleza general NOM
+  improvements.push({
+    icon: <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />,
+    title: "Fortaleza: Cumplimiento Normativo",
+    description: "El equipo muestra excelente adherencia general a normas NOM-029-STPS-2011.",
+    variant: "success" as const,
+  });
+
   return (
     <div className="flex flex-col w-full gap-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -119,7 +187,7 @@ export const SupervisorAnalyticsCard: React.FC = () => {
                       key={entry.name}
                       className={`${textColor} font-medium`}
                     >
-                      {entry.name}: {entry.value}?
+                      {entry.name}: {entry.value}
                     </div>
                   );
                 })}
@@ -142,7 +210,7 @@ export const SupervisorAnalyticsCard: React.FC = () => {
                 <div className="flex justify-between text-sm text-gray-700">
                   <span>{ind.label}</span>
                   <span className="font-medium">
-                    {ind.value}?/{ind.max}
+                    {ind.value}/{ind.max}
                   </span>
                 </div>
                 <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
@@ -162,7 +230,7 @@ export const SupervisorAnalyticsCard: React.FC = () => {
                   <span className="text-gray-700">
                     Trabajadores de Alto Riesgo:{" "}
                   </span>
-                  <span className="text-red-500 font-semibold">1?</span>
+                  <span className="text-red-500 font-semibold">{altoRiesgoCount}</span>
                 </div>
                 <p className="text-gray-500 text-xs mt-0.5">
                   Requieren capacitación adicional y seguimiento cercano
@@ -194,7 +262,7 @@ export const SupervisorAnalyticsCard: React.FC = () => {
                   <p
                     className={`text-sm md:text-base font-semibold ${styles.title}`}
                   >
-                    {item.title}?
+                    {item.title}
                   </p>
                   <p className={`text-xs md:text-sm mt-0.5 ${styles.desc}`}>
                     {item.description}

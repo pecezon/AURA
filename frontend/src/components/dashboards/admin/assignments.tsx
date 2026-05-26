@@ -13,13 +13,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Users } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { toast } from "react-hot-toast";
 import { useCourses } from "@/hooks/useCourses";
 import { useProfileEnrollments, useEnrollInCourse } from "@/hooks/useEnrollments";
 import { api } from "@/lib/api";
 
-interface AssignmentsProps {}
+interface AssignmentsProps {
+  hideHeader?: boolean;
+}
 
 interface GeneratedContent {
   title: string;
@@ -28,7 +30,7 @@ interface GeneratedContent {
   scenarios: { description: string; question: string; options: string[] }[];
 }
 
-export const Assignments: React.FC<AssignmentsProps> = () => {
+export const Assignments: React.FC<AssignmentsProps> = ({ hideHeader = false }) => {
   const [courseTopic, setCourseTopic] = useState("");
   const [courseType, setCourseType] = useState<"technical" | "safety">(
     "technical",
@@ -48,6 +50,30 @@ export const Assignments: React.FC<AssignmentsProps> = () => {
 
   const [workerSearchResults, setWorkerSearchResults] = useState<any[]>([]);
   const [isSearchingWorkers, setIsSearchingWorkers] = useState(false);
+
+  const workerContainerRef = useRef<HTMLDivElement>(null);
+  const courseContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        workerContainerRef.current &&
+        !workerContainerRef.current.contains(event.target as Node)
+      ) {
+        setWorkerSearch("");
+      }
+      if (
+        courseContainerRef.current &&
+        !courseContainerRef.current.contains(event.target as Node)
+      ) {
+        setCourseSearch("");
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     const handler = setTimeout(async () => {
@@ -197,22 +223,10 @@ export const Assignments: React.FC<AssignmentsProps> = () => {
     setRegulations("");
   };
 
-  return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center gap-2">
-          <UserCheck className="size-5 text-blue-600" />
-          <CardTitle>Asignar Cursos a Trabajadores</CardTitle>
-        </div>
-        <CardDescription>
-          Selecciona un trabajador y asigna cursos específicos para su
-          capacitación
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-6">
-          {/* Worker Selection */}
-          <div className="space-y-2">
+  const content = (
+    <div className="space-y-6">
+      {/* Worker Selection */}
+      <div className="space-y-2" ref={workerContainerRef}>
             <Label htmlFor="worker-search">Buscar Trabajador</Label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
@@ -321,7 +335,7 @@ export const Assignments: React.FC<AssignmentsProps> = () => {
           </div>
 
           {/* Course Selection */}
-          <div className="space-y-3">
+          <div className="space-y-3" ref={courseContainerRef}>
             <Label htmlFor="course-search">Buscar Cursos</Label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
@@ -437,7 +451,27 @@ export const Assignments: React.FC<AssignmentsProps> = () => {
             <CheckCircle2 className="size-4" />
             Asignar Cursos Seleccionados
           </Button>
+    </div>
+  );
+
+  if (hideHeader) {
+    return <div className="p-1">{content}</div>;
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center gap-2">
+          <UserCheck className="size-5 text-blue-600" />
+          <CardTitle>Asignar Cursos a Trabajadores</CardTitle>
         </div>
+        <CardDescription>
+          Selecciona un trabajador y asigna cursos específicos para su
+          capacitación
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {content}
       </CardContent>
     </Card>
   );

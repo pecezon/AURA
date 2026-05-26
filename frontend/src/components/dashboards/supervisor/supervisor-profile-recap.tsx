@@ -8,53 +8,65 @@ import { SupervisorAnalyticsCard } from "./supervisor-analytics-card";
 
 import { useAllProfiles } from "@/hooks/useProfile";
 import { useCourses } from "@/hooks/useCourses";
-
-const mockUserData = {
-  name: "Diego Lopez",
-  team: "Equipo A",
-  availableCourses: 20,
-  workers: [
-    {
-      name: "Trabajador 1",
-      email: "trabajador1@empresa.com",
-      assignedCourses: 5,
-      inProgressCourses: 3,
-      completedCourses: 2,
-      riskScore: 98,
-      reactionIndex: 75,
-      proceduralDiscipline: 60,
-    },
-    {
-      name: "Trabajador 2",
-      email: "trabajador2@empresa.com",
-      assignedCourses: 5,
-      inProgressCourses: 3,
-      completedCourses: 2,
-      riskScore: 20,
-      reactionIndex: 75,
-      proceduralDiscipline: 60,
-    },
-    {
-      name: "Trabajador 3",
-      email: "trabajador3@empresa.com",
-      assignedCourses: 5,
-      inProgressCourses: 3,
-      completedCourses: 2,
-      riskScore: 98,
-      reactionIndex: 33,
-      proceduralDiscipline: 80,
-    },
-  ],
-};
+import { useEnrollments } from "@/hooks/useEnrollments";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const SupervisorProfileRecap: React.FC = () => {
-  const { data: profiles } = useAllProfiles();
-  const { data: courses } = useCourses();
+  const { data: profiles, isLoading: isLoadingProfiles } = useAllProfiles();
+  const { data: courses, isLoading: isLoadingCourses } = useCourses();
+  const { isLoading: isLoadingEnrollments } = useEnrollments();
 
-  const employeeProfiles = profiles?.filter((p: any) => p.role === "EMPLOYEE");
+  const isLoading = isLoadingProfiles || isLoadingCourses || isLoadingEnrollments;
 
-  const totalWorkers = employeeProfiles?.length || mockUserData.workers.length;
-  const availableCourses = courses?.length || mockUserData.availableCourses;
+
+  const employeeProfiles = profiles?.filter((p: any) => p.role === "EMPLOYEE") || [];
+
+  const totalWorkers = employeeProfiles.length;
+  const availableCourses = courses?.length || 0;
+
+  if (isLoading) {
+    return (
+      <div className="w-full flex flex-col items-center justify-center gap-4 md:gap-8 px-4 py-2 md:px-16 md:py-4">
+        {/* User Greeting Skeleton */}
+        <div className="flex flex-col w-full items-start gap-2">
+          <Skeleton className="h-10 w-1/3" />
+          <Skeleton className="h-6 w-1/4" />
+        </div>
+
+        {/* Stat Cards Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+          <Skeleton className="h-28 w-full rounded-xl animate-pulse" />
+          <Skeleton className="h-28 w-full rounded-xl animate-pulse" />
+          <Skeleton className="h-28 w-full rounded-xl animate-pulse" />
+          <Skeleton className="h-28 w-full rounded-xl animate-pulse" />
+        </div>
+
+        {/* Tabs and Tab Content Skeleton */}
+        <div className="w-full flex flex-col gap-6">
+          <div className="flex gap-2">
+            <Skeleton className="h-10 w-24 rounded-lg" />
+            <Skeleton className="h-10 w-24 rounded-lg" />
+            <Skeleton className="h-10 w-24 rounded-lg" />
+          </div>
+          <Skeleton className="h-[400px] w-full rounded-xl animate-pulse" />
+        </div>
+      </div>
+    );
+  }
+
+
+  // Filtrar empleados que posean un Risk Score calculado (no nulo)
+  const activeWorkers = employeeProfiles.filter(
+    (p: any) => p.behavioralProfile?.riskScore !== null && p.behavioralProfile?.riskScore !== undefined
+  );
+
+  const avgRiskScore = activeWorkers.length > 0
+    ? Math.round(activeWorkers.reduce((acc: number, p: any) => acc + p.behavioralProfile.riskScore, 0) / activeWorkers.length)
+    : "N/A";
+
+  const highRiskCount = employeeProfiles.filter(
+    (p: any) => p.behavioralProfile?.riskScore !== null && p.behavioralProfile?.riskScore !== undefined && p.behavioralProfile.riskScore < 40
+  ).length;
 
   return (
     <div className="w-full flex flex-col items-center justify-center gap-4 md:gap-8 px-4 py-2 md:px-16 md:py-4">
@@ -64,7 +76,7 @@ export const SupervisorProfileRecap: React.FC = () => {
           ¡Bienvenido al Dashboard de Supervisor!
         </h1>
         <p className="text-gray-500 md:text-lg">
-          {`Análisis de desempeño y riesgo del equipo - ${mockUserData.team}?`}
+          Análisis de desempeño y riesgo del equipo
         </p>
       </div>
 
@@ -80,10 +92,8 @@ export const SupervisorProfileRecap: React.FC = () => {
           label="Risk Score Promedio"
           stat={
             <h1>
-              {mockUserData.workers.reduce(
-                (acc, worker) => acc + worker.riskScore,
-                0,
-              ) / mockUserData.workers.length || 0}?
+              {avgRiskScore}
+              {avgRiskScore !== "N/A" && <span className="text-gray-400 text-lg font-normal">/100</span>}
             </h1>
           }
           icon={<Award className="text-purple-500" />}
@@ -91,11 +101,7 @@ export const SupervisorProfileRecap: React.FC = () => {
         />
         <StatCard
           label="Alto Riesgo"
-          stat={
-            <h1>
-              {mockUserData.workers.filter((w) => w.riskScore > 50).length}?
-            </h1>
-          }
+          stat={<h1>{highRiskCount}</h1>}
           icon={<TriangleAlert className="text-red-500" />}
           gradientColor="from-red-500 to-red-700"
         />
