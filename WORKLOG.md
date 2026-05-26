@@ -11,6 +11,7 @@ Este documento mantiene un registro cronológico de las sesiones de trabajo, tar
   - Script que crea las cuentas `worker@aura.com`, `supervisor@aura.com` y `admin@aura.com` en Supabase Auth y sincroniza sus perfiles en la base de datos local con datos completos.
   - Creación de 2 intentos de simulación representativos (uno de bajo riesgo y uno de alto riesgo) para `worker@aura.com` para poblar las gráficas del Supervisor.
 - **Middleware del Backend (`auth.middleware.ts`)**: Intercepta la cabecera `X-Demo-Override-Role` en modo demo y sustituye al vuelo el contexto de `req.profile` y `req.user` por el perfil demo correspondiente.
+- **Resolución de Mismatch de IDs en Parámetros**: Intercepción de `req.body.profileId` y `req.query.profileId` en `requireAuth` y uso de `router.param` para `:profileId` en las rutas de matrículas, cuestionarios e intentos de simulación. Esto garantiza que el progreso se guarde correctamente en el perfil del usuario emulado (evitando respuestas 403).
 - **Intercepción de Axios y Enrutador**: Inyecta el header del rol emulado almacenado en `localStorage` e implementa la redirección fluida al cambiar de vista.
 - **Widget Demo Console (`DemoConsole.tsx`)**: Interfaz premium flotante tipo glassmorphism con micro-animaciones que permite alternar los roles, borra el cache de consultas de TanStack y redirige a la vista correspondiente.
 - **Variables de Entorno**: Configuración de `VITE_DEMO_MODE=true` y `DEMO_MODE=true` en los archivos `.env` respectivos.
