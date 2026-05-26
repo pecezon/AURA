@@ -39,6 +39,14 @@ export async function requireAuth(req: any, res: any, next: any) {
       if (demoProfile) {
         profile = demoProfile;
         req.user = { id: demoProfile.id, email: demoProfile.email };
+
+        // Intercept query/body profileId in demo mode
+        if (req.body && typeof req.body === "object" && req.body.profileId) {
+          req.body.profileId = demoProfile.id;
+        }
+        if (req.query && typeof req.query === "object" && req.query.profileId) {
+          req.query.profileId = demoProfile.id;
+        }
       }
     }
   }
