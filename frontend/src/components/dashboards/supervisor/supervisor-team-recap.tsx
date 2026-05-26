@@ -42,9 +42,9 @@ import { Progress } from "../../ui/progress";
 
 type TeamMember = {
   name: string;
-  riskScore: number;
-  reactionIndex: number;
-  proceduralDiscipline: number;
+  riskScore: number | null;
+  reactionIndex: number | null;
+  proceduralDiscipline: number | null;
   state: string;
   email: string;
 };
@@ -97,32 +97,42 @@ const columns: ColumnDef<TeamMember>[] = [
   {
     accessorKey: "riskScore",
     header: "Risk Score",
-    cell: ({ row }) => (
-      <div className="w-24 flex flex-col items-start gap-1">
-        <p>
-          <span className="font-bold">{row.getValue("riskScore")}?</span> /100
-        </p>
-        <Progress
-          value={Number(row.getValue("riskScore"))}
-          className={(() => {
-            const score = Number(row.getValue("riskScore"));
-            if (score >= 70) return "[&>*]:bg-red-500";
-            if (score >= 40) return "[&>*]:bg-yellow-500";
-            return "[&>*]:bg-green-500";
-          })()}
-        />
-      </div>
-    ),
+    cell: ({ row }) => {
+      const val = row.getValue("riskScore") as number | null;
+      return (
+        <div className="w-24 flex flex-col items-start gap-1">
+          <p>
+            <span className="font-bold">{val !== null ? `${val}` : "N/A"}</span>
+            {val !== null && <span className="text-gray-400 text-xs font-normal"> /100</span>}
+          </p>
+          <Progress
+            value={val !== null ? val : 0}
+            className={(() => {
+              if (val === null) return "[&>*]:bg-gray-300";
+              if (val >= 70) return "[&>*]:bg-green-500";
+              if (val >= 40) return "[&>*]:bg-yellow-500";
+              return "[&>*]:bg-red-500";
+            })()}
+          />
+        </div>
+      );
+    },
   },
   {
     accessorKey: "reactionIndex",
     header: "Reacción",
-    cell: ({ row }) => <span>{row.getValue("reactionIndex")}?/100</span>,
+    cell: ({ row }) => {
+      const val = row.getValue("reactionIndex") as number | null;
+      return <span>{val !== null ? `${val}/100` : "N/A"}</span>;
+    },
   },
   {
     accessorKey: "proceduralDiscipline",
     header: "Disciplina",
-    cell: ({ row }) => <span>{row.getValue("proceduralDiscipline")}?/100</span>,
+    cell: ({ row }) => {
+      const val = row.getValue("proceduralDiscipline") as number | null;
+      return <span>{val !== null ? `${val}/100` : "N/A"}</span>;
+    },
   },
   {
     accessorKey: "state",
@@ -130,7 +140,7 @@ const columns: ColumnDef<TeamMember>[] = [
     cell: ({ row }) => (
       <Badge
         className={(() => {
-          const state = row.getValue("state");
+          const state = row.getValue("state") as string;
           switch (state) {
             case "Alto Riesgo":
               return "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300";
@@ -143,7 +153,7 @@ const columns: ColumnDef<TeamMember>[] = [
           }
         })()}
       >
-        {row.getValue("state")}?
+        {row.getValue("state")}
       </Badge>
     ),
   },
@@ -155,14 +165,23 @@ export const SupervisorTeamRecap: React.FC = () => {
   const mappedData = React.useMemo<TeamMember[]>(() => {
     if (!profiles) return fallbackData;
     const employeeProfiles = profiles.filter((p: any) => p.role === "EMPLOYEE");
-    return employeeProfiles.map((p: any) => ({
-      name: `${p.firstName} ${p.lastName}`,
-      email: p.email,
-      riskScore: Math.floor(Math.random() * 100), // Default for now
-      reactionIndex: Math.floor(Math.random() * 100), // Default
-      proceduralDiscipline: Math.floor(Math.random() * 100), // Default
-      state: "Bajo Riesgo", // Default
-    }));
+    return employeeProfiles.map((p: any) => {
+      const risk = p.behavioralProfile?.riskScore ?? null;
+      let state = "Sin Datos";
+      if (risk !== null) {
+        if (risk >= 70) state = "Bajo Riesgo";
+        else if (risk >= 40) state = "Medio Riesgo";
+        else state = "Alto Riesgo";
+      }
+      return {
+        name: `${p.firstName} ${p.lastName}`,
+        email: p.email,
+        riskScore: risk,
+        reactionIndex: p.behavioralProfile?.reactionIndex ?? null,
+        proceduralDiscipline: p.behavioralProfile?.proceduralDiscipline ?? null,
+        state,
+      };
+    });
   }, [profiles]);
 
   const table = useReactTable<TeamMember>({
@@ -186,7 +205,7 @@ export const SupervisorTeamRecap: React.FC = () => {
               <Plus className="h-4 w-4" />
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-4xl min-h-[80vh] overflow-visible">
+          <DialogContent className="max-w-4xl overflow-visible">
             <DialogHeader>
               <DialogTitle>Asignar Trabajador a Curso</DialogTitle>
               <DialogDescription>
@@ -194,7 +213,7 @@ export const SupervisorTeamRecap: React.FC = () => {
               </DialogDescription>
             </DialogHeader>
             <div className="mt-4">
-              <Assignments />
+              <Assignments hideHeader={true} />
             </div>
           </DialogContent>
         </Dialog>

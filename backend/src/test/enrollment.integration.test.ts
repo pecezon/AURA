@@ -117,7 +117,7 @@ describe("Enrollment API Integration", () => {
           status: "ACTIVE",
           progress: 50,
           profile: { firstName: "Test" },
-          course: { title: "Test Course" }
+          course: { title: "Test Course", regulations: [] }
         }
       ]);
 
@@ -132,6 +132,7 @@ describe("Enrollment API Integration", () => {
         courseId: "course-456",
         profileName: "Test",
         courseTitle: "Test Course",
+        courseRegulations: [],
         enrolledAt: "2026-01-01T00:00:00.000Z",
         status: "ACTIVE",
         progress: 50
