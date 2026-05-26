@@ -19,11 +19,13 @@ import SimulationEngine from "./routes/simulation-engine";
 import ModuleLearning from "./routes/module-learning";
 
 import { getUserState } from "./lib/authGuard";
+import DemoConsole from "./components/dashboards/DemoConsole";
 
 const rootRoute = createRootRoute({
   component: () => (
     <div className="min-h-screen bg-gray-50 ">
       <Outlet />
+      <DemoConsole />
     </div>
   ),
 });

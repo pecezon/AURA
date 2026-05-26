@@ -3,6 +3,28 @@
 Este documento mantiene un registro cronológico de las sesiones de trabajo, tareas en curso, decisiones importantes y tareas pendientes. Esto asegura que el contexto no se pierda entre sesiones.
 
 
+## Sesión: 2026-05-26 (Sesión H) — Implementación del Demo Role Switcher (Context Swapping)
+
+**Qué implementamos en esta sesión:**
+- **Diseño del Selector de Roles**: Lluvia de ideas y definición de la estrategia "Context Swapping" para evitar colisiones con Google OAuth y no modificar el flujo de autenticación de Supabase.
+- **Siembra de Datos Demo (`seed-demo-users.ts`)**:
+  - Script que crea las cuentas `worker@aura.com`, `supervisor@aura.com` y `admin@aura.com` en Supabase Auth y sincroniza sus perfiles en la base de datos local con datos completos.
+  - Creación de 2 intentos de simulación representativos (uno de bajo riesgo y uno de alto riesgo) para `worker@aura.com` para poblar las gráficas del Supervisor.
+- **Middleware del Backend (`auth.middleware.ts`)**: Intercepta la cabecera `X-Demo-Override-Role` en modo demo y sustituye al vuelo el contexto de `req.profile` y `req.user` por el perfil demo correspondiente.
+- **Intercepción de Axios y Enrutador**: Inyecta el header del rol emulado almacenado en `localStorage` e implementa la redirección fluida al cambiar de vista.
+- **Widget Demo Console (`DemoConsole.tsx`)**: Interfaz premium flotante tipo glassmorphism con micro-animaciones que permite alternar los roles, borra el cache de consultas de TanStack y redirige a la vista correspondiente.
+- **Variables de Entorno**: Configuración de `VITE_DEMO_MODE=true` y `DEMO_MODE=true` en los archivos `.env` respectivos.
+
+**Qué quedó en progreso:**
+- Ninguno (Todo el plan de implementación se ejecutó con éxito).
+
+**Bloqueos:**
+- Ninguno.
+
+**Próximos pasos en orden de prioridad:**
+- [ ] 1. Reiniciar el servidor del backend para que cargue la variable de entorno `DEMO_MODE=true`.
+- [ ] 2. Probar la consola de demo interactiva en el frontend.
+
 ## Sesión: 2026-05-26 (Sesión G) — Depuración de TypeScript y Limpieza del Repositorio para Producción
 
 **Qué implementamos en esta sesión:**

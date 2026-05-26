@@ -44,10 +44,13 @@ export async function getUserState() {
 
   if (res.ok) {
     const profile = await res.json();
+    const emulatedRole = localStorage.getItem("aura-demo-emulated-role");
+    const activeRole = emulatedRole || profile.role;
+
     return {
       isAuthenticated: true,
       isProfileComplete: true,
-      role: profile.role === "WORKER" ? "EMPLOYEE" : profile.role,
+      role: activeRole === "WORKER" || activeRole === "EMPLOYEE" ? "EMPLOYEE" : activeRole,
     };
   }
 

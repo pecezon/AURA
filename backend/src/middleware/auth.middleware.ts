@@ -1,5 +1,6 @@
 import { ensureProfile } from "../services/profile.service";
 import { supabase } from "../config/supabase";
+import { prisma } from "../config/prisma";
 
 export async function requireAuth(req: any, res: any, next: any) {
   const authHeader = req.headers.authorization;
@@ -16,9 +17,33 @@ export async function requireAuth(req: any, res: any, next: any) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  const profile = await ensureProfile(data.user);
+  let profile = await ensureProfile(data.user);
 
-  req.user = data.user;
+  // Bypass de contexto para el Demo Mode
+  const demoOverrideRole = req.headers["x-demo-override-role"];
+  if (process.env.DEMO_MODE === "true" && demoOverrideRole) {
+    let targetEmail = "";
+    if (demoOverrideRole === "ADMIN") {
+      targetEmail = "admin@aura.com";
+    } else if (demoOverrideRole === "SUPERVISOR") {
+      targetEmail = "supervisor@aura.com";
+    } else if (demoOverrideRole === "EMPLOYEE" || demoOverrideRole === "WORKER") {
+      targetEmail = "worker@aura.com";
+    }
+
+    if (targetEmail) {
+      const demoProfile = await prisma.profile.findFirst({
+        where: { email: targetEmail }
+      });
+
+      if (demoProfile) {
+        profile = demoProfile;
+        req.user = { id: demoProfile.id, email: demoProfile.email };
+      }
+    }
+  }
+
+  req.user = req.user || data.user;
   req.profile = profile;
 
   next();

@@ -12,6 +12,11 @@ api.interceptors.request.use(async (config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
+  const emulatedRole = localStorage.getItem("aura-demo-emulated-role");
+  if (emulatedRole) {
+    config.headers["X-Demo-Override-Role"] = emulatedRole;
+  }
+
   return config;
 });
 
