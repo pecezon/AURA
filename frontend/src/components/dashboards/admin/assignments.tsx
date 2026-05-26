@@ -23,24 +23,7 @@ interface AssignmentsProps {
   hideHeader?: boolean;
 }
 
-interface GeneratedContent {
-  title: string;
-  type: string;
-  modules: { title: string; content: string; duration: string }[];
-  scenarios: { description: string; question: string; options: string[] }[];
-}
-
 export const Assignments: React.FC<AssignmentsProps> = ({ hideHeader = false }) => {
-  const [courseTopic, setCourseTopic] = useState("");
-  const [courseType, setCourseType] = useState<"technical" | "safety">(
-    "technical",
-  );
-  const [targetDuration, setTargetDuration] = useState("4");
-  const [regulations, setRegulations] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedContent, setGeneratedContent] =
-    useState<GeneratedContent | null>(null);
-
   // Assignment state
   const [selectedWorker, setSelectedWorker] = useState<string>("");
   const [selectedWorkerData, setSelectedWorkerData] = useState<any>(null);
@@ -148,79 +131,6 @@ export const Assignments: React.FC<AssignmentsProps> = ({ hideHeader = false }) 
       console.error("Error asignando cursos:", error);
       toast.error("Hubo un error al asignar los cursos o el trabajador ya los tenía asignados");
     }
-  };
-
-  const handleGenerate = async () => {
-    if (!courseTopic.trim()) {
-      toast.error("Por favor ingresa un tema para el curso");
-      return;
-    }
-
-    setIsGenerating(true);
-
-    // Simulate AI generation delay
-    await new Promise((resolve) => setTimeout(resolve, 2500));
-
-    // Generate mock content
-    const mockContent: GeneratedContent = {
-      title: courseTopic,
-      type: courseType,
-      modules: [
-        {
-          title: "Introducción y Fundamentos",
-          content: `Introducción a ${courseTopic}. Conceptos básicos y principios fundamentales que todo trabajador debe conocer antes de operar en este entorno.`,
-          duration: "45 min",
-        },
-        {
-          title: "Procedimientos Operativos Estándar",
-          content: `Procedimientos paso a paso para ${courseTopic}. Incluye secuencias críticas, puntos de verificación y mejores prácticas de la industria.`,
-          duration: "1 hora",
-        },
-        {
-          title: "Equipos de Seguridad y Protección",
-          content: `EPP requerido y equipos de seguridad necesarios para ${courseTopic}. Uso correcto, mantenimiento y verificación pre-operacional.`,
-          duration: "45 min",
-        },
-        {
-          title: "Gestión de Emergencias",
-          content: `Protocolos de respuesta ante emergencias relacionadas con ${courseTopic}. Evacuación, comunicación y procedimientos de rescate.`,
-          duration: "1 hora",
-        },
-      ],
-      scenarios: [
-        {
-          description: `Durante una operación rutinaria de ${courseTopic}, detectas una anomalía en los parámetros operativos.`,
-          question: "¿Cuál es tu primera acción?",
-          options: [
-            "Continuar monitoreando para confirmar la tendencia",
-            "Detener la operación inmediatamente y reportar",
-            "Ajustar los parámetros para compensar",
-            "Consultar con el supervisor antes de actuar",
-          ],
-        },
-        {
-          description: `Un compañero no sigue el procedimiento estándar de ${courseTopic}.`,
-          question: "¿Cómo intervenir?",
-          options: [
-            "Ignorar si no hay riesgo inmediato",
-            "Detener la operación y recordar el procedimiento",
-            "Reportar después a supervisión",
-            "Asumir que tiene experiencia y sabe lo que hace",
-          ],
-        },
-      ],
-    };
-
-    setGeneratedContent(mockContent);
-    setIsGenerating(false);
-    toast.success("Contenido generado exitosamente con IA");
-  };
-
-  const handlePublish = () => {
-    toast.success("Curso publicado y asignado a trabajadores relevantes");
-    setGeneratedContent(null);
-    setCourseTopic("");
-    setRegulations("");
   };
 
   const content = (
@@ -358,7 +268,7 @@ export const Assignments: React.FC<AssignmentsProps> = ({ hideHeader = false }) 
                     <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => setCourseSearch("")}>Cerrar</Button>
                   </div>
                   {filteredCourses.length > 0 ? (
-                    filteredCourses.map((course) => (
+                    filteredCourses.map((course: any) => (
                       <div
                         key={course.id}
                         className="flex items-start gap-3 p-3 bg-white rounded-lg border hover:bg-slate-50 transition-colors"

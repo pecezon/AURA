@@ -5,7 +5,6 @@ import { AIForm } from "../components/dashboards/admin/ai-form";
 import { CourseLibrary } from "../components/dashboards/admin/course-library";
 import { useState, useEffect } from "react";
 import { Button } from "../components/ui/button";
-import { Assignments } from "@/components/dashboards/admin/assignments";
 
 type AdminTab = "create" | "library";
 

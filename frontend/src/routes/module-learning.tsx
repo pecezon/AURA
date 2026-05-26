@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef, ChangeEvent } from "react";
+import { useState, useEffect, useRef } from "react";
+import type { ChangeEvent } from "react";
 import { Link, useParams, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, CheckCircle, XCircle, Loader2, Download, ExternalLink, Play, Pause, Headphones } from "lucide-react";
 import { Button } from "@/components/ui/button";
