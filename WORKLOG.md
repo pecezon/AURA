@@ -3,6 +3,64 @@
 Este documento mantiene un registro cronológico de las sesiones de trabajo, tareas en curso, decisiones importantes y tareas pendientes. Esto asegura que el contexto no se pierda entre sesiones.
 
 
+## Sesión: 2026-05-26 (Sesión G) — Depuración de TypeScript y Limpieza del Repositorio para Producción
+
+**Qué implementamos en esta sesión:**
+- **Corrección de Errores de Compilación (TypeScript)**:
+  - Se solucionaron los 16 errores que bloqueaban la compilación de producción del frontend (`npm run build`).
+  - `ai-form.tsx`: Tipado explícito de los callbacks en `setGeneratedContent` para evitar errores de implicit-any.
+  - `assignments.tsx`: Eliminación de variables de estado y funciones huérfanas heredadas de la simulación de IA, y tipado explícito del parámetro `course` en la iteración de filtrado.
+  - `admin-dashboard.tsx`: Eliminación de la importación muerta del componente `Assignments`.
+  - `course-detail.tsx`: Eliminación de la variable `markModuleAsCompleted` que no se utilizaba en el componente.
+  - `module-learning.tsx`: Eliminación de la importación no utilizada de `React` y migración a importación de tipo (`import type`) para `ChangeEvent` bajo `verbatimModuleSyntax`.
+- **Limpieza de Archivos de Prueba**:
+  - Eliminación definitiva del archivo de mocks `frontend/src/lib/mockData.ts` tras comprobar la ausencia de importaciones en la aplicación.
+- **Configuración de Empaquetado**:
+  - Eliminación del plugin `@tanstack/router-plugin` de `vite.config.ts` para evitar la advertencia ruidosa de "rootRouteNode must not be undefined" durante las compilaciones, ya que AURA utiliza enrutamiento manual.
+- **Verificación de Compilación de Producción**:
+  - Se probó localmente que el frontend compila de manera exitosa y limpia, generando los archivos empaquetados en `dist/` en solo 2.17 segundos.
+
+**Qué quedó en progreso:**
+- Ninguno (Limpieza y preparación completada).
+
+**Bloqueos:**
+- Ninguno.
+
+**Próximos pasos en orden de prioridad:**
+- [ ] 1. Iniciar con el desarrollo de la Fase 4 (Supervisor Dashboard) consumiendo datos de base de datos reales.
+
+## Sesión: 2026-05-25 (Sesión F) — Limpieza y Creación de Normativas Curriculares
+
+**Qué implementamos en esta sesión:**
+- **Reestructuración de Normativas (Regulations)**:
+  - Se eliminaron las 9 normativas de prueba obsoletas de la base de datos.
+  * Se crearon 21 nuevas normativas correspondientes a la currícula completa de AURA mostrada en la interfaz del usuario. Cada normativa sigue el formato de código `NOM-[CÓDIGO_CURSO]` y contiene el nombre/título descriptivo del curso correspondiente en su campo `description`.
+  * Se asociaron las nuevas normativas correspondientes a los cursos existentes en la base de datos (`SS101` -> `NOM-SS101`, `SS104` -> `NOM-SS104`, `TEC102` -> `NOM-TEC102`, `TEC110` -> `NOM-TEC110`).
+
+**Qué quedó en progreso:**
+- Ninguno.
+
+**Bloqueos:**
+- Ninguno.
+
+**Próximos pasos en orden de prioridad:**
+- [ ] 1. Iniciar con el desarrollo de la Fase 4 (Supervisor Dashboard).
+
+## Sesión: 2026-05-25 (Sesión E) — Restablecimiento de Progreso de Usuario
+
+**Qué implementamos en esta sesión:**
+- **Reinicio de Progreso y Simulaciones**:
+  - Se ejecutó un proceso de mantenimiento para restablecer a `0%` el progreso de los cursos, regresando el estado a `ASSIGNED` y eliminando los intentos de cuestionarios (`QuizAttempt` / `Answer`) e intentos de simulación (`SimulationAttempt`) para las cuentas de prueba del usuario (`diego.lopez171205@gmail.com` y `lopez.diego@cetys.edu.mx`). Las inscripciones (`CourseEnrollment`) se preservaron intactas.
+
+**Qué quedó en progreso:**
+- Ninguno.
+
+**Bloqueos:**
+- Ninguno.
+
+**Próximos pasos en orden de prioridad:**
+- [ ] 1. Iniciar con el desarrollo de la Fase 4 (Supervisor Dashboard).
+
 ## Sesión: 2026-05-25 (Sesión D) — Plan Curricular Maestro y Siembra de Cursos Multimedia Robustos
 
 **Qué implementamos en esta sesión:**

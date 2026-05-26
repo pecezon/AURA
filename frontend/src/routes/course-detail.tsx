@@ -51,7 +51,7 @@ export default function CourseDetail() {
     isError: isModulesError 
   } = useModulesByCourse(courseId);
 
-  const { progress, markModuleAsCompleted, isModuleCompleted, isLoading: isProgressLoading, isEnrolled } =
+  const { progress, isModuleCompleted, isLoading: isProgressLoading, isEnrolled } =
     useCourseProgress(profileId, courseId);
 
   const { data: attempts = [], isLoading: isAttemptsLoading } = useSimulationAttemptsByProfile(profileId);

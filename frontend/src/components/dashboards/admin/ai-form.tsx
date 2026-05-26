@@ -107,7 +107,7 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
   const handleDurationChange = (value: string) => {
     setFormData(prev => ({ ...prev, duration: value }));
     if (setGeneratedContent) {
-      setGeneratedContent(prev => prev ? { ...prev, duration: value } : prev);
+      setGeneratedContent((prev: any) => prev ? { ...prev, duration: value } : prev);
     }
   };
 
@@ -265,7 +265,7 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
                             : prev.applicableNorms.filter(id => id !== reg.id);
                           
                           if (setGeneratedContent) {
-                            setGeneratedContent(curr => curr ? { ...curr, applicableNorms: nextNorms } : curr);
+                            setGeneratedContent((curr: any) => curr ? { ...curr, applicableNorms: nextNorms } : curr);
                           }
 
                           return {
@@ -291,7 +291,7 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
                 const selected = e.target.value;
                 setFormData(prev => ({ ...prev, selectedSimulation: selected }));
                 if (setGeneratedContent) {
-                  setGeneratedContent(prev => {
+                  setGeneratedContent((prev: any) => {
                     if (!prev || !prev.modules) return prev;
                     const updatedModules = prev.modules.map((mod: any, idx: number) => {
                       const isLast = idx === prev.modules.length - 1;
