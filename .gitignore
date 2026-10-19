@@ -5,3 +5,29 @@
 # OS files
 .DS_Store
 Thumbs.db
+
+*.env
+
+# Claude / Antigravity files
+CLAUDE.md
+REFERENCES.md
+SPEC.md
+WORKLOG.md
+
+# Agents
+.agents
+
+# ==========================================
+# TERRAFORM (Archivos de estado y plugins)
+# ==========================================
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraform.lock.hcl
