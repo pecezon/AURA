@@ -1,0 +1,8 @@
+# Ejemplo de variables para Terraform en Azure
+# Copia este archivo como 'terraform.tfvars' y completa con tus valores reales:
+# cp terraform.tfvars.example terraform.tfvars
+
+db_password               = "AuraSecurePassword2026!"
+supabase_url              = "https://tu-proyecto.supabase.co"
+supabase_service_role_key = "tu-supabase-service-role-key"
+openai_api_key            = "tu-openai-api-key"
