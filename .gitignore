@@ -31,3 +31,10 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 .terraform.lock.hcl
+
+# ==========================================
+# PRUEBAS DE SEGURIDAD / IDS (Snort & PCAP)
+# ==========================================
+alert_fast.txt
+*.pcap
+test_rules.rules
