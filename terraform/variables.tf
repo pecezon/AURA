@@ -7,7 +7,7 @@ variable "resource_group_name" {
 variable "location" {
   description = "Región de Azure donde se desplegarán todos los servicios"
   type        = string
-  default     = "westus" 
+  default     = "westus"
 }
 
 variable "environment" {
@@ -19,7 +19,7 @@ variable "environment" {
 variable "db_password" {
   description = "Contraseña de administrador para PostgreSQL"
   type        = string
-  sensitive   = true 
+  sensitive   = true
   default     = "AuraSecurePassword2026!"
 }
 

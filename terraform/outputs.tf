@@ -3,16 +3,10 @@ output "resource_group_name" {
   value       = azurerm_resource_group.rg.name
 }
 
-# 1. URL PÚBLICA DEL FRONTEND (Azure Static Web Apps - Plan Free)
+# 1. URL PÚBLICA DEL FRONTEND (Para entrar en el navegador)
 output "frontend_url" {
-  description = "URL pública de la aplicación AURA (Frontend SWA)"
-  value       = "https://${azurerm_static_site.frontend.default_host_name}"
-}
-
-output "static_web_app_api_key" {
-  description = "Token de despliegue para Azure Static Web Apps"
-  value       = azurerm_static_site.frontend.api_key
-  sensitive   = true
+  description = "URL pública de la aplicación AURA (Frontend)"
+  value       = "https://${azurerm_container_app.frontend.ingress[0].fqdn}"
 }
 
 # 2. URL PÚBLICA DEL BACKEND (Para probar la API y healthcheck)

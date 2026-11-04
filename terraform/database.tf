@@ -1,15 +1,15 @@
 # 1. El Servidor Administrado de PostgreSQL
 resource "azurerm_postgresql_flexible_server" "postgres" {
-  name                   = "psql-aura-${random_string.storage_suffix.result}"
-  resource_group_name    = azurerm_resource_group.rg.name
-  location               = azurerm_resource_group.rg.location
-  version                = "16" # Misma versión de Postgres que probamos en Docker
+  name                = "psql-aura-${random_string.storage_suffix.result}"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  version             = "16" # Misma versión de Postgres que probamos en Docker
 
   administrator_login    = "aura_admin"
   administrator_password = var.db_password
 
-  storage_mb   = 32768               # 32 GB (mínimo permitido por Azure)
-  sku_name     = "B_Standard_B1ms"   # Tier Burstable económico para estudiantes
+  storage_mb = 32768             # 32 GB (mínimo permitido por Azure)
+  sku_name   = "B_Standard_B1ms" # Tier Burstable económico para estudiantes
 
   # Configuración de backup
   backup_retention_days = 7

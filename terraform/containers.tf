@@ -98,17 +98,45 @@ resource "azurerm_container_app" "backend" {
 }
 
 # ==========================================
-# 4. SERVICIO 1: FRONTEND (Azure Static Web App - Plan Free $0/mes)
+# 4. SERVICIO 1: FRONTEND (React SPA + Nginx)
 # ==========================================
-resource "azurerm_static_site" "frontend" {
-  name                = "swa-aura-${random_string.storage_suffix.result}"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = "westus" # Región de anclaje para Static Web Apps (CDN global)
-  sku_tier            = "Free"
-  sku_size            = "Free"
+resource "azurerm_container_app" "frontend" {
+  name                         = "aura-frontend"
+  container_app_environment_id = azurerm_container_app_environment.env.id
+  resource_group_name          = azurerm_resource_group.rg.name
+  revision_mode                = "Single"
 
-  tags = {
-    Environment = var.environment
-    Service     = "Frontend-SWA"
+  registry {
+    server               = azurerm_container_registry.acr.login_server
+    username             = azurerm_container_registry.acr.admin_username
+    password_secret_name = "acr-password"
+  }
+
+  secret {
+    name  = "acr-password"
+    value = azurerm_container_registry.acr.admin_password
+  }
+
+  ingress {
+    external_enabled = true # URL pública para los usuarios
+    target_port      = 80   # Puerto interno de Nginx
+    transport        = "auto"
+
+    traffic_weight {
+      percentage      = 100
+      latest_revision = true
+    }
+  }
+
+  template {
+    min_replicas = 0
+    max_replicas = 2
+
+    container {
+      name   = "aura-frontend"
+      image  = "${azurerm_container_registry.acr.login_server}/aura-frontend:v1"
+      cpu    = 0.25
+      memory = "0.5Gi"
+    }
   }
 }
