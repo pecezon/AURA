@@ -1,8 +1,11 @@
 import axios from "axios";
 import { getAccessToken } from "./supabase";
 
+const rawBackendUrl =
+  import.meta.env.VITE_AURA_BACKEND_URL || "http://localhost:4000";
+
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_AURA_BACKEND_URL || "http://localhost:4000",
+  baseURL: rawBackendUrl.replace(/\/$/, ""),
 });
 
 api.interceptors.request.use(async (config) => {
