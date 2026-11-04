@@ -100,10 +100,10 @@ resource "azurerm_container_app" "backend" {
 # ==========================================
 # 4. SERVICIO 1: FRONTEND (Azure Static Web App - Plan Free $0/mes)
 # ==========================================
-resource "azurerm_static_web_app" "frontend" {
+resource "azurerm_static_site" "frontend" {
   name                = "swa-aura-${random_string.storage_suffix.result}"
   resource_group_name = azurerm_resource_group.rg.name
-  location            = "westus" # Región de anclaje para Static Web Apps (CDN global)
+  location            = "eastus2" # Región de anclaje para Static Web Apps (CDN global)
   sku_tier            = "Free"
   sku_size            = "Free"
 
