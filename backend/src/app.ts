@@ -4,14 +4,14 @@ dotenv.config();
 import express from "express";
 import cors from "cors";
 import profileRoutes from "./modules/profile/profile.routes";
-import modulesRoutes from "./modules/modulo/modulo.routes"
+import modulesRoutes from "./modules/modulo/modulo.routes";
 import courseRoutes from "./modules/course/course.routes";
 import enrollmentRoutes from "./modules/enrollment/enrollment.routes";
 import quizRoutes from "./modules/quiz/quiz.routes";
-import quizAttemptRoutes from "./modules/quizAttempt/quizAttempt.routes"
-import simulationRoutes from "./modules/simulation/simulation.routes"
-import simulationAttemptRoutes from "./modules/simulationAttempt/simuAttempt.routes"
-import regulationRoutes from "./modules/regulation/regulation.routes"
+import quizAttemptRoutes from "./modules/quizAttempt/quizAttempt.routes";
+import simulationRoutes from "./modules/simulation/simulation.routes";
+import simulationAttemptRoutes from "./modules/simulationAttempt/simuAttempt.routes";
+import regulationRoutes from "./modules/regulation/regulation.routes";
 import openaiRoutes from "./modules/openai/openai.routes";
 import { requireAuth } from "./middleware/auth.middleware";
 import { errorHandler } from "./middleware/error.middleware";
@@ -22,6 +22,15 @@ app.use(cors());
 app.use(express.json());
 
 // Routes that need to be protected with authentication middleware should be registered after the auth middleware
+// Endpoint público para Docker & Kubernetes Health Probes (Liveness / Readiness)
+app.get("/health", (_req, res) => {
+  res.status(200).json({
+    status: "ok",
+    service: "aura-backend",
+    timestamp: new Date().toISOString(),
+  });
+});
+
 app.use(requireAuth);
 app.use("/api/profile", profileRoutes);
 app.use("/api/courses", courseRoutes);
@@ -29,13 +38,12 @@ app.use("/api/enrollments", enrollmentRoutes);
 app.use("/api/quizzes", quizRoutes);
 app.use("/api/quiz-attempts", quizAttemptRoutes);
 app.use("/api/modules", modulesRoutes);
-app.use("/api/simulations", simulationRoutes)
-app.use("/api/simulations/attempt", simulationAttemptRoutes)
-app.use("/api/regulations", regulationRoutes)
+app.use("/api/simulations", simulationRoutes);
+app.use("/api/simulations/attempt", simulationAttemptRoutes);
+app.use("/api/regulations", regulationRoutes);
 app.use("/api/openai", openaiRoutes);
 
 // Error handling middleware (must be last)
 app.use(errorHandler);
-
 
 export default app;

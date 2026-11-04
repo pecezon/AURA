@@ -25,14 +25,16 @@ function GoogleIcon() {
 }
 
 export default function LoginFormCard() {
-  const loginWithGoogle = async () => {
+    const loginWithGoogle = async () => {
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${import.meta.env.VITE_AURA_FRONTEND_URL}/dashboard`,
+        // Redirige siempre a la misma página donde estás parado (localhost, Azure, etc.)
+        redirectTo: `${window.location.origin}/dashboard`,
       },
     });
   };
+  
 
   return (
     <div className="bg-white rounded-xl p-6 shadow-lg w-full lg:w-lg text-center gap-5 flex flex-col h-full justify-between">
