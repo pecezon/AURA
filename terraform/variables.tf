@@ -7,7 +7,7 @@ variable "resource_group_name" {
 variable "location" {
   description = "Región de Azure donde se desplegarán todos los servicios"
   type        = string
-  default     = "eastus" 
+  default     = "westus" 
 }
 
 variable "environment" {

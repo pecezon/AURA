@@ -62,7 +62,7 @@ resource "azurerm_container_app" "backend" {
       name   = "aura-backend"
       image  = "${azurerm_container_registry.acr.login_server}/aura-backend:v1"
       cpu    = 0.5
-      memory = "1.0Gi"
+      memory = "1Gi"
 
       env {
         name  = "PORT"
@@ -103,7 +103,7 @@ resource "azurerm_container_app" "backend" {
 resource "azurerm_static_site" "frontend" {
   name                = "swa-aura-${random_string.storage_suffix.result}"
   resource_group_name = azurerm_resource_group.rg.name
-  location            = "eastus2" # Región de anclaje para Static Web Apps (CDN global)
+  location            = "westus" # Región de anclaje para Static Web Apps (CDN global)
   sku_tier            = "Free"
   sku_size            = "Free"
 
