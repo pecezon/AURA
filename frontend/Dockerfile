@@ -1,7 +1,7 @@
 # ==========================================
 # ETAPA 1: BUILDER (Compilación con Node)
 # ==========================================
-FROM node:22-alpine AS builder
+FROM --platform=linux/amd64 node:22-alpine AS builder
 
 WORKDIR /app
 
@@ -26,7 +26,7 @@ RUN npm run build
 # ==========================================
 # ETAPA 2: RUNNER (Servidor Nginx Ultra Ligero)
 # ==========================================
-FROM nginx:1.27-alpine
+FROM --platform=linux/amd64 nginx:1.27-alpine
 
 # Reemplazamos la configuración default de Nginx con la nuestra
 COPY nginx.conf /etc/nginx/conf.d/default.conf

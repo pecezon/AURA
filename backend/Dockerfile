@@ -1,7 +1,7 @@
 # ==========================================
 # ETAPA 1: BUILDER (Taller de Compilación)
 # ==========================================
-FROM node:22-alpine AS builder
+FROM --platform=linux/amd64 node:22-alpine AS builder
 
 # Instalar openssl (requerido por los binarios del motor de Prisma en Alpine Linux)
 RUN apk add --no-cache openssl
@@ -30,7 +30,7 @@ RUN npm run build
 # ==========================================
 # ETAPA 2: RUNNER (Contenedor de Producción)
 # ==========================================
-FROM node:22-alpine AS runner
+FROM --platform=linux/amd64 node:22-alpine AS runner
 
 RUN apk add --no-cache openssl
 
