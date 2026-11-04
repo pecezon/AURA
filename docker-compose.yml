@@ -1,0 +1,79 @@
+services:
+  # ==========================================
+  # 1. BASE DE DATOS POSTGRESQL
+  # ==========================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: aura-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: aura_user
+      POSTGRES_PASSWORD: aura_password
+      POSTGRES_DB: aura_db
+    ports:
+      # Mapeamos 5432 al host para que puedas inspeccionar con DBeaver, TablePlus o Prisma Studio si quieres
+      - "5432:5432"
+    volumes:
+      # Persistencia de datos en disco
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - aura-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aura_user -d aura_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================
+  # 2. BACKEND API (Express + Prisma)
+  # ==========================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: aura-backend
+    restart: always
+    ports:
+      - "4000:4000"
+    environment:
+      PORT: 4000
+      NODE_ENV: production
+      DATABASE_URL: "postgresql://aura_user:aura_password@postgres:5432/aura_db?schema=public"
+      DIRECT_URL: "postgresql://aura_user:aura_password@postgres:5432/aura_db?schema=public"
+      SUPABASE_URL: ${SUPABASE_URL:-https://dummy.supabase.co}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-dummy-service-key}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-dummy-key}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - aura-network
+
+  # ==========================================
+  # 3. FRONTEND (React SPA + Nginx)
+  # ==========================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL:-https://aura-demo.supabase.co}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummy}
+        VITE_AURA_BACKEND_URL: "http://localhost:4000"
+        VITE_AURA_FRONTEND_URL: "http://localhost:3000"
+    container_name: aura-frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - aura-network
+
+# Definición de volúmenes persistentes y redes virtuales
+volumes:
+  postgres_data:
+
+networks:
+  aura-network:
+    driver: bridge
