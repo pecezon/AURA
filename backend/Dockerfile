@@ -1,34 +1,34 @@
 # ==========================================
-# ETAPA 1: BUILDER (Taller de Compilación)
+# STAGE 1: BUILDER (Build environment)
 # ==========================================
 FROM node:22-alpine AS builder
 
-# Instalar openssl (requerido por los binarios del motor de Prisma en Alpine Linux)
+# Install openssl (required by Prisma engine binaries on Alpine Linux)
 RUN apk add --no-cache openssl
 
 WORKDIR /app
 
-# 1. Copiamos solo los manifiestos de dependencias primero para aprovechar la caché de Docker
+# 1. Copy dependency manifests first to leverage Docker layer caching
 COPY package*.json ./
 
-# Instalamos TODAS las dependencias (incluyendo devDependencies para poder compilar con tsc)
+# Install ALL dependencies (including devDependencies required for tsc compilation)
 RUN npm ci
 
-# 2. Copiamos el esquema de Prisma y generamos el cliente fuertemente tipado
+# 2. Copy Prisma schema and generate strongly-typed client
 COPY prisma.config.ts ./
 COPY prisma ./prisma
 RUN npx prisma generate
 
-# 3. Copiamos el código fuente y el tsconfig
+# 3. Copy source code and tsconfig
 COPY tsconfig.json ./
 COPY src ./src
 
-# 4. Compilamos TypeScript a JavaScript en /app/dist
+# 4. Compile TypeScript to JavaScript in /app/dist
 RUN npm run build
 
 
 # ==========================================
-# ETAPA 2: RUNNER (Contenedor de Producción)
+# STAGE 2: RUNNER (Production runtime container)
 # ==========================================
 FROM node:22-alpine AS runner
 
@@ -38,18 +38,17 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Cambiamos de usuario ANTES de instalar dependencias para que todo pertenezca a 'node'
-# y limpiamos la caché de npm en el mismo comando
+# Set ownership to non-root 'node' user before installing production dependencies and purge npm cache
 COPY --chown=node:node package*.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
-# Copiamos los artefactos compilados ya con el dueño correcto
+# Copy built artifacts and generated Prisma client with correct ownership
 COPY --chown=node:node --from=builder /app/dist ./dist
 COPY --chown=node:node --from=builder /app/generated ./generated
 COPY --chown=node:node --from=builder /app/prisma.config.ts ./prisma.config.ts
 COPY --chown=node:node --from=builder /app/prisma ./prisma
 
-# Usamos el usuario seguro
+# Run under non-privileged user
 USER node
 
 EXPOSE 4000

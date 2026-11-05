@@ -1,4 +1,4 @@
-# 1. Espacio de trabajo para recopilar logs de los contenedores
+# 1. Workspace to aggregate container logs
 resource "azurerm_log_analytics_workspace" "logs" {
   name                = "log-aura-${random_string.storage_suffix.result}"
   location            = azurerm_resource_group.rg.location
@@ -7,7 +7,7 @@ resource "azurerm_log_analytics_workspace" "logs" {
   retention_in_days   = 30
 }
 
-# 2. El Entorno compartido de Container Apps (Container App Environment)
+# 2. Shared Container App Environment
 resource "azurerm_container_app_environment" "env" {
   name                       = "cae-aura-${random_string.storage_suffix.result}"
   location                   = azurerm_resource_group.rg.location
@@ -16,7 +16,7 @@ resource "azurerm_container_app_environment" "env" {
 }
 
 # ==========================================
-# 3. SERVICIO 2: BACKEND (Node.js + Express + Prisma)
+# 3. SERVICE 2: BACKEND (Node.js + Express + Prisma)
 # ==========================================
 resource "azurerm_container_app" "backend" {
   name                         = "aura-backend"
@@ -24,7 +24,7 @@ resource "azurerm_container_app" "backend" {
   resource_group_name          = azurerm_resource_group.rg.name
   revision_mode                = "Single"
 
-  # Conexión con tu registro privado ACR
+  # Connection to private ACR registry
   registry {
     server               = azurerm_container_registry.acr.login_server
     username             = azurerm_container_registry.acr.admin_username
@@ -41,10 +41,10 @@ resource "azurerm_container_app" "backend" {
     value = var.db_password
   }
 
-  # Configuración de red del Backend
+  # Backend network ingress configuration
   ingress {
-    external_enabled = true # Expone la API con HTTPS público
-    target_port      = 4000 # Puerto de Express
+    external_enabled = true # Expose API via public HTTPS
+    target_port      = 4000 # Express application port
     transport        = "auto"
 
     traffic_weight {
@@ -54,7 +54,7 @@ resource "azurerm_container_app" "backend" {
   }
 
   template {
-    # MAGIA DE COSTOS: Escala a 0 si no hay tráfico
+    # Cost optimization: Scale to 0 when there is no traffic
     min_replicas = 0
     max_replicas = 2
 
@@ -72,7 +72,7 @@ resource "azurerm_container_app" "backend" {
         name  = "NODE_ENV"
         value = "production"
       }
-      # Terraform arma la URL de Postgres dinámicamente con SSL obligatorio de Azure
+      # Dynamically compose Postgres URL with Azure-mandated SSL mode
       env {
         name  = "DATABASE_URL"
         value = "postgresql://${azurerm_postgresql_flexible_server.postgres.administrator_login}:${var.db_password}@${azurerm_postgresql_flexible_server.postgres.fqdn}:5432/${azurerm_postgresql_flexible_server_database.db.name}?sslmode=require"
@@ -98,7 +98,7 @@ resource "azurerm_container_app" "backend" {
 }
 
 # ==========================================
-# 4. SERVICIO 1: FRONTEND (React SPA + Nginx)
+# 4. SERVICE 1: FRONTEND (React SPA + Nginx)
 # ==========================================
 resource "azurerm_container_app" "frontend" {
   name                         = "aura-frontend"
@@ -118,8 +118,8 @@ resource "azurerm_container_app" "frontend" {
   }
 
   ingress {
-    external_enabled = true # URL pública para los usuarios
-    target_port      = 80   # Puerto interno de Nginx
+    external_enabled = true # Public URL for end users
+    target_port      = 80   # Internal Nginx port
     transport        = "auto"
 
     traffic_weight {

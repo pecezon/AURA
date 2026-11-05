@@ -1,4 +1,4 @@
-# 1. Configuración de versión de Terraform y proveedores requeridos
+# 1. Terraform version and required providers configuration
 terraform {
   required_version = ">= 1.5.0"
 
@@ -10,12 +10,12 @@ terraform {
   }
 }
 
-# 2. Configuración del proveedor de Azure (azurerm)
+# 2. Azure Provider configuration (azurerm)
 provider "azurerm" {
   features {}
 }
 
-# 3. El Resource Group: el contenedor padre de todos los 4 servicios de AURA
+# 3. Resource Group: parent container for all 4 AURA services
 resource "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
   location = var.location

@@ -1,26 +1,26 @@
-# Dependencias locales (se deben instalar dentro del contenedor Linux)
+# Local dependencies (must be installed inside the Linux container)
 node_modules
 
-# Archivos de compilación locales
+# Local build artifacts
 dist
 generated
 
-# Variables de entorno y secretos locales
+# Local environment variables and secrets
 .env
 .env.*
 
-# Control de versiones y logs
+# Version control and logs
 .git
 .gitignore
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Archivos del sistema operativo
+# Operating system files
 .DS_Store
 Thumbs.db
 
-# Pruebas y cobertura
+# Tests and coverage
 coverage
 __tests__
 *.test.ts

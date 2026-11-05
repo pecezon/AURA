@@ -1,17 +1,17 @@
-# 1. El Servidor Administrado de PostgreSQL
+# 1. Managed PostgreSQL Server
 resource "azurerm_postgresql_flexible_server" "postgres" {
   name                = "psql-aura-${random_string.storage_suffix.result}"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
-  version             = "16" # Misma versión de Postgres que probamos en Docker
+  version             = "16" # Same Postgres version tested in Docker
 
   administrator_login    = "aura_admin"
   administrator_password = var.db_password
 
-  storage_mb = 32768             # 32 GB (mínimo permitido por Azure)
-  sku_name   = "B_Standard_B1ms" # Tier Burstable económico para estudiantes
+  storage_mb = 32768             # 32 GB (minimum allowed by Azure)
+  sku_name   = "B_Standard_B1ms" # Cost-effective Burstable tier for student use
 
-  # Configuración de backup
+  # Backup configuration
   backup_retention_days = 7
 
   tags = {
@@ -20,7 +20,7 @@ resource "azurerm_postgresql_flexible_server" "postgres" {
   }
 }
 
-# 2. La Base de Datos interna llamada 'aura_db'
+# 2. Internal database named 'aura_db'
 resource "azurerm_postgresql_flexible_server_database" "db" {
   name      = "aura_db"
   server_id = azurerm_postgresql_flexible_server.postgres.id
@@ -28,15 +28,15 @@ resource "azurerm_postgresql_flexible_server_database" "db" {
   charset   = "utf8"
 }
 
-# 3. Regla de Firewall: Permitir tráfico desde los servicios de Azure (Backend)
+# 3. Firewall rule: Allow traffic from Azure services (Backend)
 resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_azure_services" {
   name             = "AllowAzureServices"
   server_id        = azurerm_postgresql_flexible_server.postgres.id
   start_ip_address = "0.0.0.0"
-  end_ip_address   = "0.0.0.0" # IP mágica de Azure para servicios internos
+  end_ip_address   = "0.0.0.0" # Special Azure IP range representing internal services
 }
 
-# 4. Regla de Firewall opcional: Permitir que te conectes desde tu Mac para pruebas locales
+# 4. Optional firewall rule: Allow connections from local environment for development/testing
 resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_all" {
   name             = "AllowAllForDev"
   server_id        = azurerm_postgresql_flexible_server.postgres.id

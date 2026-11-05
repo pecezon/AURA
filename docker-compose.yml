@@ -1,6 +1,6 @@
 services:
   # ==========================================
-  # 1. BASE DE DATOS POSTGRESQL
+  # 1. POSTGRESQL DATABASE
   # ==========================================
   postgres:
     image: postgres:16-alpine
@@ -11,10 +11,10 @@ services:
       POSTGRES_PASSWORD: aura_password
       POSTGRES_DB: aura_db
     ports:
-      # Mapeamos 5432 al host para que puedas inspeccionar con DBeaver, TablePlus o Prisma Studio si quieres
+      # Map 5432 to host for external inspection with DBeaver, TablePlus, or Prisma Studio
       - "5432:5432"
     volumes:
-      # Persistencia de datos en disco
+      # Disk data persistence
       - postgres_data:/var/lib/postgresql/data
     networks:
       - aura-network
@@ -70,10 +70,11 @@ services:
     networks:
       - aura-network
 
-# Definición de volúmenes persistentes y redes virtuales
+# Definition of persistent volumes and virtual networks
 volumes:
   postgres_data:
 
 networks:
   aura-network:
     driver: bridge
+
