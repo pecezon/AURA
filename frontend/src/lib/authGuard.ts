@@ -1,6 +1,26 @@
-import {  supabase } from "./supabase";
+import { supabase } from "./supabase";
 
-export async function getUserState() {
+export const SUPERADMIN_DEFAULT_EMAIL = "diego.lopez171205@gmail.com";
+
+export function isSuperAdminEmail(email?: string | null): boolean {
+  if (!email) return false;
+  const configuredEmail = (
+    import.meta.env.VITE_SUPERADMIN_EMAIL || SUPERADMIN_DEFAULT_EMAIL
+  )
+    .trim()
+    .toLowerCase();
+  return email.trim().toLowerCase() === configuredEmail;
+}
+
+export interface UserState {
+  isAuthenticated: boolean;
+  isProfileComplete?: boolean;
+  role?: string;
+  email?: string;
+  isSuperAdmin?: boolean;
+}
+
+export async function getUserState(): Promise<UserState> {
   const { data } = await supabase.auth.getSession();
 
   if (!data.session) {
@@ -14,15 +34,17 @@ export async function getUserState() {
   const baseUrl = rawUrl.replace(/\/$/, "");
 
   const currUserId = data.session.user?.id;
-   if (!currUserId) {
-     return { isAuthenticated: false };
-   }  const res = await fetch(
+  if (!currUserId) {
+    return { isAuthenticated: false };
+  }
+
+  const res = await fetch(
     `${baseUrl}/api/profile/dashboard-data/${currUserId}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    },
+    }
   );
 
   if (res.status === 401) {
@@ -33,9 +55,12 @@ export async function getUserState() {
     const body = await res.json();
 
     if (body?.needsCompletion) {
+      const userEmail = data.session.user?.email;
       return {
         isAuthenticated: true,
         isProfileComplete: false,
+        email: userEmail,
+        isSuperAdmin: isSuperAdminEmail(userEmail),
       };
     }
 
@@ -45,10 +70,13 @@ export async function getUserState() {
 
   if (res.ok) {
     const profile = await res.json();
+    const userEmail = data.session.user?.email || profile.email;
     return {
       isAuthenticated: true,
       isProfileComplete: true,
       role: profile.role === "WORKER" ? "EMPLOYEE" : profile.role,
+      email: userEmail,
+      isSuperAdmin: isSuperAdminEmail(userEmail),
     };
   }
 

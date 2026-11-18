@@ -12,9 +12,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "@tanstack/react-router";
-import { User, LogOut, LayoutDashboard } from "lucide-react";
+import { User, LogOut, LayoutDashboard, ShieldCheck } from "lucide-react";
 import { useMyProfile } from "@/hooks/useProfile";
 import { useQueryClient } from "@tanstack/react-query";
+import { isSuperAdminEmail } from "@/lib/authGuard";
 
 export function AvatarDropdown() {
   const navigate = useNavigate();
@@ -36,6 +37,10 @@ export function AvatarDropdown() {
 
   const handleDashboardClick = () => {
     navigate({ to: "/dashboard" });
+  };
+
+  const handleSuperAdminClick = () => {
+    navigate({ to: "/dashboard/superadmin" });
   };
 
   const { data: profile, isLoading } = useMyProfile();
@@ -107,6 +112,16 @@ export function AvatarDropdown() {
           <LayoutDashboard className="w-4 h-4" />
           Dashboard
         </DropdownMenuItem>
+
+        {isSuperAdminEmail(user.email) && (
+          <DropdownMenuItem
+            onClick={handleSuperAdminClick}
+            className="gap-2 cursor-pointer text-indigo-600 font-medium hover:text-indigo-700 hover:bg-indigo-50"
+          >
+            <ShieldCheck className="w-4 h-4 text-indigo-600" />
+            Panel SuperAdmin
+          </DropdownMenuItem>
+        )}
 
         <DropdownMenuItem onClick={handleProfileClick} className="gap-2 cursor-pointer">
           <User className="w-4 h-4" />
