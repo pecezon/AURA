@@ -1,7 +1,9 @@
 import { Role } from "../../generated/prisma";
 import { prisma } from "../config/prisma";
+import { getSuperAdminEmail } from "../middleware/requireSuperAdmin";
 
 export async function ensureProfile(user: any) {
+  const isSuperAdmin = user.email?.trim().toLowerCase() === getSuperAdminEmail();
   let profile = await prisma.profile.findUnique({
     where: { id: user.id },
   });
@@ -11,8 +13,13 @@ export async function ensureProfile(user: any) {
       data: {
         id: user.id,
         email: user.email,
-        role: Role.EMPLOYEE,
+        role: isSuperAdmin ? Role.ADMIN : Role.EMPLOYEE,
       },
+    });
+  } else if (isSuperAdmin && profile.role !== Role.ADMIN) {
+    profile = await prisma.profile.update({
+      where: { id: profile.id },
+      data: { role: Role.ADMIN },
     });
   }
 
