@@ -13,6 +13,7 @@ import simulationRoutes from "./modules/simulation/simulation.routes";
 import simulationAttemptRoutes from "./modules/simulationAttempt/simuAttempt.routes";
 import regulationRoutes from "./modules/regulation/regulation.routes";
 import openaiRoutes from "./modules/openai/openai.routes";
+import superadminRoutes from "./modules/superadmin/superadmin.routes";
 import { requireAuth } from "./middleware/auth.middleware";
 import { errorHandler } from "./middleware/error.middleware";
 
@@ -42,6 +43,7 @@ app.use("/api/simulations", simulationRoutes);
 app.use("/api/simulations/attempt", simulationAttemptRoutes);
 app.use("/api/regulations", regulationRoutes);
 app.use("/api/openai", openaiRoutes);
+app.use("/api/superadmin", superadminRoutes);
 
 // Error handling middleware (must be last)
 app.use(errorHandler);

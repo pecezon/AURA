@@ -11,6 +11,7 @@ import Login from "./routes/login";
 import WorkerDashboard from "./routes/worker-dashboard";
 import SupervisorDashboard from "./routes/supervisor-dashboard";
 import AdminDashboard from "./routes/admin-dashboard";
+import SuperAdminDashboard from "./routes/superadmin-dashboard";
 import ProfilePage from "./routes/profile";
 import Landing from "./routes/landing";
 import RegistrationForm from "./routes/registration-form";
@@ -142,7 +143,27 @@ const adminDashboardRoute = createRoute({
     }
   },
   component: AdminDashboard,
+});
 
+const superadminDashboardRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/dashboard/superadmin",
+  beforeLoad: async () => {
+    const user = await getUserState();
+
+    if (!user.isAuthenticated) {
+      throw redirect({ to: "/login" });
+    }
+
+    if (!user.isProfileComplete) {
+      throw redirect({ to: "/registration-form" });
+    }
+
+    if (!user.isSuperAdmin) {
+      throw redirect({ to: "/dashboard" });
+    }
+  },
+  component: SuperAdminDashboard,
 });
 
 // Registration Form Route
@@ -239,6 +260,7 @@ const routeTree = rootRoute.addChildren([
   workerDashboardRoute,
   supervisorDashboardRoute,
   adminDashboardRoute,
+  superadminDashboardRoute,
   landingRoute,
   registrationFormRoute,
   profileRoute,
