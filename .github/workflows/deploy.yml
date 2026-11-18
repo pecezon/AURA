@@ -1,25 +1,176 @@
-name: Continuous Deployment with OIDC
+name: CI/CD Pipeline (Quality Gates & Azure Deployment)
+
 on:
+  pull_request:
+    branches:
+      - main
   push:
     branches:
       - main
-      - test-oidc
+
 permissions:
   id-token: write
   contents: read
+
+env:
+  AZURE_RESOURCE_GROUP: rg-aura-cloud
+  AZURE_ACR_NAME: acrauras7c730
+  AZURE_CONTAINER_APP_BACKEND: aura-backend
+  AZURE_CONTAINER_APP_FRONTEND: aura-frontend
+
 jobs:
-  deploy:
+  # ========================================================
+  # JOB 1: CI BACKEND (Quality Gates)
+  # ========================================================
+  ci-backend:
+    name: Backend CI (Typecheck & Tests)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install Backend Dependencies
+        run: npm --prefix backend ci
+
+      - name: Generate Prisma Client
+        run: cd backend && npx prisma generate
+
+      - name: Compile TypeScript (tsc)
+        run: npm --prefix backend run build
+
+      - name: Run Backend Unit Tests
+        run: |
+          npm --prefix backend test \
+            src/test/superadmin.unit.test.ts \
+            src/test/profile.service.test.ts \
+            src/test/scoring.service.test.ts \
+            src/test/simulation-validation.test.ts
+
+  # ========================================================
+  # JOB 2: CI FRONTEND (Quality Gates)
+  # ========================================================
+  ci-frontend:
+    name: Frontend CI (Lint & Build)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Frontend Dependencies
+        run: npm --prefix frontend ci
+
+      - name: Lint Frontend Code
+        run: npm --prefix frontend run lint
+
+      - name: TypeCheck & Build Frontend
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://wreyeflwqcinjxsuhpuf.supabase.co' }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || 'dummy_anon_key_for_typecheck' }}
+          VITE_AURA_BACKEND_URL: 'https://aura-backend.cae-aura-s7c730.westus.azurecontainerapps.io'
+          VITE_AURA_FRONTEND_URL: 'https://aura-frontend.cae-aura-s7c730.westus.azurecontainerapps.io'
+        run: npm --prefix frontend run build
+
+  # ========================================================
+  # JOB 3: CD DEPLOY (Solo tras aprobar CI y en push a main)
+  # ========================================================
+  cd-deploy:
+    name: Deploy to Azure Container Apps
+    needs: [ci-backend, ci-frontend]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
       - name: Azure Login via OIDC
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      - name: Verify Azure Connection
+
+      - name: Login to Azure Container Registry (ACR)
         run: |
-          az account show
-          echo "Conexión a Azure exitosa mediante OIDC sin contraseñas!"
+          az acr login --name ${{ env.AZURE_ACR_NAME }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Build & Push Backend Image
+      - name: Build and Push Backend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ env.AZURE_ACR_NAME }}.azurecr.io/aura-backend:${{ github.sha }}
+            ${{ env.AZURE_ACR_NAME }}.azurecr.io/aura-backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Build & Push Frontend Image
+      - name: Build and Push Frontend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          platforms: linux/amd64
+          push: true
+          build-args: |
+            VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL || 'https://wreyeflwqcinjxsuhpuf.supabase.co' }}
+            VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}
+            VITE_AURA_BACKEND_URL=https://aura-backend.cae-aura-s7c730.westus.azurecontainerapps.io
+            VITE_AURA_FRONTEND_URL=https://aura-frontend.cae-aura-s7c730.westus.azurecontainerapps.io
+          tags: |
+            ${{ env.AZURE_ACR_NAME }}.azurecr.io/aura-frontend:${{ github.sha }}
+            ${{ env.AZURE_ACR_NAME }}.azurecr.io/aura-frontend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Update Azure Container Apps with New Revisions
+      - name: Deploy Backend Container App
+        run: |
+          az containerapp update \
+            --name ${{ env.AZURE_CONTAINER_APP_BACKEND }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --image ${{ env.AZURE_ACR_NAME }}.azurecr.io/aura-backend:${{ github.sha }}
+
+      - name: Deploy Frontend Container App
+        run: |
+          az containerapp update \
+            --name ${{ env.AZURE_CONTAINER_APP_FRONTEND }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --image ${{ env.AZURE_ACR_NAME }}.azurecr.io/aura-frontend:${{ github.sha }}
+
+      # Smoke Health Check
+      - name: Verify Backend Health
+        run: |
+          BACKEND_FQDN=$(az containerapp show --name ${{ env.AZURE_CONTAINER_APP_BACKEND }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --query "properties.configuration.ingress.fqdn" -o tsv)
+          echo "Comprobando salud en https://${BACKEND_FQDN}/health ..."
+          for i in {1..10}; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://${BACKEND_FQDN}/health" || echo "000")
+            if [ "$STATUS" -eq 200 ]; then
+              echo "Despliegue exitoso: Backend responde con HTTP 200 OK!"
+              exit 0
+            fi
+            echo "Intento $i: esperando que el contenedor responda (HTTP $STATUS)..."
+            sleep 6
+          done
+          echo "Timeout: El backend no respondió con HTTP 200 en el tiempo esperado"
+          exit 1
