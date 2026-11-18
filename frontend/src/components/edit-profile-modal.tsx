@@ -48,7 +48,7 @@ const sanitizers: Record<keyof ProfileForm, (v: string) => string> = {
   lastName: (v) => v.replace(/[^a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]/g, "").slice(0, 50),
   employeeId: (v) =>
     v
-      .replace(/[^a-zA-Z0-9\-]/g, "")
+      .replace(/[^a-zA-Z0-9-]/g, "")
       .toUpperCase()
       .slice(0, 20),
   area: (v) => v.replace(/[^a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s&]/g, "").slice(0, 60),

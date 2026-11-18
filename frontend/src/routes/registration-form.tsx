@@ -43,7 +43,7 @@ const sanitizers: Record<keyof ProfileForm, (v: string) => string> = {
   // Solo alfanumérico + guión, máx 20 chars
   employeeId: (v) =>
     v
-      .replace(/[^a-zA-Z0-9\-]/g, "")
+      .replace(/[^a-zA-Z0-9-]/g, "")
       .toUpperCase()
       .slice(0, 20),
   // Solo letras, espacios y &, máx 60 chars

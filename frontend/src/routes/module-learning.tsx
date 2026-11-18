@@ -175,7 +175,7 @@ export default function ModuleLearning() {
       } else {
         toast.error(`Quiz no superado. Calificación: ${result.score.toFixed(0)}`);
       }
-    } catch (error) {
+    } catch {
       toast.error("Error al enviar el quiz");
     }
   };

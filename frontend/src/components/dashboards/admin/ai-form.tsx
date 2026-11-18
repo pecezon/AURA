@@ -313,7 +313,7 @@ export const AIForm: React.FC<AIFormProps> = ({ onGenerateContent, content, setG
                           }
                         };
                       }
-                      const { simulation, ...rest } = mod;
+                      const { simulation: _unusedSimulation, ...rest } = mod;
                       return rest;
                     });
                     return { ...prev, modules: updatedModules };
